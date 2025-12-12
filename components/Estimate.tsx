@@ -13,7 +13,7 @@ import {
 import { Button } from "./ui/button";
 import { FILE_SERVER_URL } from "@/lib/config";
 import Link from "next/link";
-import { TypeClient } from "@prisma/client";
+import { TypeClient } from "@/generated/prisma/enums";
 import { GeistMono } from "geist/font/mono";
 
 export default function Estimate({
