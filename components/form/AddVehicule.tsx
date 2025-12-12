@@ -1,0 +1,245 @@
+"use client";
+
+import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { TypeClient } from "@/generated/prisma/enums";
+import { Plus } from "lucide-react";
+import { useForm } from "react-hook-form";
+import toast from "react-hot-toast";
+import z from "zod";
+import { FormField } from "./FormField";
+import { format } from "date-fns";
+import { Spinner } from "../ui/spinner";
+import { addClientVehicule } from "@/lib/actions/vehicule";
+import UploadImage from "./UploadImage";
+import { useState } from "react";
+import { FILE_SERVER_URL } from "@/lib/config";
+import SelectSearch from "@/components/form/SelectSearch";
+import { useQuery } from "@tanstack/react-query";
+import DateInputField from "./DateInputField";
+
+type FetchInsurances = {
+  id: string;
+  name: string;
+}[];
+
+function useInsurances() {
+  return useQuery({
+    queryKey: ["insurances"],
+    queryFn: async (): Promise<FetchInsurances> => {
+      const response = await fetch(`/api/insurances`);
+      return await response.json();
+    },
+  });
+}
+
+export function AddVehicule({
+  typeClient,
+  clientId,
+  refetch,
+}: {
+  typeClient: TypeClient;
+  clientId: string;
+  refetch: () => void;
+}) {
+  const { data: insurances, isLoading, isError } = useInsurances();
+
+  const [open, setOpen] = useState(false);
+
+  const zodFormSchema = z.object({
+    brand: z.string().nonempty("La marque est requise."),
+    model: z.string().nonempty("Le modèle de la voiture est requis."),
+    year: z
+      .string()
+      .nonempty("L'année est requise.")
+      .length(4, "L'année doit être sous forme de YYYY"),
+    licensePlate: z
+      .string()
+      .nonempty("La plaque d'immatriculation est requise."),
+    insuranceId: z.string().optional(),
+    chassisNumber: z.string().optional(),
+    registrationNumber: z.string().optional(),
+    lastExpertise: z.date().optional(),
+    certificateImage: z.instanceof(File).optional(),
+  });
+  type FormSchema = z.infer<typeof zodFormSchema>;
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors, isSubmitting },
+  } = useForm<FormSchema>({
+    resolver: zodResolver(zodFormSchema),
+  });
+
+  const handleSubmitForm = async (data: FormSchema) => {
+    try {
+      let uploadedUrl: string[] = [];
+      if (data.certificateImage) {
+        const formData = new FormData();
+        formData.append("files", data.certificateImage);
+
+        const res = await fetch(`${FILE_SERVER_URL}/upload`, {
+          method: "POST",
+          body: formData,
+        });
+
+        if (!res.ok) throw new Error("Erreur lors de l'envoi de l'image");
+
+        const json = await res.json();
+        uploadedUrl = json.files.map((url: string) => `${url}`);
+      }
+
+      const newData = {
+        clientId: clientId,
+        brand: data.brand,
+        model: data.model,
+        year: parseInt(data.year, 10),
+        licensePlate: data.licensePlate,
+        insuranceId: data.insuranceId,
+        chassisNumber: data.chassisNumber,
+        registrationNumber: data.registrationNumber,
+        lastExpertise: data.lastExpertise,
+        certificateImage: uploadedUrl[0],
+      };
+
+      const response = await addClientVehicule({ data: newData });
+      if (response.success) {
+        toast.success(response.message);
+        setOpen(false);
+        refetch();
+      } else {
+        toast.error(response.message);
+        setOpen(false);
+      }
+    } catch (error) {
+      toast.error("Une erreur est survenue lors de l'ajout du véhicule.");
+      console.error(error);
+      setOpen(false);
+    }
+  };
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <form onSubmit={handleSubmit(handleSubmitForm)}>
+        <DialogTrigger asChild>
+          <Button
+            className={`${typeClient === "individual" ? "individual-btn" : "company-btn"} gap-1`}
+          >
+            <Plus className="size-4" />
+            Nouveau véhicule
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-[600px]">
+          <DialogHeader>
+            <DialogTitle>Ajouter un véhicule au client</DialogTitle>
+          </DialogHeader>
+          <div className="grid grid-cols-2 gap-4">
+            <FormField
+              label="Marque"
+              name="brand"
+              register={register}
+              type="text"
+              error={errors.brand}
+              nonempty
+            />
+            <FormField
+              label="Modèle"
+              name="model"
+              register={register}
+              type="text"
+              error={errors.model}
+              nonempty
+            />
+            <FormField
+              label="Année"
+              name="year"
+              register={register}
+              type="text"
+              error={errors.year}
+              placeholder={format(new Date(), "yyyy") as string}
+              nonempty
+            />
+            <FormField
+              label="Plaque d'immatriculation"
+              name="licensePlate"
+              register={register}
+              type="text"
+              error={errors.licensePlate}
+              placeholder="GE-960123"
+              nonempty
+            />
+            <SelectSearch
+              label="Séléctionne une assurance"
+              name="insuranceId"
+              content={
+                isLoading
+                  ? [{ label: "Chargement...", value: "" }]
+                  : isError
+                    ? [{ label: "Erreur", value: "" }]
+                    : insurances
+                      ? insurances.map((insurance) => {
+                          return { label: insurance.name, value: insurance.id };
+                        })
+                      : []
+              }
+              placeholder="Séléctionne une assurance"
+              setValue={setValue}
+              research="Recherche une assurance..."
+              noFound="Aucune assurance trouvée"
+              error={errors.insuranceId}
+            />
+            <FormField
+              label="Numéro de chassis"
+              name="chassisNumber"
+              register={register}
+              type="text"
+              error={errors.chassisNumber}
+            />
+            <FormField
+              label="Numéro de matricule"
+              name="registrationNumber"
+              register={register}
+              type="text"
+              error={errors.registrationNumber}
+            />
+            <DateInputField
+              name="lastExpertise"
+              label="Dernière expertise"
+              setValue={setValue}
+              error={errors.lastExpertise}
+            />
+            <div className="col-span-2">
+              <UploadImage
+                setValue={setValue}
+                errorsForm={errors.certificateImage?.message}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <DialogClose asChild>
+              <Button variant="outline">Fermer</Button>
+            </DialogClose>
+            <Button
+              type="submit"
+              disabled={isSubmitting}
+              className={`${typeClient === "individual" ? "individual-btn" : "company-btn"}`}
+              onClick={handleSubmit(handleSubmitForm)}
+            >
+              {isSubmitting ? <Spinner /> : "Enregistrer la voiture"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </form>
+    </Dialog>
+  );
+}
