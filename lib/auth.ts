@@ -5,9 +5,9 @@ import { db } from "./db";
 import "dotenv/config";
 import bcrypt from "bcrypt";
 
-
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(db),
+  // eslint-disable-next-line
+  adapter: PrismaAdapter(db as any),
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
