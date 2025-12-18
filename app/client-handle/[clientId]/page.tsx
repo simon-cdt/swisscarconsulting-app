@@ -11,11 +11,10 @@ import { useState } from "react";
 import { TypeClient } from "@/generated/prisma/enums";
 import { AddVehicule } from "@/components/form/AddVehicule";
 import parsePhoneNumberFromString from "libphonenumber-js";
-import { UpdateClientIndividual } from "@/components/form/UpdateForm/UpdateClientIndividual";
-import { UpdateClientCompany } from "@/components/form/UpdateForm/UpdateClientCompany";
 import { Separator } from "@/components/ui/separator";
 import ErrorPage from "@/components/ErrorPage";
 import LoadingPage from "@/components/LoadingPage";
+import UpdateClient from "@/components/form/UpdateForm/UpdateClient";
 
 type FetchAllVehiculesOfClient = {
   vehicules: {
@@ -102,7 +101,7 @@ export default function ClientVehiculePage() {
             </header>
 
             {/* Main Content */}
-            <main className="mx-auto flex w-[750px] flex-col items-center gap-6 px-6">
+            <main className="mx-auto flex w-187.5 flex-col items-center gap-6 px-6">
               <Card
                 className={`${data.client.typeClient === "individual" ? "individual-card" : "company-card"} w-full p-6`}
               >
@@ -122,28 +121,11 @@ export default function ClientVehiculePage() {
                         Informations client
                       </h2>
                     </div>
-                    {data.client.typeClient === "individual" &&
-                    data.client.name &&
-                    data.client.firstName ? (
-                      <UpdateClientIndividual
-                        client={{
-                          ...data.client,
-                          name: data.client.name!,
-                          firstName: data.client.firstName!,
-                        }}
-                        refetch={refetch}
-                      />
-                    ) : (
-                      <UpdateClientCompany
-                        client={{
-                          ...data.client,
-                          companyName: data.client.companyName!,
-                          contactFirstName: data.client.contactFirstName!,
-                          contactName: data.client.contactName!,
-                        }}
-                        refetch={refetch}
-                      />
-                    )}
+                    <UpdateClient
+                      typeClient={data.client.typeClient}
+                      client={data.client}
+                      refetch={refetch}
+                    />
                   </div>
                   <div className="grid grid-cols-2 gap-x-8 gap-y-2">
                     <div>

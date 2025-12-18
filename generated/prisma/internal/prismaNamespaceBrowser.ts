@@ -157,6 +157,7 @@ export const EstimateItemScalarFieldEnum = {
   id: 'id',
   estimateId: 'estimateId',
   type: 'type',
+  designation: 'designation',
   description: 'description',
   unitPrice: 'unitPrice',
   quantity: 'quantity',
@@ -258,6 +259,7 @@ export type EstimateOrderByRelevanceFieldEnum = (typeof EstimateOrderByRelevance
 export const EstimateItemOrderByRelevanceFieldEnum = {
   id: 'id',
   estimateId: 'estimateId',
+  designation: 'designation',
   description: 'description'
 } as const
 

@@ -30,7 +30,8 @@ export default function UpdateLaborItem({
   ItemsEstimate: ItemEstimate;
   item: {
     id: string;
-    description: string;
+    designation: string;
+    description: string | null;
     unitPrice: number;
     position: number;
     discount: number | null;
@@ -40,7 +41,8 @@ export default function UpdateLaborItem({
   const [open, setOpen] = useState(false);
 
   const zodFormSchema = z.object({
-    description: z.string().nonempty("La description est requise."),
+    designation: z.string().nonempty("La désignation est requise."),
+    description: z.string().optional(),
     unitPrice: z
       .number("Un nombre est attendu")
       .positive("Le prix doit être positif"),
@@ -61,7 +63,8 @@ export default function UpdateLaborItem({
   } = useForm<FormSchema>({
     resolver: zodResolver(zodFormSchema),
     defaultValues: {
-      description: item.description,
+      designation: item.designation,
+      description: item.description || undefined,
       unitPrice: item.unitPrice,
       discount: item.discount || undefined,
       position: item.position,
@@ -107,7 +110,8 @@ export default function UpdateLaborItem({
       // Mettre à jour l'item modifié
       updatedItems[itemIndex] = {
         ...updatedItems[itemIndex],
-        description: data.description,
+        designation: data.designation,
+        description: data.description || null,
         unitPrice: data.unitPrice,
         discount: data.discount ?? null,
         position: newPosition,
@@ -153,13 +157,24 @@ export default function UpdateLaborItem({
           <div className="grid w-full grid-cols-3 gap-4">
             <div className="col-span-3">
               <FormField
+                label="Désignation"
+                name="designation"
+                register={register}
+                type="text"
+                error={errors.designation}
+                nonempty
+                defaultValue={item.designation}
+              />
+            </div>
+            <div className="col-span-3">
+              <FormField
                 label="Description"
                 name="description"
                 register={register}
                 type="text"
                 error={errors.description}
-                nonempty
-                defaultValue={item.description}
+                textarea
+                defaultValue={item.description || undefined}
               />
             </div>
             <FormField

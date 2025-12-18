@@ -20,7 +20,8 @@ export default function AddLaborItem({
   setSelectedItems: React.Dispatch<React.SetStateAction<ItemEstimate>>;
 }) {
   const zodFormSchema = z.object({
-    description: z.string().nonempty("La description est requise."),
+    designation: z.string().nonempty("La désignation est requise."),
+    description: z.string().optional(),
     unitPrice: z
       .number("Un nombre est attendu")
       .positive("Le prix doit être positif"),
@@ -52,7 +53,8 @@ export default function AddLaborItem({
       const newItem = {
         id: crypto.randomUUID(),
         type: "LABOR" as const,
-        description: data.description,
+        designation: data.designation,
+        description: data.description || null,
         unitPrice: data.unitPrice,
         quantity: 1,
         discount: data.discount ?? null,
@@ -91,12 +93,22 @@ export default function AddLaborItem({
       <div className="grid w-full grid-cols-3 gap-4">
         <div className="col-span-3">
           <FormField
+            label="Désignation"
+            name="designation"
+            register={register}
+            type="text"
+            error={errors.designation}
+            nonempty
+          />
+        </div>
+        <div className="col-span-3">
+          <FormField
             label="Description"
             name="description"
             register={register}
             type="text"
             error={errors.description}
-            nonempty
+            textarea
           />
         </div>
         <FormField

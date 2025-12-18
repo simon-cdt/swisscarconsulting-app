@@ -52,10 +52,12 @@ export const addClientVehicule = async ({
         brand: data.brand,
         model: data.model,
         year: data.year,
-        licensePlate: data.licensePlate,
-        chassisNumber: data.chassisNumber ? data.chassisNumber : null,
+        licensePlate: data.licensePlate.toUpperCase(),
+        chassisNumber: data.chassisNumber
+          ? data.chassisNumber.toUpperCase()
+          : null,
         registrationNumber: data.registrationNumber
-          ? data.registrationNumber
+          ? data.registrationNumber.toUpperCase()
           : null,
         lastExpertise: data.lastExpertise ? data.lastExpertise : null,
         certificateImage: data.certificateImage,

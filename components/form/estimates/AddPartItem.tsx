@@ -20,7 +20,8 @@ export default function AddPartItem({
   setSelectedItems: React.Dispatch<React.SetStateAction<ItemEstimate>>;
 }) {
   const zodFormSchema = z.object({
-    description: z.string().nonempty("La description est requise."),
+    designation: z.string().nonempty("La désignation est requise."),
+    description: z.string().optional(),
     unitPrice: z
       .number("Un nombre est attendu")
       .positive("Le prix doit être positif"),
@@ -50,7 +51,8 @@ export default function AddPartItem({
       const newItem = {
         id: crypto.randomUUID(),
         type: "PART" as const,
-        description: data.description,
+        designation: data.designation,
+        description: data.description ?? null,
         unitPrice: data.unitPrice,
         quantity: data.quantity,
         discount: null,
@@ -89,11 +91,22 @@ export default function AddPartItem({
       <div className="grid w-full grid-cols-3 gap-4">
         <div className="col-span-3">
           <FormField
+            label="Désignation"
+            name="designation"
+            register={register}
+            type="text"
+            error={errors.designation}
+            nonempty
+          />
+        </div>
+        <div className="col-span-3">
+          <FormField
             label="Description"
             name="description"
             register={register}
             type="text"
             error={errors.description}
+            textarea
           />
         </div>
         <FormField
@@ -103,6 +116,7 @@ export default function AddPartItem({
           type="number"
           step="0.01"
           error={errors.unitPrice}
+          nonempty
         />
         <FormField
           label="Quantité"
@@ -110,6 +124,7 @@ export default function AddPartItem({
           register={register}
           type="number"
           error={errors.quantity}
+          nonempty
         />
         <SelectField
           items={Array.from({ length: ItemsEstimate.length + 1 }, (_, i) => ({
@@ -122,6 +137,7 @@ export default function AddPartItem({
           setValue={setValue}
           defaultValue={(ItemsEstimate.length + 1).toString()}
           error={errors.position}
+          nonempty
         />
       </div>
       <div className="mt-4 flex w-full justify-end gap-3">

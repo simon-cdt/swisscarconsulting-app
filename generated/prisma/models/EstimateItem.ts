@@ -44,6 +44,7 @@ export type EstimateItemMinAggregateOutputType = {
   id: string | null
   estimateId: string | null
   type: $Enums.ItemType | null
+  designation: string | null
   description: string | null
   unitPrice: number | null
   quantity: number | null
@@ -57,6 +58,7 @@ export type EstimateItemMaxAggregateOutputType = {
   id: string | null
   estimateId: string | null
   type: $Enums.ItemType | null
+  designation: string | null
   description: string | null
   unitPrice: number | null
   quantity: number | null
@@ -70,6 +72,7 @@ export type EstimateItemCountAggregateOutputType = {
   id: number
   estimateId: number
   type: number
+  designation: number
   description: number
   unitPrice: number
   quantity: number
@@ -99,6 +102,7 @@ export type EstimateItemMinAggregateInputType = {
   id?: true
   estimateId?: true
   type?: true
+  designation?: true
   description?: true
   unitPrice?: true
   quantity?: true
@@ -112,6 +116,7 @@ export type EstimateItemMaxAggregateInputType = {
   id?: true
   estimateId?: true
   type?: true
+  designation?: true
   description?: true
   unitPrice?: true
   quantity?: true
@@ -125,6 +130,7 @@ export type EstimateItemCountAggregateInputType = {
   id?: true
   estimateId?: true
   type?: true
+  designation?: true
   description?: true
   unitPrice?: true
   quantity?: true
@@ -225,7 +231,8 @@ export type EstimateItemGroupByOutputType = {
   id: string
   estimateId: string
   type: $Enums.ItemType
-  description: string
+  designation: string
+  description: string | null
   unitPrice: number
   quantity: number | null
   discount: number | null
@@ -261,7 +268,8 @@ export type EstimateItemWhereInput = {
   id?: Prisma.StringFilter<"EstimateItem"> | string
   estimateId?: Prisma.StringFilter<"EstimateItem"> | string
   type?: Prisma.EnumItemTypeFilter<"EstimateItem"> | $Enums.ItemType
-  description?: Prisma.StringFilter<"EstimateItem"> | string
+  designation?: Prisma.StringFilter<"EstimateItem"> | string
+  description?: Prisma.StringNullableFilter<"EstimateItem"> | string | null
   unitPrice?: Prisma.FloatFilter<"EstimateItem"> | number
   quantity?: Prisma.IntNullableFilter<"EstimateItem"> | number | null
   discount?: Prisma.FloatNullableFilter<"EstimateItem"> | number | null
@@ -275,7 +283,8 @@ export type EstimateItemOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   estimateId?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  description?: Prisma.SortOrder
+  designation?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   quantity?: Prisma.SortOrderInput | Prisma.SortOrder
   discount?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -293,7 +302,8 @@ export type EstimateItemWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.EstimateItemWhereInput | Prisma.EstimateItemWhereInput[]
   estimateId?: Prisma.StringFilter<"EstimateItem"> | string
   type?: Prisma.EnumItemTypeFilter<"EstimateItem"> | $Enums.ItemType
-  description?: Prisma.StringFilter<"EstimateItem"> | string
+  designation?: Prisma.StringFilter<"EstimateItem"> | string
+  description?: Prisma.StringNullableFilter<"EstimateItem"> | string | null
   unitPrice?: Prisma.FloatFilter<"EstimateItem"> | number
   quantity?: Prisma.IntNullableFilter<"EstimateItem"> | number | null
   discount?: Prisma.FloatNullableFilter<"EstimateItem"> | number | null
@@ -307,7 +317,8 @@ export type EstimateItemOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   estimateId?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  description?: Prisma.SortOrder
+  designation?: Prisma.SortOrder
+  description?: Prisma.SortOrderInput | Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   quantity?: Prisma.SortOrderInput | Prisma.SortOrder
   discount?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -328,7 +339,8 @@ export type EstimateItemScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"EstimateItem"> | string
   estimateId?: Prisma.StringWithAggregatesFilter<"EstimateItem"> | string
   type?: Prisma.EnumItemTypeWithAggregatesFilter<"EstimateItem"> | $Enums.ItemType
-  description?: Prisma.StringWithAggregatesFilter<"EstimateItem"> | string
+  designation?: Prisma.StringWithAggregatesFilter<"EstimateItem"> | string
+  description?: Prisma.StringNullableWithAggregatesFilter<"EstimateItem"> | string | null
   unitPrice?: Prisma.FloatWithAggregatesFilter<"EstimateItem"> | number
   quantity?: Prisma.IntNullableWithAggregatesFilter<"EstimateItem"> | number | null
   discount?: Prisma.FloatNullableWithAggregatesFilter<"EstimateItem"> | number | null
@@ -340,7 +352,8 @@ export type EstimateItemScalarWhereWithAggregatesInput = {
 export type EstimateItemCreateInput = {
   id?: string
   type: $Enums.ItemType
-  description: string
+  designation: string
+  description?: string | null
   unitPrice: number
   quantity?: number | null
   discount?: number | null
@@ -354,7 +367,8 @@ export type EstimateItemUncheckedCreateInput = {
   id?: string
   estimateId: string
   type: $Enums.ItemType
-  description: string
+  designation: string
+  description?: string | null
   unitPrice: number
   quantity?: number | null
   discount?: number | null
@@ -366,7 +380,8 @@ export type EstimateItemUncheckedCreateInput = {
 export type EstimateItemUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumItemTypeFieldUpdateOperationsInput | $Enums.ItemType
-  description?: Prisma.StringFieldUpdateOperationsInput | string
+  designation?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -380,7 +395,8 @@ export type EstimateItemUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   estimateId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumItemTypeFieldUpdateOperationsInput | $Enums.ItemType
-  description?: Prisma.StringFieldUpdateOperationsInput | string
+  designation?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -393,7 +409,8 @@ export type EstimateItemCreateManyInput = {
   id?: string
   estimateId: string
   type: $Enums.ItemType
-  description: string
+  designation: string
+  description?: string | null
   unitPrice: number
   quantity?: number | null
   discount?: number | null
@@ -405,7 +422,8 @@ export type EstimateItemCreateManyInput = {
 export type EstimateItemUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumItemTypeFieldUpdateOperationsInput | $Enums.ItemType
-  description?: Prisma.StringFieldUpdateOperationsInput | string
+  designation?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -418,7 +436,8 @@ export type EstimateItemUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   estimateId?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumItemTypeFieldUpdateOperationsInput | $Enums.ItemType
-  description?: Prisma.StringFieldUpdateOperationsInput | string
+  designation?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -447,6 +466,7 @@ export type EstimateItemCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   estimateId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  designation?: Prisma.SortOrder
   description?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
@@ -467,6 +487,7 @@ export type EstimateItemMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   estimateId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  designation?: Prisma.SortOrder
   description?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
@@ -480,6 +501,7 @@ export type EstimateItemMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   estimateId?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  designation?: Prisma.SortOrder
   description?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
@@ -569,7 +591,8 @@ export type NullableFloatFieldUpdateOperationsInput = {
 export type EstimateItemCreateWithoutEstimateInput = {
   id?: string
   type: $Enums.ItemType
-  description: string
+  designation: string
+  description?: string | null
   unitPrice: number
   quantity?: number | null
   discount?: number | null
@@ -581,7 +604,8 @@ export type EstimateItemCreateWithoutEstimateInput = {
 export type EstimateItemUncheckedCreateWithoutEstimateInput = {
   id?: string
   type: $Enums.ItemType
-  description: string
+  designation: string
+  description?: string | null
   unitPrice: number
   quantity?: number | null
   discount?: number | null
@@ -623,7 +647,8 @@ export type EstimateItemScalarWhereInput = {
   id?: Prisma.StringFilter<"EstimateItem"> | string
   estimateId?: Prisma.StringFilter<"EstimateItem"> | string
   type?: Prisma.EnumItemTypeFilter<"EstimateItem"> | $Enums.ItemType
-  description?: Prisma.StringFilter<"EstimateItem"> | string
+  designation?: Prisma.StringFilter<"EstimateItem"> | string
+  description?: Prisma.StringNullableFilter<"EstimateItem"> | string | null
   unitPrice?: Prisma.FloatFilter<"EstimateItem"> | number
   quantity?: Prisma.IntNullableFilter<"EstimateItem"> | number | null
   discount?: Prisma.FloatNullableFilter<"EstimateItem"> | number | null
@@ -635,7 +660,8 @@ export type EstimateItemScalarWhereInput = {
 export type EstimateItemCreateManyEstimateInput = {
   id?: string
   type: $Enums.ItemType
-  description: string
+  designation: string
+  description?: string | null
   unitPrice: number
   quantity?: number | null
   discount?: number | null
@@ -647,7 +673,8 @@ export type EstimateItemCreateManyEstimateInput = {
 export type EstimateItemUpdateWithoutEstimateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumItemTypeFieldUpdateOperationsInput | $Enums.ItemType
-  description?: Prisma.StringFieldUpdateOperationsInput | string
+  designation?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -659,7 +686,8 @@ export type EstimateItemUpdateWithoutEstimateInput = {
 export type EstimateItemUncheckedUpdateWithoutEstimateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumItemTypeFieldUpdateOperationsInput | $Enums.ItemType
-  description?: Prisma.StringFieldUpdateOperationsInput | string
+  designation?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -671,7 +699,8 @@ export type EstimateItemUncheckedUpdateWithoutEstimateInput = {
 export type EstimateItemUncheckedUpdateManyWithoutEstimateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumItemTypeFieldUpdateOperationsInput | $Enums.ItemType
-  description?: Prisma.StringFieldUpdateOperationsInput | string
+  designation?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
@@ -686,6 +715,7 @@ export type EstimateItemSelect<ExtArgs extends runtime.Types.Extensions.Internal
   id?: boolean
   estimateId?: boolean
   type?: boolean
+  designation?: boolean
   description?: boolean
   unitPrice?: boolean
   quantity?: boolean
@@ -702,6 +732,7 @@ export type EstimateItemSelectScalar = {
   id?: boolean
   estimateId?: boolean
   type?: boolean
+  designation?: boolean
   description?: boolean
   unitPrice?: boolean
   quantity?: boolean
@@ -711,7 +742,7 @@ export type EstimateItemSelectScalar = {
   updatedAt?: boolean
 }
 
-export type EstimateItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "estimateId" | "type" | "description" | "unitPrice" | "quantity" | "discount" | "position" | "createdAt" | "updatedAt", ExtArgs["result"]["estimateItem"]>
+export type EstimateItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "estimateId" | "type" | "designation" | "description" | "unitPrice" | "quantity" | "discount" | "position" | "createdAt" | "updatedAt", ExtArgs["result"]["estimateItem"]>
 export type EstimateItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   estimate?: boolean | Prisma.EstimateDefaultArgs<ExtArgs>
 }
@@ -725,7 +756,8 @@ export type $EstimateItemPayload<ExtArgs extends runtime.Types.Extensions.Intern
     id: string
     estimateId: string
     type: $Enums.ItemType
-    description: string
+    designation: string
+    description: string | null
     unitPrice: number
     quantity: number | null
     discount: number | null
@@ -1105,6 +1137,7 @@ export interface EstimateItemFieldRefs {
   readonly id: Prisma.FieldRef<"EstimateItem", 'String'>
   readonly estimateId: Prisma.FieldRef<"EstimateItem", 'String'>
   readonly type: Prisma.FieldRef<"EstimateItem", 'ItemType'>
+  readonly designation: Prisma.FieldRef<"EstimateItem", 'String'>
   readonly description: Prisma.FieldRef<"EstimateItem", 'String'>
   readonly unitPrice: Prisma.FieldRef<"EstimateItem", 'Float'>
   readonly quantity: Prisma.FieldRef<"EstimateItem", 'Int'>

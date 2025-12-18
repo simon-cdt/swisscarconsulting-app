@@ -38,7 +38,7 @@ export default function AddCompany() {
     const response = await addClientCompany({ data });
     if (response.success) {
       toast.success(response.message);
-      router.push(`/client-handle/vehicule/${response.clientId}`);
+      router.push(`/client-handle/${response.clientId}`);
     } else {
       toast.error(response.message);
     }

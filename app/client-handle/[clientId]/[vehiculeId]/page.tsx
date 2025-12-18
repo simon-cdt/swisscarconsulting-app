@@ -15,8 +15,6 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { FormField } from "@/components/form/FormField";
 import { Spinner } from "@/components/ui/spinner";
 import parsePhoneNumberFromString from "libphonenumber-js";
-import { UpdateClientIndividual } from "@/components/form/UpdateForm/UpdateClientIndividual";
-import { UpdateClientCompany } from "@/components/form/UpdateForm/UpdateClientCompany";
 import { UpdateVehicule } from "@/components/form/UpdateForm/UpdateVehicule";
 import { addIntervention } from "@/lib/actions/intervention";
 import toast from "react-hot-toast";
@@ -32,6 +30,7 @@ import {
 } from "@/components/ui/dialog";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import UpdateClient from "@/components/form/UpdateForm/UpdateClient";
 
 type FetchClientAndVehicule = {
   vehicule: {
@@ -182,7 +181,7 @@ export default function VisitPage() {
         data && (
           <div className="flex min-h-screen w-screen flex-col items-center pt-10">
             {/* Header */}
-            <header className="bg-card w-[1000px] border-b">
+            <header className="bg-card w-250 border-b">
               <div className="container mx-auto flex items-center justify-between px-6 pb-4">
                 <div className="flex items-center gap-4">
                   <Link href={`/client-handle/${clientId}`}>
@@ -198,7 +197,7 @@ export default function VisitPage() {
             </header>
 
             {/* Main Content */}
-            <main className="w-[1000px] py-8">
+            <main className="w-250 py-8">
               <div className="flex w-full flex-col items-center space-y-6">
                 <div className="grid w-full grid-cols-2 gap-x-6">
                   <Card
@@ -220,28 +219,11 @@ export default function VisitPage() {
                             Informations client
                           </h2>
                         </div>
-                        {data.client.typeClient === "individual" &&
-                        data.client.name &&
-                        data.client.firstName ? (
-                          <UpdateClientIndividual
-                            client={{
-                              ...data.client,
-                              name: data.client.name!,
-                              firstName: data.client.firstName!,
-                            }}
-                            refetch={refetch}
-                          />
-                        ) : (
-                          <UpdateClientCompany
-                            client={{
-                              ...data.client,
-                              companyName: data.client.companyName!,
-                              contactFirstName: data.client.contactFirstName!,
-                              contactName: data.client.contactName!,
-                            }}
-                            refetch={refetch}
-                          />
-                        )}
+                        <UpdateClient
+                          typeClient={data.client.typeClient}
+                          client={data.client}
+                          refetch={refetch}
+                        />
                       </div>
                       <div className="grid grid-cols-2 gap-x-8 gap-y-2">
                         <Item
@@ -339,7 +321,7 @@ export default function VisitPage() {
                                   Voir la carte grise
                                 </Button>
                               </DialogTrigger>
-                              <DialogContent className="sm:max-w-[600px]">
+                              <DialogContent className="sm:max-w-150">
                                 <DialogTitle />
                                 {/* eslint-disable-next-line */}
                                 <img

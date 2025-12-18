@@ -22,7 +22,8 @@ export const Roles = [
 export type ItemEstimate = {
   id: string;
   type: ItemType;
-  description: string;
+  designation: string;
+  description: string | null;
   unitPrice: number;
   quantity: number | null;
   discount: number | null;

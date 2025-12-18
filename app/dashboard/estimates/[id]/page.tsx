@@ -184,11 +184,11 @@ export default function QuoteGeneratorPage() {
                 </p>
               </div>
 
-              <div className="grid gap-6 lg:grid-cols-2">
+              <div className="flex flex-col gap-6">
                 {/* Colonne gauche - Constat et Médias */}
-                <div className="flex flex-col gap-6">
+                <div className="flex w-full justify-between gap-6">
                   {/* Zone de constat */}
-                  <Card className="border-2">
+                  <Card className="w-full border-2">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <FileText className="text-primary h-5 w-5" />
@@ -199,7 +199,7 @@ export default function QuoteGeneratorPage() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="bg-muted/30 max-h-64 overflow-y-auto rounded-md border p-4">
+                      <div className="bg-muted/30 max-h-32 overflow-y-auto rounded-md border p-4">
                         <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
                           {estimate.intervention.description}
                         </p>
@@ -207,7 +207,7 @@ export default function QuoteGeneratorPage() {
                     </CardContent>
                   </Card>
 
-                  <Card className="border-2">
+                  <Card className="w-full border-2">
                     <CardHeader>
                       <CardTitle className="flex items-center gap-2">
                         <ImageIcon className="h-5 w-5 text-black/50" />
@@ -349,9 +349,14 @@ export default function QuoteGeneratorPage() {
                               className="bg-card flex items-center justify-between rounded-lg border p-3"
                             >
                               <div className="w-[65%] overflow-hidden">
-                                <p className="text-foreground truncate font-medium">
-                                  {item.description}
+                                <p className="font-semibold">
+                                  {item.designation}
                                 </p>
+                                {item.description && (
+                                  <p className="truncate text-sm text-black/70">
+                                    {item.description}
+                                  </p>
+                                )}
                               </div>
                               <div className="flex w-[32%] items-center justify-between">
                                 <span className="text-primary w-[53%] font-semibold">
@@ -462,7 +467,7 @@ export default function QuoteGeneratorPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex justify-center">
-                  <div className="h-[1123px] w-[794px] border bg-white">
+                  <div className="h-280.75 w-198.5 border bg-white">
                     <div
                       id="pdf-preview"
                       className="pdf-container relative flex h-full w-full flex-col rounded p-16"
@@ -511,7 +516,7 @@ export default function QuoteGeneratorPage() {
                               <thead>
                                 <tr className="border-b-2 border-gray-300">
                                   <th className="p-2 text-left text-black">
-                                    Description
+                                    Désignation
                                   </th>
                                   <th className="p-2 text-right text-black">
                                     Quantité
@@ -528,10 +533,15 @@ export default function QuoteGeneratorPage() {
                                 {selectedItems.map((item) => (
                                   <tr
                                     key={item.id}
-                                    className="border-b border-gray-200"
+                                    className="w-full border-b border-gray-200"
                                   >
-                                    <td className="w-1/2 p-2 wrap-break-word text-black">
-                                      {item.description}
+                                    <td className="flex w-full flex-col gap-1 p-2">
+                                      <p className="w-full font-semibold">
+                                        {item.designation}
+                                      </p>
+                                      <p className="w-full text-sm wrap-break-word whitespace-pre-wrap text-black/70">
+                                        {item.description}
+                                      </p>
                                     </td>
                                     <td className="p-2 text-right text-black">
                                       {item.quantity ?? 0}

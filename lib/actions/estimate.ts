@@ -52,7 +52,8 @@ export const updateEstimateItems = async ({
   items: Array<{
     id: string;
     type: "PART" | "LABOR";
-    description: string;
+    designation: string;
+    description: string | null;
     unitPrice: number;
     quantity: number;
     discount: number | null;
@@ -78,6 +79,7 @@ export const updateEstimateItems = async ({
         data: {
           estimateId,
           type: item.type,
+          designation: item.designation,
           description: item.description,
           unitPrice: item.unitPrice,
           quantity: item.quantity,

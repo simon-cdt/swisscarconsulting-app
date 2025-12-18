@@ -1,34 +1,26 @@
 "use client";
 
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogClose,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Edit } from "lucide-react";
 import { useForm } from "react-hook-form";
 import z from "zod";
 import { Spinner } from "../../ui/spinner";
 import { FormField } from "../FormField";
 import { updateClientIndividual } from "@/lib/actions/client";
 import toast from "react-hot-toast";
-import { useState } from "react";
 
 export function UpdateClientIndividual({
   client,
   refetch,
+  setIsOpen,
 }: {
   client: {
     id: string;
-    name: string;
-    firstName: string;
+    name: string | null;
+    firstName: string | null;
+    companyName: string | null;
+    contactFirstName: string | null;
+    contactName: string | null;
     email: string;
     phone: string;
     address: string | null;
@@ -36,9 +28,8 @@ export function UpdateClientIndividual({
     city: string | null;
   };
   refetch: () => void;
+  setIsOpen: (isOpen: boolean) => void;
 }) {
-  const [isOpen, setIsOpen] = useState(false);
-
   const zodFormSchema = z.object({
     name: z.string().nonempty("Le nom est requis."),
     firstName: z.string().nonempty("Le prénom est requis."),
@@ -82,101 +73,84 @@ export function UpdateClientIndividual({
     }
   };
   return (
-    <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <form onSubmit={handleSubmit(handleSubmitForm)}>
-        <DialogTrigger asChild>
-          <Button className={`individual-btn flex items-center gap-3`}>
-            <span>Modifier</span>
-            <Edit className="size-4" />
+    <form onSubmit={handleSubmit(handleSubmitForm)}>
+      <div className="grid grid-cols-2 gap-4">
+        <FormField
+          label="Nom"
+          name="name"
+          type="text"
+          defaultValue={client.name || client.contactName || ""}
+          error={errors.name}
+          register={register}
+          nonempty
+        />
+        <FormField
+          label="Prénom"
+          name="firstName"
+          type="text"
+          defaultValue={client.firstName || client.contactFirstName || ""}
+          error={errors.firstName}
+          register={register}
+          nonempty
+        />
+        <FormField
+          label="Email"
+          name="email"
+          type="email"
+          defaultValue={client.email}
+          error={errors.email}
+          register={register}
+          nonempty
+        />
+        <FormField
+          label="Téléphone"
+          name="phone"
+          type="text"
+          defaultValue={client.phone}
+          error={errors.phone}
+          register={register}
+          nonempty
+        />
+        <div className="col-span-2">
+          <FormField
+            label="Adresse"
+            name="address"
+            type="text"
+            defaultValue={client.address || ""}
+            error={errors.address}
+            register={register}
+          />
+        </div>
+        <FormField
+          label="Code Postal"
+          name="postalCode"
+          type="text"
+          defaultValue={client.postalCode || ""}
+          error={errors.postalCode}
+          register={register}
+        />
+        <FormField
+          label="Ville"
+          name="city"
+          type="text"
+          defaultValue={client.city || ""}
+          error={errors.city}
+          register={register}
+        />
+        <div className="col-span-2 flex w-full justify-end gap-4">
+          <Button variant="outline" type="button">
+            Annuler
           </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-[600px]">
-          <DialogHeader>
-            <DialogTitle>Modifier le client</DialogTitle>
-            <DialogDescription>
-              Apportez des modifications au client ici. Cliquez sur enregistrer
-              lorsque vous avez terminé.
-            </DialogDescription>
-          </DialogHeader>
-          <div className="grid grid-cols-2 gap-4">
-            <FormField
-              label="Nom"
-              name="name"
-              type="text"
-              defaultValue={client.name}
-              error={errors.name}
-              register={register}
-              nonempty
-            />
-            <FormField
-              label="Prénom"
-              name="firstName"
-              type="text"
-              defaultValue={client.firstName}
-              error={errors.firstName}
-              register={register}
-              nonempty
-            />
-            <FormField
-              label="Email"
-              name="email"
-              type="email"
-              defaultValue={client.email}
-              error={errors.email}
-              register={register}
-              nonempty
-            />
-            <FormField
-              label="Téléphone"
-              name="phone"
-              type="text"
-              defaultValue={client.phone}
-              error={errors.phone}
-              register={register}
-              nonempty
-            />
-            <div className="col-span-2">
-              <FormField
-                label="Adresse"
-                name="address"
-                type="text"
-                defaultValue={client.address || ""}
-                error={errors.address}
-                register={register}
-              />
-            </div>
-            <FormField
-              label="Code Postal"
-              name="postalCode"
-              type="text"
-              defaultValue={client.postalCode || ""}
-              error={errors.postalCode}
-              register={register}
-            />
-            <FormField
-              label="Ville"
-              name="city"
-              type="text"
-              defaultValue={client.city || ""}
-              error={errors.city}
-              register={register}
-            />
-          </div>
-          <DialogFooter>
-            <DialogClose asChild>
-              <Button variant="outline">Annuler</Button>
-            </DialogClose>
-            <Button
-              type="submit"
-              onClick={handleSubmit(handleSubmitForm)}
-              disabled={isSubmitting}
-              className="individual-btn"
-            >
-              {isSubmitting ? <Spinner /> : "Enregistrer"}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </form>
-    </Dialog>
+          <Button
+            type="submit"
+            onClick={handleSubmit(handleSubmitForm)}
+            disabled={isSubmitting}
+            className="individual-btn"
+          >
+            {isSubmitting ? <Spinner /> : "Enregistrer"}
+          </Button>
+        </div>
+      </div>
+    </form>
   );
 }

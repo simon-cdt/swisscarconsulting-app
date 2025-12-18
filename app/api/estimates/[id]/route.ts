@@ -21,6 +21,7 @@ export async function GET(
       items: {
         select: {
           id: true,
+          designation: true,
           description: true,
           quantity: true,
           unitPrice: true,

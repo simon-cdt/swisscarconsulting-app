@@ -142,6 +142,7 @@ export const updateClientIndividual = async ({
         address: data.address,
         postalCode: data.postalCode,
         city: data.city,
+        typeClient: "individual",
       },
     });
 
@@ -191,6 +192,7 @@ export const updateClientCompany = async ({
         address: data.address,
         postalCode: data.postalCode,
         city: data.city,
+        typeClient: "company",
       },
     });
 
