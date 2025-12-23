@@ -3,6 +3,7 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth";
 import { db } from "../db";
+import { ItemType } from "@/generated/prisma/enums";
 
 export const addEstimate = async ({
   data,
@@ -51,17 +52,17 @@ export const updateEstimateItems = async ({
   estimateId: string;
   items: Array<{
     id: string;
-    type: "PART" | "LABOR";
+    type: ItemType;
     designation: string;
     description: string | null;
-    unitPrice: number;
-    quantity: number;
+    unitPrice: number | null;
+    quantity: number | null;
     discount: number | null;
     position: number;
   }>;
 }): Promise<
   | { success: false; message: string }
-  | { success: true; message: "Les items ont bien été mis à jour." }
+  | { success: true; message: "Les mises à jour ont été enregistrées." }
 > => {
   try {
     const session = await getServerSession(authOptions);
@@ -96,7 +97,7 @@ export const updateEstimateItems = async ({
       },
     });
 
-    return { success: true, message: "Les items ont bien été mis à jour." };
+    return { success: true, message: "Les mises à jour ont été enregistrées." };
   } catch (error) {
     console.error(error);
     return { success: false, message: "Une erreur est survenue" };

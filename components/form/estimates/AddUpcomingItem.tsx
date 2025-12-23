@@ -11,7 +11,7 @@ import { Spinner } from "@/components/ui/spinner";
 import SelectField from "../SelectField";
 import { updateEstimateItems } from "@/lib/actions/estimate";
 
-export default function AddPartItem({
+export default function AddUpcomingItem({
   ItemsEstimate,
   setOpen,
   setSelectedItems,
@@ -24,14 +24,6 @@ export default function AddPartItem({
 }) {
   const zodFormSchema = z.object({
     designation: z.string().nonempty("La désignation est requise."),
-    description: z.string().optional(),
-    unitPrice: z
-      .number("Un nombre est attendu")
-      .positive("Le prix doit être positif"),
-    quantity: z
-      .number("Un nombre est attendu")
-      .int("La quantité doit être un entier")
-      .positive("La quantité doit être positive"),
     position: z.number().min(1, "La position doit être positive."),
   });
   type FormSchema = z.infer<typeof zodFormSchema>;
@@ -53,13 +45,13 @@ export default function AddPartItem({
       // Créer le nouvel item
       const newItem = {
         id: crypto.randomUUID(),
-        type: "PART" as const,
+        type: "UPCOMING" as const,
         designation: data.designation,
-        description: data.description ?? null,
-        unitPrice: data.unitPrice,
-        quantity: data.quantity,
-        discount: null,
         position: data.position,
+        description: null,
+        unitPrice: 0,
+        quantity: null,
+        discount: null,
       };
 
       // Créer une copie du tableau
@@ -84,7 +76,6 @@ export default function AddPartItem({
       const response = await updateEstimateItems({
         items: updatedItems.map((item) => ({
           ...item,
-          type: "PART",
         })),
         estimateId: estimateId,
       });
@@ -104,43 +95,14 @@ export default function AddPartItem({
   };
   return (
     <form onSubmit={handleSubmit(handleSubmitForm)} className="w-full">
-      <div className="grid w-full grid-cols-3 gap-4">
-        <div className="col-span-3">
-          <FormField
-            label="Désignation"
-            name="designation"
-            register={register}
-            type="text"
-            error={errors.designation}
-            nonempty
-          />
-        </div>
-        <div className="col-span-3">
-          <FormField
-            label="Description"
-            name="description"
-            register={register}
-            type="text"
-            error={errors.description}
-            textarea
-          />
-        </div>
+      <div className="flex w-full flex-col gap-4">
         <FormField
-          label="Prix unique"
-          name="unitPrice"
+          label="Désignation"
+          name="designation"
           register={register}
-          type="number"
-          step="0.01"
-          error={errors.unitPrice}
-          nonempty
-        />
-        <FormField
-          label="Quantité"
-          name="quantity"
-          register={register}
-          type="number"
-          error={errors.quantity}
-          nonempty
+          type="text"
+          error={errors.designation}
+          textarea
         />
         <SelectField
           items={Array.from({ length: ItemsEstimate.length + 1 }, (_, i) => ({
@@ -153,7 +115,6 @@ export default function AddPartItem({
           setValue={setValue}
           defaultValue={(ItemsEstimate.length + 1).toString()}
           error={errors.position}
-          nonempty
         />
       </div>
       <div className="mt-4 flex w-full justify-end gap-3">
@@ -164,8 +125,10 @@ export default function AddPartItem({
           type="submit"
           disabled={isSubmitting}
           onClick={handleSubmit(handleSubmitForm)}
+          variant={"destructive"}
+          className="text-white"
         >
-          {isSubmitting ? <Spinner /> : "Ajouter l'item"}
+          {isSubmitting ? <Spinner /> : "Ajouter le à venir"}
         </Button>
       </div>
     </form>

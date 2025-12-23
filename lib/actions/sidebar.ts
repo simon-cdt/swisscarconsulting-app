@@ -15,6 +15,7 @@ export const GetSidebarCount = async () => {
               some: {},
             },
           },
+          deleted: false,
         },
       });
       const estimatePending = await db.estimate.count({

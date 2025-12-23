@@ -31,6 +31,7 @@ export type InterventionMinAggregateOutputType = {
   date: Date | null
   description: string | null
   medias: string | null
+  deleted: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -42,6 +43,7 @@ export type InterventionMaxAggregateOutputType = {
   date: Date | null
   description: string | null
   medias: string | null
+  deleted: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -53,6 +55,7 @@ export type InterventionCountAggregateOutputType = {
   date: number
   description: number
   medias: number
+  deleted: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -66,6 +69,7 @@ export type InterventionMinAggregateInputType = {
   date?: true
   description?: true
   medias?: true
+  deleted?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -77,6 +81,7 @@ export type InterventionMaxAggregateInputType = {
   date?: true
   description?: true
   medias?: true
+  deleted?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -88,6 +93,7 @@ export type InterventionCountAggregateInputType = {
   date?: true
   description?: true
   medias?: true
+  deleted?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -172,6 +178,7 @@ export type InterventionGroupByOutputType = {
   date: Date
   description: string | null
   medias: string | null
+  deleted: boolean
   createdAt: Date
   updatedAt: Date | null
   _count: InterventionCountAggregateOutputType | null
@@ -204,6 +211,7 @@ export type InterventionWhereInput = {
   date?: Prisma.DateTimeFilter<"Intervention"> | Date | string
   description?: Prisma.StringNullableFilter<"Intervention"> | string | null
   medias?: Prisma.StringNullableFilter<"Intervention"> | string | null
+  deleted?: Prisma.BoolFilter<"Intervention"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Intervention"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Intervention"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -218,6 +226,7 @@ export type InterventionOrderByWithRelationInput = {
   date?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   medias?: Prisma.SortOrderInput | Prisma.SortOrder
+  deleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   user?: Prisma.UserOrderByWithRelationInput
@@ -236,6 +245,7 @@ export type InterventionWhereUniqueInput = Prisma.AtLeast<{
   date?: Prisma.DateTimeFilter<"Intervention"> | Date | string
   description?: Prisma.StringNullableFilter<"Intervention"> | string | null
   medias?: Prisma.StringNullableFilter<"Intervention"> | string | null
+  deleted?: Prisma.BoolFilter<"Intervention"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Intervention"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Intervention"> | Date | string | null
   user?: Prisma.XOR<Prisma.UserScalarRelationFilter, Prisma.UserWhereInput>
@@ -250,6 +260,7 @@ export type InterventionOrderByWithAggregationInput = {
   date?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   medias?: Prisma.SortOrderInput | Prisma.SortOrder
+  deleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.InterventionCountOrderByAggregateInput
@@ -267,6 +278,7 @@ export type InterventionScalarWhereWithAggregatesInput = {
   date?: Prisma.DateTimeWithAggregatesFilter<"Intervention"> | Date | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Intervention"> | string | null
   medias?: Prisma.StringNullableWithAggregatesFilter<"Intervention"> | string | null
+  deleted?: Prisma.BoolWithAggregatesFilter<"Intervention"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Intervention"> | Date | string
   updatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Intervention"> | Date | string | null
 }
@@ -276,6 +288,7 @@ export type InterventionCreateInput = {
   date?: Date | string
   description?: string | null
   medias?: string | null
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutInterventionsInput
@@ -290,6 +303,7 @@ export type InterventionUncheckedCreateInput = {
   date?: Date | string
   description?: string | null
   medias?: string | null
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
   estimates?: Prisma.EstimateUncheckedCreateNestedManyWithoutInterventionInput
@@ -300,6 +314,7 @@ export type InterventionUpdateInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutInterventionsNestedInput
@@ -314,6 +329,7 @@ export type InterventionUncheckedUpdateInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   estimates?: Prisma.EstimateUncheckedUpdateManyWithoutInterventionNestedInput
@@ -326,6 +342,7 @@ export type InterventionCreateManyInput = {
   date?: Date | string
   description?: string | null
   medias?: string | null
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -335,6 +352,7 @@ export type InterventionUpdateManyMutationInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -346,6 +364,7 @@ export type InterventionUncheckedUpdateManyInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -373,6 +392,7 @@ export type InterventionCountOrderByAggregateInput = {
   date?: Prisma.SortOrder
   description?: Prisma.SortOrder
   medias?: Prisma.SortOrder
+  deleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -384,6 +404,7 @@ export type InterventionMaxOrderByAggregateInput = {
   date?: Prisma.SortOrder
   description?: Prisma.SortOrder
   medias?: Prisma.SortOrder
+  deleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -395,6 +416,7 @@ export type InterventionMinOrderByAggregateInput = {
   date?: Prisma.SortOrder
   description?: Prisma.SortOrder
   medias?: Prisma.SortOrder
+  deleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -507,6 +529,7 @@ export type InterventionCreateWithoutUserInput = {
   date?: Date | string
   description?: string | null
   medias?: string | null
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
   vehicule: Prisma.VehiculeCreateNestedOneWithoutInterventionsInput
@@ -519,6 +542,7 @@ export type InterventionUncheckedCreateWithoutUserInput = {
   date?: Date | string
   description?: string | null
   medias?: string | null
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
   estimates?: Prisma.EstimateUncheckedCreateNestedManyWithoutInterventionInput
@@ -560,6 +584,7 @@ export type InterventionScalarWhereInput = {
   date?: Prisma.DateTimeFilter<"Intervention"> | Date | string
   description?: Prisma.StringNullableFilter<"Intervention"> | string | null
   medias?: Prisma.StringNullableFilter<"Intervention"> | string | null
+  deleted?: Prisma.BoolFilter<"Intervention"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Intervention"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Intervention"> | Date | string | null
 }
@@ -569,6 +594,7 @@ export type InterventionCreateWithoutVehiculeInput = {
   date?: Date | string
   description?: string | null
   medias?: string | null
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutInterventionsInput
@@ -581,6 +607,7 @@ export type InterventionUncheckedCreateWithoutVehiculeInput = {
   date?: Date | string
   description?: string | null
   medias?: string | null
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
   estimates?: Prisma.EstimateUncheckedCreateNestedManyWithoutInterventionInput
@@ -617,6 +644,7 @@ export type InterventionCreateWithoutEstimatesInput = {
   date?: Date | string
   description?: string | null
   medias?: string | null
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
   user: Prisma.UserCreateNestedOneWithoutInterventionsInput
@@ -630,6 +658,7 @@ export type InterventionUncheckedCreateWithoutEstimatesInput = {
   date?: Date | string
   description?: string | null
   medias?: string | null
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -655,6 +684,7 @@ export type InterventionUpdateWithoutEstimatesInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutInterventionsNestedInput
@@ -668,6 +698,7 @@ export type InterventionUncheckedUpdateWithoutEstimatesInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -678,6 +709,7 @@ export type InterventionCreateManyUserInput = {
   date?: Date | string
   description?: string | null
   medias?: string | null
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -687,6 +719,7 @@ export type InterventionUpdateWithoutUserInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   vehicule?: Prisma.VehiculeUpdateOneRequiredWithoutInterventionsNestedInput
@@ -699,6 +732,7 @@ export type InterventionUncheckedUpdateWithoutUserInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   estimates?: Prisma.EstimateUncheckedUpdateManyWithoutInterventionNestedInput
@@ -710,6 +744,7 @@ export type InterventionUncheckedUpdateManyWithoutUserInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -720,6 +755,7 @@ export type InterventionCreateManyVehiculeInput = {
   date?: Date | string
   description?: string | null
   medias?: string | null
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -729,6 +765,7 @@ export type InterventionUpdateWithoutVehiculeInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   user?: Prisma.UserUpdateOneRequiredWithoutInterventionsNestedInput
@@ -741,6 +778,7 @@ export type InterventionUncheckedUpdateWithoutVehiculeInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   estimates?: Prisma.EstimateUncheckedUpdateManyWithoutInterventionNestedInput
@@ -752,6 +790,7 @@ export type InterventionUncheckedUpdateManyWithoutVehiculeInput = {
   date?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   medias?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -794,6 +833,7 @@ export type InterventionSelect<ExtArgs extends runtime.Types.Extensions.Internal
   date?: boolean
   description?: boolean
   medias?: boolean
+  deleted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
@@ -811,11 +851,12 @@ export type InterventionSelectScalar = {
   date?: boolean
   description?: boolean
   medias?: boolean
+  deleted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type InterventionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "vehiculeId" | "date" | "description" | "medias" | "createdAt" | "updatedAt", ExtArgs["result"]["intervention"]>
+export type InterventionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "userId" | "vehiculeId" | "date" | "description" | "medias" | "deleted" | "createdAt" | "updatedAt", ExtArgs["result"]["intervention"]>
 export type InterventionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   user?: boolean | Prisma.UserDefaultArgs<ExtArgs>
   vehicule?: boolean | Prisma.VehiculeDefaultArgs<ExtArgs>
@@ -837,6 +878,7 @@ export type $InterventionPayload<ExtArgs extends runtime.Types.Extensions.Intern
     date: Date
     description: string | null
     medias: string | null
+    deleted: boolean
     createdAt: Date
     updatedAt: Date | null
   }, ExtArgs["result"]["intervention"]>
@@ -1217,6 +1259,7 @@ export interface InterventionFieldRefs {
   readonly date: Prisma.FieldRef<"Intervention", 'DateTime'>
   readonly description: Prisma.FieldRef<"Intervention", 'String'>
   readonly medias: Prisma.FieldRef<"Intervention", 'String'>
+  readonly deleted: Prisma.FieldRef<"Intervention", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Intervention", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Intervention", 'DateTime'>
 }

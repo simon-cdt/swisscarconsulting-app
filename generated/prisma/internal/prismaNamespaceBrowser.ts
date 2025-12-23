@@ -135,6 +135,7 @@ export const InterventionScalarFieldEnum = {
   date: 'date',
   description: 'description',
   medias: 'medias',
+  deleted: 'deleted',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

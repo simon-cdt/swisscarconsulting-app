@@ -9,15 +9,18 @@ import z from "zod";
 import { FormField } from "@/components/form/FormField";
 import { Spinner } from "@/components/ui/spinner";
 import SelectField from "../SelectField";
+import { updateEstimateItems } from "@/lib/actions/estimate";
 
 export default function AddLaborItem({
   ItemsEstimate,
   setOpen,
   setSelectedItems,
+  estimateId,
 }: {
   ItemsEstimate: ItemEstimate;
   setOpen: (value: boolean) => void;
   setSelectedItems: React.Dispatch<React.SetStateAction<ItemEstimate>>;
+  estimateId: string;
 }) {
   const zodFormSchema = z.object({
     designation: z.string().nonempty("La désignation est requise."),
@@ -80,7 +83,20 @@ export default function AddLaborItem({
       // Mettre à jour l'état
       setSelectedItems(updatedItems);
 
-      toast.success("Item ajouté avec succès");
+      const response = await updateEstimateItems({
+        items: updatedItems.map((item) => ({
+          ...item,
+          type: "LABOR",
+        })),
+        estimateId: estimateId,
+      });
+
+      if (response.success) {
+        toast.success(response.message);
+      } else {
+        toast.error(response.message);
+      }
+
       setOpen(false);
     } catch (error) {
       toast.error("Une erreur est survenue lors de l'ajout de l'item.");

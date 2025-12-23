@@ -22,6 +22,7 @@ export async function GET() {
           some: {},
         },
       },
+      deleted: false,
     },
     select: {
       id: true,

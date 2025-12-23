@@ -19,13 +19,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Edit2 } from "lucide-react";
+import { updateEstimateItems } from "@/lib/actions/estimate";
 
 export default function UpdateLaborItem({
   ItemsEstimate,
   item,
   setSelectedItems,
+  estimateId,
 }: {
   ItemsEstimate: ItemEstimate;
   item: {
@@ -37,6 +39,7 @@ export default function UpdateLaborItem({
     discount: number | null;
   };
   setSelectedItems: React.Dispatch<React.SetStateAction<ItemEstimate>>;
+  estimateId: string;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -70,6 +73,13 @@ export default function UpdateLaborItem({
       position: item.position,
     },
   });
+
+  // Initialiser la valeur de position quand le dialog s'ouvre
+  useEffect(() => {
+    if (open) {
+      setValue("position", item.position);
+    }
+  }, [open, item.position, setValue]);
 
   const handleSubmitForm = async (data: FormSchema) => {
     try {
@@ -123,7 +133,20 @@ export default function UpdateLaborItem({
       // Mettre à jour l'état
       setSelectedItems(updatedItems);
 
-      toast.success("Item modifié avec succès");
+      const response = await updateEstimateItems({
+        items: updatedItems.map((item) => ({
+          ...item,
+          type: "LABOR",
+        })),
+        estimateId: estimateId,
+      });
+
+      if (response.success) {
+        toast.success(response.message);
+      } else {
+        toast.error(response.message);
+      }
+
       setOpen(false);
     } catch (error) {
       toast.error("Une erreur est survenue lors de la modification de l'item.");
@@ -132,7 +155,7 @@ export default function UpdateLaborItem({
     }
   };
   return (
-    <Dialog open={open}>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button
           variant="ghost"

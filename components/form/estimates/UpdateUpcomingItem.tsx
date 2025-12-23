@@ -19,40 +19,29 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Edit2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { Edit2 } from "lucide-react";
 import { updateEstimateItems } from "@/lib/actions/estimate";
 
-export default function UpdatePartItem({
+export default function UpdateUpcomingItem({
   ItemsEstimate,
-  setSelectedItems,
   item,
+  setSelectedItems,
   estimateId,
 }: {
   ItemsEstimate: ItemEstimate;
-  setSelectedItems: React.Dispatch<React.SetStateAction<ItemEstimate>>;
   item: {
     id: string;
     designation: string;
-    description: string | null;
-    unitPrice: number;
-    quantity: number | null;
     position: number;
   };
+  setSelectedItems: React.Dispatch<React.SetStateAction<ItemEstimate>>;
   estimateId: string;
 }) {
   const [open, setOpen] = useState(false);
 
   const zodFormSchema = z.object({
     designation: z.string().nonempty("La désignation est requise."),
-    description: z.string().optional(),
-    unitPrice: z
-      .number("Un nombre est attendu")
-      .positive("Le prix doit être positif"),
-    quantity: z
-      .number("Un nombre est attendu")
-      .int("La quantité doit être un entier")
-      .positive("La quantité doit être positive"),
     position: z.number().min(1, "La position doit être positive."),
   });
   type FormSchema = z.infer<typeof zodFormSchema>;
@@ -66,9 +55,6 @@ export default function UpdatePartItem({
     resolver: zodResolver(zodFormSchema),
     defaultValues: {
       designation: item.designation,
-      description: item.description || undefined,
-      unitPrice: item.unitPrice,
-      quantity: item.quantity ?? 0,
       position: item.position,
     },
   });
@@ -120,9 +106,6 @@ export default function UpdatePartItem({
       updatedItems[itemIndex] = {
         ...updatedItems[itemIndex],
         designation: data.designation,
-        description: data.description || null,
-        unitPrice: data.unitPrice,
-        quantity: data.quantity,
         position: newPosition,
       };
 
@@ -135,7 +118,6 @@ export default function UpdatePartItem({
       const response = await updateEstimateItems({
         items: updatedItems.map((item) => ({
           ...item,
-          type: "PART",
         })),
         estimateId: estimateId,
       });
@@ -176,48 +158,17 @@ export default function UpdatePartItem({
               Modifiez les informations de l&apos;item sélectionné.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid w-full grid-cols-3 gap-4">
-            <div className="col-span-3">
-              <FormField
-                label="Désignation"
-                name="designation"
-                register={register}
-                type="text"
-                error={errors.designation}
-                nonempty
-                defaultValue={item.designation}
-              />
-            </div>
-            <div className="col-span-3">
-              <FormField
-                label="Description"
-                name="description"
-                register={register}
-                type="text"
-                error={errors.description}
-                defaultValue={item.description || undefined}
-                textarea
-              />
-            </div>
+          <div className="flex w-full flex-col gap-4">
             <FormField
-              label="Prix unique"
-              name="unitPrice"
+              label="Désignation"
+              name="designation"
               register={register}
-              type="number"
-              step="0.01"
-              error={errors.unitPrice}
-              defaultValue={item.unitPrice.toString()}
-              nonempty
+              type="text"
+              error={errors.designation}
+              textarea
+              defaultValue={item.designation}
             />
-            <FormField
-              label="Quantité"
-              name="quantity"
-              register={register}
-              type="number"
-              error={errors.quantity}
-              defaultValue={item.quantity?.toString()}
-              nonempty
-            />
+
             <SelectField
               items={Array.from({ length: ItemsEstimate.length }, (_, i) => ({
                 value: (i + 1).toString(),
@@ -229,7 +180,6 @@ export default function UpdatePartItem({
               setValue={setValue}
               defaultValue={item.position.toString()}
               error={errors.position}
-              nonempty
             />
           </div>
           <DialogFooter>

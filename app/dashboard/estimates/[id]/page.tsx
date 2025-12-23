@@ -27,13 +27,14 @@ import ErrorPage from "@/components/ErrorPage";
 import { ItemEstimate } from "@/types/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AddPartItem from "@/components/form/estimates/AddPartItem";
-import { updateEstimateItems } from "@/lib/actions/estimate";
 import toast from "react-hot-toast";
 import AddLaborItem from "@/components/form/estimates/AddLaborItem";
 import UpdatePartItem from "@/components/form/estimates/UpdatePartItem";
-import { Spinner } from "@/components/ui/spinner";
 import UpdateLaborItem from "@/components/form/estimates/UpdateLaborItem";
 import { FILE_SERVER_URL } from "@/lib/config";
+import AddUpcomingItem from "@/components/form/estimates/AddUpcomingItem";
+import UpdateUpcomingItem from "@/components/form/estimates/UpdateUpcomingItem";
+import { updateEstimateItems } from "@/lib/actions/estimate";
 
 type FetchEstimate = {
   id: string;
@@ -77,21 +78,14 @@ function useEstimate({ id }: { id: string }) {
 export default function QuoteGeneratorPage() {
   const params = useParams<{ id: string }>();
 
-  const {
-    data: estimate,
-    isLoading,
-    isError,
-    refetch,
-  } = useEstimate({ id: params.id });
+  const { data: estimate, isLoading, isError } = useEstimate({ id: params.id });
 
   const [selectedItems, setSelectedItems] = useState<ItemEstimate>([]);
   const loadingItems = useRef(false);
 
-  const [loadingSave, setLoadingSave] = useState(false);
-
   const [dialogOpen, setDialogOpen] = useState(false);
 
-  const handleRemoveItem = (id: string) => {
+  const handleRemoveItem = async (id: string) => {
     // Trouver l'item à supprimer pour récupérer sa position
     const itemToRemove = selectedItems.find((item) => item.id === id);
 
@@ -111,6 +105,19 @@ export default function QuoteGeneratorPage() {
     updatedItems.sort((a, b) => a.position - b.position);
 
     setSelectedItems(updatedItems);
+
+    const response = await updateEstimateItems({
+      items: updatedItems.map((item) => ({
+        ...item,
+      })),
+      estimateId: params.id,
+    });
+
+    if (response.success) {
+      toast.success(response.message);
+    } else {
+      toast.error(response.message);
+    }
   };
 
   const calculateTotal = () => {
@@ -199,7 +206,7 @@ export default function QuoteGeneratorPage() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <div className="bg-muted/30 max-h-32 overflow-y-auto rounded-md border p-4">
+                      <div className="bg-muted/30 max-h-24 overflow-y-auto rounded-md border p-4">
                         <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
                           {estimate.intervention.description}
                         </p>
@@ -317,12 +324,19 @@ export default function QuoteGeneratorPage() {
                                 <TabsTrigger className="w-full" value="labo">
                                   Labo
                                 </TabsTrigger>
+                                <TabsTrigger
+                                  className="w-full"
+                                  value="upcoming"
+                                >
+                                  À venir
+                                </TabsTrigger>
                               </TabsList>
                               <TabsContent value="piece">
                                 <AddPartItem
                                   ItemsEstimate={selectedItems}
                                   setOpen={setDialogOpen}
                                   setSelectedItems={setSelectedItems}
+                                  estimateId={params.id}
                                 />
                               </TabsContent>
                               <TabsContent value="labo">
@@ -330,6 +344,15 @@ export default function QuoteGeneratorPage() {
                                   ItemsEstimate={selectedItems}
                                   setOpen={setDialogOpen}
                                   setSelectedItems={setSelectedItems}
+                                  estimateId={params.id}
+                                />
+                              </TabsContent>
+                              <TabsContent value="upcoming">
+                                <AddUpcomingItem
+                                  ItemsEstimate={selectedItems}
+                                  setOpen={setDialogOpen}
+                                  setSelectedItems={setSelectedItems}
+                                  estimateId={params.id}
                                 />
                               </TabsContent>
                             </Tabs>
@@ -349,35 +372,57 @@ export default function QuoteGeneratorPage() {
                               className="bg-card flex items-center justify-between rounded-lg border p-3"
                             >
                               <div className="w-[65%] overflow-hidden">
-                                <p className="font-semibold">
+                                <p
+                                  className={`${item.type === "UPCOMING" && "text-red-500"} font-semibold`}
+                                >
                                   {item.designation}
                                 </p>
                                 {item.description && (
-                                  <p className="truncate text-sm text-black/70">
+                                  <p className="text-sm whitespace-pre-line text-black/70">
                                     {item.description}
                                   </p>
                                 )}
                               </div>
                               <div className="flex w-[32%] items-center justify-between">
                                 <span className="text-primary w-[53%] font-semibold">
-                                  {item.unitPrice
-                                    .toFixed(2)
-                                    .replaceAll(".", ",")}
-                                  {" .-"}
+                                  {item.type === "UPCOMING"
+                                    ? null
+                                    : item.unitPrice
+                                        .toFixed(2)
+                                        .replaceAll(".", ",") + " .-"}
                                 </span>
                                 <div className="flex w-[40%]">
                                   {item.type === "PART" ? (
                                     <UpdatePartItem
                                       ItemsEstimate={selectedItems}
                                       setSelectedItems={setSelectedItems}
-                                      item={item}
+                                      item={{
+                                        ...item,
+                                        unitPrice: item.unitPrice,
+                                      }}
+                                      estimateId={params.id}
                                     />
-                                  ) : (
+                                  ) : item.type === "LABOR" ? (
                                     <UpdateLaborItem
                                       ItemsEstimate={selectedItems}
                                       setSelectedItems={setSelectedItems}
-                                      item={item}
+                                      item={{
+                                        ...item,
+                                        unitPrice: item.unitPrice,
+                                      }}
+                                      estimateId={params.id}
                                     />
+                                  ) : (
+                                    item.type === "UPCOMING" && (
+                                      <UpdateUpcomingItem
+                                        ItemsEstimate={selectedItems}
+                                        setSelectedItems={setSelectedItems}
+                                        item={{
+                                          ...item,
+                                        }}
+                                        estimateId={params.id}
+                                      />
+                                    )
                                   )}
                                   <Button
                                     variant="ghost"
@@ -410,35 +455,6 @@ export default function QuoteGeneratorPage() {
                         </p>
                       </div>
                       <div className="flex gap-4">
-                        <Button
-                          className="bg-blue-600 hover:bg-blue-700"
-                          onClick={async () => {
-                            try {
-                              setLoadingSave(true);
-                              const response = await updateEstimateItems({
-                                estimateId: estimate.id,
-                                items: selectedItems.map((item) => ({
-                                  ...item,
-                                  quantity: item.quantity ?? 0,
-                                })),
-                              });
-                              if (response.success) {
-                                toast.success(response.message);
-                                refetch();
-                                setLoadingSave(false);
-                              } else {
-                                toast.error(response.message);
-                                setLoadingSave(false);
-                              }
-                            } catch (error) {
-                              console.error(error);
-                              toast.error("Une erreur est survenue");
-                              setLoadingSave(false);
-                            }
-                          }}
-                        >
-                          {loadingSave ? <Spinner /> : "Enregistrer"}
-                        </Button>
                         <Button
                           onClick={generatePDF}
                           disabled={selectedItems.length === 0}
@@ -536,25 +552,32 @@ export default function QuoteGeneratorPage() {
                                     className="w-full border-b border-gray-200"
                                   >
                                     <td className="flex w-full flex-col gap-1 p-2">
-                                      <p className="w-full font-semibold">
+                                      <p
+                                        className={`${item.type === "UPCOMING" && "text-red-500"} w-full font-semibold`}
+                                      >
                                         {item.designation}
                                       </p>
                                       <p className="w-full text-sm wrap-break-word whitespace-pre-wrap text-black/70">
                                         {item.description}
                                       </p>
                                     </td>
-                                    <td className="p-2 text-right text-black">
-                                      {item.quantity ?? 0}
-                                    </td>
-                                    <td className="p-2 text-right whitespace-nowrap text-black">
-                                      {item.unitPrice.toFixed(2)} CHF
-                                    </td>
-                                    <td className="p-2 text-right whitespace-nowrap text-black">
-                                      {(
-                                        item.unitPrice * (item.quantity ?? 0)
-                                      ).toFixed(2)}{" "}
-                                      CHF
-                                    </td>
+                                    {item.type !== "UPCOMING" && (
+                                      <>
+                                        <td className="p-2 text-right text-black">
+                                          {item.quantity ?? 0}
+                                        </td>
+                                        <td className="p-2 text-right whitespace-nowrap text-black">
+                                          {item.unitPrice.toFixed(2)} CHF
+                                        </td>
+                                        <td className="p-2 text-right whitespace-nowrap text-black">
+                                          {(
+                                            item.unitPrice *
+                                            (item.quantity ?? 0)
+                                          ).toFixed(2)}{" "}
+                                          CHF
+                                        </td>
+                                      </>
+                                    )}
                                   </tr>
                                 ))}
                               </tbody>

@@ -9,6 +9,7 @@ import {
   FileTextIcon,
   ShieldIcon,
   CarIcon,
+  Trash,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import LoadingPage from "@/components/LoadingPage";
@@ -41,6 +42,7 @@ import toast from "react-hot-toast";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
+import { putInTrash } from "@/lib/actions/intervention";
 
 type FetchAllInterventions = {
   id: string;
@@ -76,7 +78,12 @@ function useInterventions() {
 export default function InterventionsPage() {
   const router = useRouter();
 
-  const { data: interventions, isLoading, isError } = useInterventions();
+  const {
+    data: interventions,
+    isLoading,
+    isError,
+    refetch,
+  } = useInterventions();
 
   const [loading, setLoading] = useState(false);
 
@@ -145,22 +152,61 @@ export default function InterventionsPage() {
                     return (
                       <Card
                         key={intervention.id}
-                        className={`${isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 h-[190px] w-[700px] p-6 transition-colors`}
+                        className={`${isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 flex h-[190px] w-[600px] items-start justify-between gap-0 p-6`}
                       >
-                        <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
-                          {/* Informations principales */}
-                          <div className="flex h-full flex-col justify-between gap-2">
-                            <div className="flex flex-wrap items-center gap-3">
-                              <div className="text-muted-foreground flex items-center gap-2">
-                                <CalendarIcon className="size-4" />
-                                <span className="text-sm font-medium">
-                                  {format(intervention.date, "PP", {
-                                    locale: fr,
-                                  })}
-                                </span>
-                              </div>
+                        <div className="flex w-full flex-row items-center justify-between">
+                          <div className="flex w-full flex-wrap items-center gap-3">
+                            <div className="text-muted-foreground flex items-center gap-2">
+                              <CalendarIcon className="size-4" />
+                              <span className="text-sm font-medium">
+                                {format(intervention.date, "PP", {
+                                  locale: fr,
+                                })}
+                              </span>
                             </div>
+                          </div>
+                          <AlertDialog>
+                            <AlertDialogTrigger className="trans h-9 w-9 rounded-md p-1 hover:bg-red-200">
+                              <Trash className="size-4" />
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>
+                                  Êtes-vous sûr de supprimer cette intervention
+                                  ?
+                                </AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  L&apos;intervention se mettera dans la
+                                  corbeille, vous pourrez la restaurer à tout
+                                  moment.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                <AlertDialogAction
+                                  className="bg-red-600 text-white hover:bg-red-700"
+                                  onClick={async () => {
+                                    const response = await putInTrash({
+                                      interventionId: intervention.id,
+                                    });
 
+                                    if (response.success) {
+                                      toast.success(response.message);
+                                      refetch();
+                                    } else {
+                                      toast.error(response.message);
+                                    }
+                                  }}
+                                >
+                                  Supprimer
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                          </AlertDialog>
+                        </div>
+                        <div className="flex w-full flex-row justify-between">
+                          {/* Informations principales */}
+                          <div className="flex h-full w-full flex-col justify-between gap-2">
                             <div className="space-y-2">
                               <h3 className="text-foreground text-lg font-semibold">
                                 {getClientDisplayName(
@@ -194,7 +240,6 @@ export default function InterventionsPage() {
                               </div>
                             </div>
                           </div>
-
                           <div className="flex h-full w-[250px] flex-col justify-center gap-2">
                             <Dialog>
                               <DialogTrigger asChild>

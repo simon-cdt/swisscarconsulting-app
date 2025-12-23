@@ -11,7 +11,8 @@
 
 export const ItemType = {
   PART: 'PART',
-  LABOR: 'LABOR'
+  LABOR: 'LABOR',
+  UPCOMING: 'UPCOMING'
 } as const
 
 export type ItemType = (typeof ItemType)[keyof typeof ItemType]
