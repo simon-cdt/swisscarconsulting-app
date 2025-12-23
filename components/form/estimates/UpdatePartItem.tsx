@@ -196,7 +196,8 @@ export default function UpdatePartItem({
                 type="text"
                 error={errors.description}
                 defaultValue={item.description || undefined}
-                textarea
+                richText
+                setValue={setValue}
               />
             </div>
             <FormField

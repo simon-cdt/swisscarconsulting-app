@@ -165,7 +165,8 @@ export default function UpdateUpcomingItem({
               register={register}
               type="text"
               error={errors.designation}
-              textarea
+              richText
+              setValue={setValue}
               defaultValue={item.designation}
             />
 

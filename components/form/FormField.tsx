@@ -1,8 +1,9 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { FieldError } from "react-hook-form";
+import { FieldError, UseFormSetValue } from "react-hook-form";
 import { Textarea } from "@/components/ui/textarea";
 import { HTMLInputTypeAttribute } from "react";
+import RichTextEditor from "./RichTextEditor";
 
 interface FormFieldProps {
   label: string;
@@ -17,6 +18,9 @@ interface FormFieldProps {
   textarea?: boolean;
   nonempty?: boolean;
   step?: string;
+  richText?: boolean;
+  // eslint-disable-next-line
+  setValue?: UseFormSetValue<any>;
 }
 
 // CHAMP DE FORMULAIRE
@@ -32,6 +36,8 @@ export const FormField = ({
   textarea,
   nonempty,
   step,
+  richText,
+  setValue,
 }: FormFieldProps) => {
   return (
     <div className="flex flex-col gap-2">
@@ -47,7 +53,13 @@ export const FormField = ({
             {icon}
           </div>
         )}
-        {textarea ? (
+        {richText && setValue ? (
+          <RichTextEditor
+            value={defaultValue}
+            onChange={(value) => setValue(name, value)}
+            placeholder={placeholder}
+          />
+        ) : textarea ? (
           <Textarea
             id={name}
             placeholder={placeholder}

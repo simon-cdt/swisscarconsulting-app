@@ -124,7 +124,8 @@ export default function AddLaborItem({
             register={register}
             type="text"
             error={errors.description}
-            textarea
+            richText
+            setValue={setValue}
           />
         </div>
         <FormField

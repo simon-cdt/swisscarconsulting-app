@@ -102,7 +102,8 @@ export default function AddUpcomingItem({
           register={register}
           type="text"
           error={errors.designation}
-          textarea
+          richText
+          setValue={setValue}
         />
         <SelectField
           items={Array.from({ length: ItemsEstimate.length + 1 }, (_, i) => ({

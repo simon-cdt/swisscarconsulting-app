@@ -60,6 +60,11 @@ type FetchEstimate = {
         name: string | null;
         companyName: string | null;
         typeClient: TypeClient;
+        email: string;
+        phone: string;
+        address: string | null;
+        postalCode: number | null;
+        city: string | null;
       };
     };
   };
@@ -134,8 +139,35 @@ export default function QuoteGeneratorPage() {
       const previewElement = document.getElementById("pdf-preview");
       if (!previewElement) return;
 
+      // Cloner l'élément pour ne pas modifier l'original
+      const clonedElement = previewElement.cloneNode(true) as HTMLElement;
+
+      // Convertir l'image en base64
+      const img = clonedElement.querySelector(
+        'img[alt="logo"]',
+      ) as HTMLImageElement;
+      if (img) {
+        const canvas = document.createElement("canvas");
+        const ctx = canvas.getContext("2d");
+        const image = new Image();
+        image.crossOrigin = "anonymous";
+
+        await new Promise((resolve, reject) => {
+          image.onload = () => {
+            canvas.width = image.width;
+            canvas.height = image.height;
+            ctx?.drawImage(image, 0, 0);
+            const base64 = canvas.toDataURL("image/png");
+            img.src = base64;
+            resolve(null);
+          };
+          image.onerror = reject;
+          image.src = "/logo.png";
+        });
+      }
+
       // Capturer le HTML avec les styles inline
-      const html = previewElement.outerHTML;
+      const html = clonedElement.outerHTML;
 
       const response = await fetch("/api/pdf", {
         method: "POST",
@@ -371,19 +403,23 @@ export default function QuoteGeneratorPage() {
                               key={item.id}
                               className="bg-card flex items-center justify-between rounded-lg border p-3"
                             >
-                              <div className="w-[65%] overflow-hidden">
-                                <p
-                                  className={`${item.type === "UPCOMING" && "text-red-500"} font-semibold`}
-                                >
-                                  {item.designation}
-                                </p>
+                              <div className="w-[50%] overflow-hidden">
+                                <div
+                                  className={`${item.type === "UPCOMING" && "text-red-500"} prose prose-sm max-w-none font-semibold`}
+                                  dangerouslySetInnerHTML={{
+                                    __html: item.designation,
+                                  }}
+                                />
                                 {item.description && (
-                                  <p className="text-sm whitespace-pre-line text-black/70">
-                                    {item.description}
-                                  </p>
+                                  <div
+                                    className="prose prose-sm max-w-none text-sm text-black/70"
+                                    dangerouslySetInnerHTML={{
+                                      __html: item.description,
+                                    }}
+                                  />
                                 )}
                               </div>
-                              <div className="flex w-[32%] items-center justify-between">
+                              <div className="flex w-[47%] items-center justify-between">
                                 <span className="text-primary w-[53%] font-semibold">
                                   {item.type === "UPCOMING"
                                     ? null
@@ -486,29 +522,56 @@ export default function QuoteGeneratorPage() {
                   <div className="h-280.75 w-198.5 border bg-white">
                     <div
                       id="pdf-preview"
-                      className="pdf-container relative flex h-full w-full flex-col rounded p-16"
+                      className="pdf-container relative flex h-full w-full flex-col rounded p-14"
                     >
-                      <div className="pdf-content flex-1">
-                        <h1 className="mb-6 text-center text-3xl font-bold text-black">
-                          DEVIS - SWISS CAR CONSULTING
-                        </h1>
-
-                        <div className="mb-6 border-b-2 border-gray-300 pb-4">
-                          <h2 className="mb-2 text-xl font-semibold text-black">
-                            Client
-                          </h2>
-                          <p className="text-black">
-                            <strong>
+                      <div className="pdf-content flex flex-col gap-4">
+                        <div className="flex flex-col">
+                          {/* eslint-disable-next-line */}
+                          <img src={"/logo.png"} alt="logo" className="w-60" />
+                          {/* <div>info devis</div> */}
+                        </div>
+                        <div className="flex flex-row justify-between">
+                          <div>
+                            <p className="font-semibold">
+                              Swiss Car Consulting
+                            </p>
+                            <p>18, rue des travaux</p>
+                            <p>1234, Ville</p>
+                            <p>Tel: +41 79 123 45 67</p>
+                            <p>Mail: exemple@mail.com</p>
+                          </div>
+                          <div>
+                            <p className="font-semibold">
                               {estimate.intervention.vehicule.client
                                 .typeClient === TypeClient.individual
                                 ? `${estimate.intervention.vehicule.client.firstName} ${estimate.intervention.vehicule.client.name}`
                                 : estimate.intervention.vehicule.client
                                     .companyName}
-                            </strong>
-                          </p>
+                            </p>
+                            {estimate.intervention.vehicule.client.address &&
+                              estimate.intervention.vehicule.client.city &&
+                              estimate.intervention.vehicule.client
+                                .postalCode && (
+                                <>
+                                  <p>
+                                    {
+                                      estimate.intervention.vehicule.client
+                                        .address
+                                    }
+                                  </p>
+                                  <p>
+                                    {
+                                      estimate.intervention.vehicule.client
+                                        .postalCode
+                                    }
+                                    ,{" "}
+                                    {estimate.intervention.vehicule.client.city}
+                                  </p>
+                                </>
+                              )}
+                          </div>
                         </div>
-
-                        <div className="mb-6 border-b-2 border-gray-300 pb-4">
+                        <div className="">
                           <h2 className="mb-2 text-xl font-semibold text-black">
                             Véhicule
                           </h2>
@@ -523,53 +586,54 @@ export default function QuoteGeneratorPage() {
                           </p>
                         </div>
 
-                        <div className="mb-6">
-                          <h2 className="mb-3 text-xl font-semibold text-black">
-                            Prestations
-                          </h2>
+                        <div>
                           {selectedItems.length > 0 ? (
-                            <table className="w-full border-collapse">
+                            <table className="w-full border border-black/50">
                               <thead>
-                                <tr className="border-b-2 border-gray-300">
-                                  <th className="p-2 text-left text-black">
+                                <tr className="bg-blue-400">
+                                  <th className="w-[55%] border border-black/50 text-center text-sm">
                                     Désignation
                                   </th>
-                                  <th className="p-2 text-right text-black">
+                                  <th className="w-[15%] border border-black/50 px-2 text-center text-sm">
                                     Quantité
                                   </th>
-                                  <th className="p-2 text-right text-black">
+                                  <th className="w-[15%] border border-black/50 text-center text-sm">
                                     Prix unitaire
                                   </th>
-                                  <th className="p-2 text-right text-black">
-                                    Total
+                                  <th className="w-[15%] border border-black/50 text-center text-sm">
+                                    Total HT
                                   </th>
                                 </tr>
                               </thead>
                               <tbody>
-                                {selectedItems.map((item) => (
+                                {selectedItems.map((item, i) => (
                                   <tr
                                     key={item.id}
-                                    className="w-full border-b border-gray-200"
+                                    className={`${selectedItems.length - 1 !== i && "border-b"} border-black/50`}
                                   >
-                                    <td className="flex w-full flex-col gap-1 p-2">
-                                      <p
-                                        className={`${item.type === "UPCOMING" && "text-red-500"} w-full font-semibold`}
-                                      >
-                                        {item.designation}
-                                      </p>
-                                      <p className="w-full text-sm wrap-break-word whitespace-pre-wrap text-black/70">
-                                        {item.description}
-                                      </p>
+                                    <td className="flex w-full flex-col gap-1 p-1">
+                                      <div
+                                        className={`${item.type === "UPCOMING" ? "text-red-500" : "text-black"} prose prose-sm text-sm font-semibold wrap-break-word`}
+                                        dangerouslySetInnerHTML={{
+                                          __html: item.designation,
+                                        }}
+                                      />
+                                      <div
+                                        className="prose prose-sm text-xs wrap-break-word text-black/70"
+                                        dangerouslySetInnerHTML={{
+                                          __html: item.description || "",
+                                        }}
+                                      />
                                     </td>
                                     {item.type !== "UPCOMING" && (
                                       <>
-                                        <td className="p-2 text-right text-black">
+                                        <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
                                           {item.quantity ?? 0}
                                         </td>
-                                        <td className="p-2 text-right whitespace-nowrap text-black">
+                                        <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
                                           {item.unitPrice.toFixed(2)} CHF
                                         </td>
-                                        <td className="p-2 text-right whitespace-nowrap text-black">
+                                        <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
                                           {(
                                             item.unitPrice *
                                             (item.quantity ?? 0)
@@ -590,10 +654,49 @@ export default function QuoteGeneratorPage() {
                         </div>
                       </div>
 
-                      <div className="pdf-footer mt-auto border-t-2 border-black pt-4 text-right">
-                        <p className="text-2xl font-bold text-black">
-                          Total: {calculateTotal().toFixed(2)} CHF
-                        </p>
+                      <div className="pdf-footer mt-auto border-t-2 border-black pt-4">
+                        <div className="flex justify-between">
+                          <div className="text-left text-sm text-black">
+                            <p className="mb-2 font-semibold">
+                              Conditions de paiement :
+                            </p>
+                            <p className="mb-1">
+                              Paiement à effectuer dans un délai de 30 jours
+                            </p>
+                            <p className="mb-1">
+                              Date limite :{" "}
+                              {new Date(
+                                new Date().setMonth(new Date().getMonth() + 1),
+                              ).toLocaleDateString("fr-CH")}
+                            </p>
+                            <p className="mt-3 font-semibold">IBAN :</p>
+                            <p>CH00 0000 0000 0000 0000 0</p>
+                          </div>
+                          <div className="text-right">
+                            <div className="mb-2 flex justify-between gap-8">
+                              <p className="text-base text-black">Total HT :</p>
+                              <p className="text-base font-semibold text-black">
+                                {calculateTotal().toFixed(2)} CHF
+                              </p>
+                            </div>
+                            <div className="mb-2 flex justify-between gap-8">
+                              <p className="text-base text-black">
+                                TVA (10%) :
+                              </p>
+                              <p className="text-base font-semibold text-black">
+                                {(calculateTotal() * 0.1).toFixed(2)} CHF
+                              </p>
+                            </div>
+                            <div className="flex justify-between gap-8 border-t-2 border-black pt-2">
+                              <p className="text-xl font-bold text-black">
+                                Total TTC :
+                              </p>
+                              <p className="text-xl font-bold text-black">
+                                {(calculateTotal() * 1.1).toFixed(2)} CHF
+                              </p>
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>

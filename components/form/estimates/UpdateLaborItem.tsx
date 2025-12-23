@@ -196,7 +196,8 @@ export default function UpdateLaborItem({
                 register={register}
                 type="text"
                 error={errors.description}
-                textarea
+                richText
+                setValue={setValue}
                 defaultValue={item.description || undefined}
               />
             </div>
