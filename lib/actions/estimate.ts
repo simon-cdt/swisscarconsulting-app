@@ -55,7 +55,7 @@ export const updateEstimateItems = async ({
     type: ItemType;
     designation: string;
     description: string | null;
-    unitPrice: number | null;
+    unitPrice: number;
     quantity: number | null;
     discount: number | null;
     position: number;
