@@ -23,7 +23,7 @@ import { useEffect, useState } from "react";
 import { Edit2 } from "lucide-react";
 import { updateEstimateItems } from "@/lib/actions/estimate";
 
-export default function UpdateLaborItem({
+export default function UpdateMOItem({
   ItemsEstimate,
   item,
   setSelectedItems,

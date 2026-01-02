@@ -21,6 +21,7 @@ interface FormFieldProps {
   richText?: boolean;
   // eslint-disable-next-line
   setValue?: UseFormSetValue<any>;
+  onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
 // CHAMP DE FORMULAIRE
@@ -38,6 +39,7 @@ export const FormField = ({
   step,
   richText,
   setValue,
+  onChange,
 }: FormFieldProps) => {
   return (
     <div className="flex flex-col gap-2">
@@ -83,6 +85,7 @@ export const FormField = ({
                       return isNaN(parsed) ? undefined : parsed;
                     }
                   : undefined,
+              onChange: onChange,
             })}
             className={icon ? "pl-9" : ""}
             defaultValue={defaultValue}

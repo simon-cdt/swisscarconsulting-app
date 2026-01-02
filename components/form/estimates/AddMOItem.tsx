@@ -11,7 +11,7 @@ import { Spinner } from "@/components/ui/spinner";
 import SelectField from "../SelectField";
 import { updateEstimateItems } from "@/lib/actions/estimate";
 
-export default function AddLaborItem({
+export default function AddMOItem({
   ItemsEstimate,
   setOpen,
   setSelectedItems,
@@ -133,7 +133,7 @@ export default function AddLaborItem({
           name="unitPrice"
           register={register}
           type="number"
-          step="0.01"
+          step="1"
           error={errors.unitPrice}
           nonempty
         />
@@ -143,7 +143,7 @@ export default function AddLaborItem({
           register={register}
           type="number"
           error={errors.discount}
-          step="0.01"
+          step="1"
         />
         <SelectField
           items={Array.from({ length: ItemsEstimate.length + 1 }, (_, i) => ({

@@ -28,9 +28,9 @@ import { ItemEstimate } from "@/types/types";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AddPartItem from "@/components/form/estimates/AddPartItem";
 import toast from "react-hot-toast";
-import AddLaborItem from "@/components/form/estimates/AddLaborItem";
+import AddMOItem from "@/components/form/estimates/AddMOItem";
 import UpdatePartItem from "@/components/form/estimates/UpdatePartItem";
-import UpdateLaborItem from "@/components/form/estimates/UpdateLaborItem";
+import UpdateMOItem from "@/components/form/estimates/UpdateMOItem";
 import { FILE_SERVER_URL } from "@/lib/config";
 import AddUpcomingItem from "@/components/form/estimates/AddUpcomingItem";
 import UpdateUpcomingItem from "@/components/form/estimates/UpdateUpcomingItem";
@@ -353,8 +353,8 @@ export default function QuoteGeneratorPage() {
                                 <TabsTrigger className="w-full" value="piece">
                                   Pièce
                                 </TabsTrigger>
-                                <TabsTrigger className="w-full" value="labo">
-                                  Labo
+                                <TabsTrigger className="w-full" value="MO">
+                                  Main d&apos;oeuvre
                                 </TabsTrigger>
                                 <TabsTrigger
                                   className="w-full"
@@ -371,8 +371,8 @@ export default function QuoteGeneratorPage() {
                                   estimateId={params.id}
                                 />
                               </TabsContent>
-                              <TabsContent value="labo">
-                                <AddLaborItem
+                              <TabsContent value="MO">
+                                <AddMOItem
                                   ItemsEstimate={selectedItems}
                                   setOpen={setDialogOpen}
                                   setSelectedItems={setSelectedItems}
@@ -439,7 +439,7 @@ export default function QuoteGeneratorPage() {
                                       estimateId={params.id}
                                     />
                                   ) : item.type === "LABOR" ? (
-                                    <UpdateLaborItem
+                                    <UpdateMOItem
                                       ItemsEstimate={selectedItems}
                                       setSelectedItems={setSelectedItems}
                                       item={{

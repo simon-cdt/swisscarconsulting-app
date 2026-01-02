@@ -18,10 +18,28 @@ export default function AddClient() {
     firstName: z.string().nonempty("Le prénom est requis."),
     name: z.string().nonempty("Le nom est requis."),
     email: z.email("Ce n'est pas un e-mail.").nonempty("L'e-mail est requis."),
-    phone: z.string().nonempty("Le numéro de téléphone est requis."),
+    phone: z
+      .string()
+      .nonempty("Le numéro de téléphone est requis.")
+      .regex(
+        /^[\d\s\+\-\(\)]+$/,
+        "Le numéro de téléphone contient des caractères invalides",
+      )
+      .min(8, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
     address: z.string().optional(),
-    postalCode: z.string().optional(),
-    city: z.string().optional(),
+    postalCode: z
+      .number()
+      .int("Le code postal doit être un nombre entier")
+      .min(1000, "Le format est incorrecte")
+      .max(99999, "Le format est incorrecte")
+      .optional(),
+    city: z
+      .string()
+      .optional()
+      .refine(
+        (val) => !val || /^[a-zA-ZÀ-ÿ\s\-']+$/.test(val),
+        "La ville ne doit contenir que des lettres",
+      ),
   });
   type FormSchema = z.infer<typeof zodFormSchema>;
 
@@ -31,6 +49,9 @@ export default function AddClient() {
     formState: { errors, isSubmitting },
   } = useForm<FormSchema>({
     resolver: zodResolver(zodFormSchema),
+    defaultValues: {
+      postalCode: undefined,
+    },
   });
 
   const handleSubmitForm = async (data: FormSchema) => {
@@ -75,7 +96,7 @@ export default function AddClient() {
         <FormField
           label="Numéro de téléphone"
           name="phone"
-          type="text"
+          type="tel"
           register={register}
           error={errors.phone}
           placeholder="+41 79 123 45 67"
@@ -104,9 +125,10 @@ export default function AddClient() {
           <FormField
             label="Code postal"
             name="postalCode"
-            type="text"
+            type="number"
             register={register}
             error={errors.postalCode}
+            step="1"
             placeholder="1204"
           />
         </div>

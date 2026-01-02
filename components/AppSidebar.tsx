@@ -25,6 +25,7 @@ import {
   Users2,
   Wallet,
   ToolCase,
+  Trash,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { Button } from "./ui/button";
@@ -119,6 +120,16 @@ const data = {
           title: "Utilisateurs",
           url: "/dashboard/admin",
           icon: Users2,
+        },
+      ],
+    },
+    {
+      title: "Corbeille",
+      items: [
+        {
+          title: "Corbeille",
+          url: "/trash",
+          icon: Trash,
         },
       ],
     },

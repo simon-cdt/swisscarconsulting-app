@@ -17,12 +17,30 @@ export default function AddCompany() {
   const zodFormSchema = z.object({
     companyName: z.string().nonempty("Le nom de l'entreprise est requis."),
     email: z.email("Ce n'est pas e-mail.").nonempty("L'e-mail est requis."),
-    phone: z.string().nonempty("Le numéro de téléphone est requis."),
+    phone: z
+      .string()
+      .nonempty("Le numéro de téléphone est requis.")
+      .regex(
+        /^[\d\s\+\-\(\)]+$/,
+        "Le numéro de téléphone contient des caractères invalides",
+      )
+      .min(8, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
     contactFirstName: z.string().nonempty("Le prénom du contact est requis."),
     contactName: z.string().nonempty("Le nom du contact est requis."),
     address: z.string().optional(),
-    postalCode: z.string().optional(),
-    city: z.string().optional(),
+    postalCode: z
+      .number()
+      .int("Le code postal doit être un nombre entier")
+      .min(1000, "Le format est incorrecte")
+      .max(99999, "Le format est incorrecte")
+      .optional(),
+    city: z
+      .string()
+      .optional()
+      .refine(
+        (val) => !val || /^[a-zA-ZÀ-ÿ\s\-']+$/.test(val),
+        "La ville ne doit contenir que des lettres",
+      ),
   });
   type FormSchema = z.infer<typeof zodFormSchema>;
 
@@ -32,6 +50,9 @@ export default function AddCompany() {
     formState: { errors, isSubmitting },
   } = useForm<FormSchema>({
     resolver: zodResolver(zodFormSchema),
+    defaultValues: {
+      postalCode: undefined,
+    },
   });
 
   const handleSubmitForm = async (data: FormSchema) => {
@@ -115,10 +136,11 @@ export default function AddCompany() {
           <FormField
             label="Code postal"
             name="postalCode"
-            type="text"
+            type="number"
             register={register}
             error={errors.postalCode}
             placeholder="1204"
+            step="1"
           />
         </div>
       </div>

@@ -13,7 +13,7 @@ export const addClientIndividual = async ({
     email: string;
     phone: string;
     address?: string;
-    postalCode?: string;
+    postalCode?: number;
     city?: string;
   };
 }): Promise<
@@ -65,7 +65,7 @@ export const addClientCompany = async ({
     contactFirstName: string;
     contactName: string;
     address?: string;
-    postalCode?: string;
+    postalCode?: number;
     city?: string;
   };
 }): Promise<
@@ -119,7 +119,7 @@ export const updateClientIndividual = async ({
     email: string;
     phone: string;
     address?: string;
-    postalCode?: string;
+    postalCode?: number;
     city?: string;
   };
 }): Promise<
@@ -140,7 +140,7 @@ export const updateClientIndividual = async ({
         email: data.email,
         phone: data.phone,
         address: data.address,
-        postalCode: data.postalCode,
+        postalCode: data.postalCode === undefined ? null : data.postalCode,
         city: data.city,
         typeClient: "individual",
       },
@@ -168,7 +168,7 @@ export const updateClientCompany = async ({
     contactFirstName: string;
     contactName: string;
     address?: string;
-    postalCode?: string;
+    postalCode?: number;
     city?: string;
   };
 }): Promise<
@@ -190,7 +190,7 @@ export const updateClientCompany = async ({
         contactFirstName: data.contactFirstName,
         contactName: data.contactName,
         address: data.address,
-        postalCode: data.postalCode,
+        postalCode: data.postalCode === undefined ? null : data.postalCode,
         city: data.city,
         typeClient: "company",
       },

@@ -211,7 +211,6 @@ export const ClientOrderByRelevanceFieldEnum = {
   email: 'email',
   phone: 'phone',
   address: 'address',
-  postalCode: 'postalCode',
   city: 'city',
   firstName: 'firstName',
   name: 'name',

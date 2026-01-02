@@ -34,7 +34,7 @@ model Client {
   phone      String
 
   address    String?
-  postalCode String?
+  postalCode Int?
   city       String?
 
   firstName String?

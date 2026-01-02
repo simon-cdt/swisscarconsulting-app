@@ -34,10 +34,28 @@ export function UpdateClientIndividual({
     name: z.string().nonempty("Le nom est requis."),
     firstName: z.string().nonempty("Le prénom est requis."),
     email: z.email("L'email est invalide."),
-    phone: z.string().nonempty("Le téléphone est requis."),
+    phone: z
+      .string()
+      .nonempty("Le numéro de téléphone est requis.")
+      .regex(
+        /^[\d\s\+\-\(\)]+$/,
+        "Le numéro de téléphone contient des caractères invalides",
+      )
+      .min(8, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
     address: z.string().optional(),
-    postalCode: z.string().optional(),
-    city: z.string().optional(),
+    postalCode: z
+      .number()
+      .int("Le code postal doit être un nombre entier")
+      .min(1000, "Le format est incorrecte")
+      .max(99999, "Le format est incorrecte")
+      .optional(),
+    city: z
+      .string()
+      .optional()
+      .refine(
+        (val) => !val || /^[a-zA-ZÀ-ÿ\s\-']+$/.test(val),
+        "La ville ne doit contenir que des lettres",
+      ),
   });
   type FormSchema = z.infer<typeof zodFormSchema>;
 
@@ -124,10 +142,11 @@ export function UpdateClientIndividual({
         <FormField
           label="Code Postal"
           name="postalCode"
-          type="text"
-          defaultValue={client.postalCode || ""}
+          type="number"
+          defaultValue={client.postalCode || undefined}
           error={errors.postalCode}
           register={register}
+          step="1"
         />
         <FormField
           label="Ville"
