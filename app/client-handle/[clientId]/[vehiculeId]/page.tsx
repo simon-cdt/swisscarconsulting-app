@@ -12,7 +12,6 @@ import { useParams, useRouter } from "next/navigation";
 import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { FormField } from "@/components/form/FormField";
 import { Spinner } from "@/components/ui/spinner";
 import parsePhoneNumberFromString from "libphonenumber-js";
 import { UpdateVehicule } from "@/components/form/UpdateForm/UpdateVehicule";
@@ -93,6 +92,30 @@ export default function VisitPage() {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
+
+  const handleDescriptionKeyDown = (
+    e: React.KeyboardEvent<HTMLTextAreaElement>,
+  ) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      const textarea = e.currentTarget;
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const value = textarea.value;
+
+      // Insérer un retour à la ligne avec un tiret
+      const newValue =
+        value.substring(0, start) + "\n- " + value.substring(end);
+
+      setValue("description", newValue);
+
+      // Repositionner le curseur après le tiret
+      setTimeout(() => {
+        textarea.selectionStart = textarea.selectionEnd = start + 3;
+      }, 0);
+    }
+  };
+
   const zodFormSchema = z.object({
     description: z.string().nonempty("La description est requise."),
     images: z.array(z.instanceof(File)).optional(),
@@ -351,15 +374,17 @@ export default function VisitPage() {
                   onSubmit={handleSubmit(handleSubmitForm)}
                 >
                   <Card className="p-6">
-                    <FormField
-                      label="Description du problème"
-                      name="description"
-                      error={errors.description}
-                      register={register}
-                      type="text"
-                      textarea
-                      nonempty
+                    <textarea
+                      placeholder="Description du problème"
+                      {...register("description")}
+                      onKeyDown={handleDescriptionKeyDown}
+                      className="min-h-40 w-full rounded border p-2 text-sm"
                     />
+                    {errors.description && (
+                      <p className="text-sm text-red-500">
+                        {errors.description.message}
+                      </p>
+                    )}
                     <UploadFiles
                       errorsForm={errors.images?.message}
                       setValue={setValue}

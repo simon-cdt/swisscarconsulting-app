@@ -126,10 +126,13 @@ export default function QuoteGeneratorPage() {
   };
 
   const calculateTotal = () => {
-    return selectedItems.reduce(
-      (sum, item) => sum + item.unitPrice * (item.quantity ?? 0),
-      0,
-    );
+    return selectedItems.reduce((sum, item) => {
+      const itemTotal = item.unitPrice * (item.quantity ?? 0);
+      const discountAmount = item.discount
+        ? (itemTotal * item.discount) / 100
+        : 0;
+      return sum + (itemTotal - discountAmount);
+    }, 0);
   };
 
   const generatePDF = async () => {
@@ -274,53 +277,57 @@ export default function QuoteGeneratorPage() {
                           <DialogHeader>
                             <DialogTitle>Photos et vidéos</DialogTitle>
                           </DialogHeader>
-                          {estimate.intervention.medias
-                            ?.split(",")
-                            .map((file, index) => {
-                              const fileName = file.trim();
-                              const isVideo =
-                                /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(fileName);
-                              const isImage =
-                                /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i.test(
-                                  fileName,
-                                );
+                          <div className="flex flex-wrap gap-2">
+                            {estimate.intervention.medias
+                              ?.split(",")
+                              .map((file, index) => {
+                                const fileName = file.trim();
+                                const isVideo =
+                                  /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(
+                                    fileName,
+                                  );
+                                const isImage =
+                                  /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i.test(
+                                    fileName,
+                                  );
 
-                              if (isVideo) {
-                                return (
-                                  <div
-                                    key={index}
-                                    className="bg-muted relative aspect-video overflow-hidden rounded-lg"
-                                  >
-                                    <video
-                                      controls
-                                      className="h-full w-full object-contain"
-                                      src={`${FILE_SERVER_URL}/uploads/${fileName}`}
+                                if (isVideo) {
+                                  return (
+                                    <div
+                                      key={index}
+                                      className="bg-muted relative col-span-full aspect-video overflow-hidden rounded-lg"
                                     >
-                                      Votre navigateur ne supporte pas la
-                                      lecture de vidéos.
-                                    </video>
-                                  </div>
-                                );
-                              }
+                                      <video
+                                        controls
+                                        className="h-full w-full object-contain"
+                                        src={`${FILE_SERVER_URL}/uploads/${fileName}`}
+                                      >
+                                        Votre navigateur ne supporte pas la
+                                        lecture de vidéos.
+                                      </video>
+                                    </div>
+                                  );
+                                }
 
-                              if (isImage) {
-                                return (
-                                  <div
-                                    key={index}
-                                    className="bg-muted relative aspect-video overflow-hidden rounded-lg border border-black/20"
-                                  >
-                                    {/* eslint-disable-next-line */}
-                                    <img
-                                      src={`${FILE_SERVER_URL}/uploads/${fileName}`}
-                                      alt={`Image ${index + 1}`}
-                                      className="object-contain"
-                                    />
-                                  </div>
-                                );
-                              }
+                                if (isImage) {
+                                  return (
+                                    <div
+                                      key={index}
+                                      className="bg-muted relative flex h-75 items-center justify-center overflow-hidden rounded-lg"
+                                    >
+                                      {/* eslint-disable-next-line */}
+                                      <img
+                                        src={`${FILE_SERVER_URL}/uploads/${fileName}`}
+                                        alt={`Image ${index + 1}`}
+                                        className="h-full w-full object-contain"
+                                      />
+                                    </div>
+                                  );
+                                }
 
-                              return null;
-                            })}
+                                return null;
+                              })}
+                          </div>
                         </DialogContent>
                       </Dialog>
                     </CardContent>
@@ -398,80 +405,123 @@ export default function QuoteGeneratorPage() {
                     <CardContent>
                       {selectedItems.length > 0 ? (
                         <div className="max-h-96 space-y-2 overflow-y-auto">
-                          {selectedItems.map((item) => (
-                            <div
-                              key={item.id}
-                              className="bg-card flex items-center justify-between rounded-lg border p-3"
-                            >
-                              <div className="w-[50%] overflow-hidden">
-                                <div
-                                  className={`${item.type === "UPCOMING" && "text-red-500"} prose prose-sm max-w-none font-semibold`}
-                                  dangerouslySetInnerHTML={{
-                                    __html: item.designation,
-                                  }}
-                                />
-                                {item.description && (
+                          {selectedItems
+                            .sort((a, b) => {
+                              // Séparer les items UPCOMING des autres
+                              if (
+                                a.type === "UPCOMING" &&
+                                b.type !== "UPCOMING"
+                              )
+                                return 1;
+                              if (
+                                a.type !== "UPCOMING" &&
+                                b.type === "UPCOMING"
+                              )
+                                return -1;
+                              // Sinon, trier par position
+                              return a.position - b.position;
+                            })
+                            .map((item) => (
+                              <div
+                                key={item.id}
+                                className="bg-card flex items-center justify-between rounded-lg border p-3"
+                              >
+                                <div className="w-[50%] overflow-hidden">
                                   <div
-                                    className="prose prose-sm max-w-none text-sm text-black/70"
+                                    className={`${item.type === "UPCOMING" && "text-red-500"} prose prose-sm max-w-none font-semibold`}
                                     dangerouslySetInnerHTML={{
-                                      __html: item.description,
+                                      __html: item.designation,
                                     }}
                                   />
-                                )}
-                              </div>
-                              <div className="flex w-[47%] items-center justify-between">
-                                <span className="text-primary w-[53%] font-semibold">
-                                  {item.type === "UPCOMING"
-                                    ? null
-                                    : item.unitPrice
-                                        .toFixed(2)
-                                        .replaceAll(".", ",") + " .-"}
-                                </span>
-                                <div className="flex w-[40%]">
-                                  {item.type === "PART" ? (
-                                    <UpdatePartItem
-                                      ItemsEstimate={selectedItems}
-                                      setSelectedItems={setSelectedItems}
-                                      item={{
-                                        ...item,
-                                        unitPrice: item.unitPrice,
+                                  {item.description && (
+                                    <div
+                                      className="prose prose-sm max-w-none text-sm text-black/70"
+                                      dangerouslySetInnerHTML={{
+                                        __html: item.description,
                                       }}
-                                      estimateId={params.id}
                                     />
-                                  ) : item.type === "LABOR" ? (
-                                    <UpdateMOItem
-                                      ItemsEstimate={selectedItems}
-                                      setSelectedItems={setSelectedItems}
-                                      item={{
-                                        ...item,
-                                        unitPrice: item.unitPrice,
-                                      }}
-                                      estimateId={params.id}
-                                    />
-                                  ) : (
-                                    item.type === "UPCOMING" && (
-                                      <UpdateUpcomingItem
+                                  )}
+                                </div>
+                                <div className="flex w-[47%] items-center justify-between">
+                                  <div className="w-[53%]">
+                                    {item.type === "UPCOMING" ? null : (
+                                      <>
+                                        <div className="text-primary font-semibold">
+                                          {item.unitPrice
+                                            .toFixed(2)
+                                            .replaceAll(".", ",")}{" "}
+                                          .-
+                                          {item.discount && (
+                                            <span className="ml-1 text-xs text-red-600">
+                                              (-{item.discount}%)
+                                            </span>
+                                          )}
+                                        </div>
+                                        {item.discount && (
+                                          <div className="text-sm font-semibold text-green-600">
+                                            {(() => {
+                                              const itemTotal =
+                                                item.unitPrice *
+                                                (item.quantity ?? 0);
+                                              const discountAmount =
+                                                (itemTotal * item.discount) /
+                                                100;
+                                              return (
+                                                (itemTotal - discountAmount)
+                                                  .toFixed(2)
+                                                  .replaceAll(".", ",") + " .-"
+                                              );
+                                            })()}
+                                          </div>
+                                        )}
+                                      </>
+                                    )}
+                                  </div>
+                                  <div className="flex w-[40%]">
+                                    {item.type === "PART" ? (
+                                      <UpdatePartItem
                                         ItemsEstimate={selectedItems}
                                         setSelectedItems={setSelectedItems}
                                         item={{
                                           ...item,
+                                          unitPrice: item.unitPrice,
                                         }}
                                         estimateId={params.id}
                                       />
-                                    )
-                                  )}
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    onClick={() => handleRemoveItem(item.id)}
-                                    className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-full p-0"
-                                  >
-                                    <X className="h-4 w-4" />
-                                  </Button>
+                                    ) : item.type === "LABOR" ? (
+                                      <UpdateMOItem
+                                        ItemsEstimate={selectedItems}
+                                        setSelectedItems={setSelectedItems}
+                                        item={{
+                                          ...item,
+                                          unitPrice: item.unitPrice,
+                                        }}
+                                        estimateId={params.id}
+                                      />
+                                    ) : (
+                                      item.type === "UPCOMING" && (
+                                        <UpdateUpcomingItem
+                                          ItemsEstimate={selectedItems}
+                                          setSelectedItems={setSelectedItems}
+                                          item={{
+                                            ...item,
+                                          }}
+                                          estimateId={params.id}
+                                        />
+                                      )
+                                    )}
+                                    <Button
+                                      variant="ghost"
+                                      size="sm"
+                                      onClick={() => handleRemoveItem(item.id)}
+                                      className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-full p-0"
+                                    >
+                                      <X className="h-4 w-4" />
+                                    </Button>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
                         </div>
                       ) : (
                         <p className="text-muted-foreground py-8 text-center text-sm">
@@ -586,8 +636,11 @@ export default function QuoteGeneratorPage() {
                           </p>
                         </div>
 
+                        {/* Tableau des pièces et main d'œuvre */}
                         <div>
-                          {selectedItems.length > 0 ? (
+                          {selectedItems.filter(
+                            (item) => item.type !== "UPCOMING",
+                          ).length > 0 ? (
                             <table className="w-full border border-black/50">
                               <thead>
                                 <tr className="bg-blue-400">
@@ -606,44 +659,55 @@ export default function QuoteGeneratorPage() {
                                 </tr>
                               </thead>
                               <tbody>
-                                {selectedItems.map((item, i) => (
-                                  <tr
-                                    key={item.id}
-                                    className={`${selectedItems.length - 1 !== i && "border-b"} border-black/50`}
-                                  >
-                                    <td className="flex w-full flex-col gap-1 p-1">
-                                      <div
-                                        className={`${item.type === "UPCOMING" ? "text-red-500" : "text-black"} prose prose-sm text-sm font-semibold wrap-break-word`}
-                                        dangerouslySetInnerHTML={{
-                                          __html: item.designation,
-                                        }}
-                                      />
-                                      <div
-                                        className="prose prose-sm text-xs wrap-break-word text-black/70"
-                                        dangerouslySetInnerHTML={{
-                                          __html: item.description || "",
-                                        }}
-                                      />
-                                    </td>
-                                    {item.type !== "UPCOMING" && (
-                                      <>
-                                        <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
-                                          {item.quantity ?? 0}
-                                        </td>
-                                        <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
-                                          {item.unitPrice.toFixed(2)} CHF
-                                        </td>
-                                        <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
-                                          {(
+                                {selectedItems
+                                  .filter((item) => item.type !== "UPCOMING")
+                                  .sort((a, b) => a.position - b.position)
+                                  .map((item, i, arr) => (
+                                    <tr
+                                      key={item.id}
+                                      className={`${arr.length - 1 !== i && "border-b"} border-black/50`}
+                                    >
+                                      <td className="flex w-full flex-col gap-1 p-1">
+                                        <div
+                                          className="prose prose-sm text-sm font-semibold wrap-break-word text-black"
+                                          dangerouslySetInnerHTML={{
+                                            __html: item.designation,
+                                          }}
+                                        />
+                                        <div
+                                          className="prose prose-sm text-xs wrap-break-word text-black/70"
+                                          dangerouslySetInnerHTML={{
+                                            __html: item.description || "",
+                                          }}
+                                        />
+                                      </td>
+                                      <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
+                                        {item.quantity ?? 0}
+                                      </td>
+                                      <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
+                                        {item.unitPrice.toFixed(2)} CHF
+                                        {item.discount && (
+                                          <div className="text-xs text-red-600">
+                                            -{item.discount}%
+                                          </div>
+                                        )}
+                                      </td>
+                                      <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
+                                        {(() => {
+                                          const itemTotal =
                                             item.unitPrice *
-                                            (item.quantity ?? 0)
-                                          ).toFixed(2)}{" "}
-                                          CHF
-                                        </td>
-                                      </>
-                                    )}
-                                  </tr>
-                                ))}
+                                            (item.quantity ?? 0);
+                                          const discountAmount = item.discount
+                                            ? (itemTotal * item.discount) / 100
+                                            : 0;
+                                          return (
+                                            itemTotal - discountAmount
+                                          ).toFixed(2);
+                                        })()}{" "}
+                                        CHF
+                                      </td>
+                                    </tr>
+                                  ))}
                               </tbody>
                             </table>
                           ) : (
@@ -652,6 +716,52 @@ export default function QuoteGeneratorPage() {
                             </p>
                           )}
                         </div>
+
+                        {/* Tableau des items à venir */}
+                        {selectedItems.filter(
+                          (item) => item.type === "UPCOMING",
+                        ).length > 0 && (
+                          <div className="mt-6">
+                            <h3 className="mb-2 text-lg font-semibold text-black">
+                              À venir
+                            </h3>
+                            <table className="w-full border border-black/50">
+                              <thead>
+                                <tr className="bg-red-400">
+                                  <th className="w-full border border-black/50 text-center text-sm">
+                                    Désignation
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {selectedItems
+                                  .filter((item) => item.type === "UPCOMING")
+                                  .sort((a, b) => a.position - b.position)
+                                  .map((item, i, arr) => (
+                                    <tr
+                                      key={item.id}
+                                      className={`${arr.length - 1 !== i && "border-b"} border-black/50`}
+                                    >
+                                      <td className="flex w-full flex-col gap-1 p-1">
+                                        <div
+                                          className="prose prose-sm text-sm font-semibold wrap-break-word text-red-500"
+                                          dangerouslySetInnerHTML={{
+                                            __html: item.designation,
+                                          }}
+                                        />
+                                        <div
+                                          className="prose prose-sm text-xs wrap-break-word text-black/70"
+                                          dangerouslySetInnerHTML={{
+                                            __html: item.description || "",
+                                          }}
+                                        />
+                                      </td>
+                                    </tr>
+                                  ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
                       </div>
 
                       <div className="pdf-footer mt-auto border-t-2 border-black pt-4">

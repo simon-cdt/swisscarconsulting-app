@@ -41,14 +41,19 @@ export default function AddMOItem({
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormSchema>({
     resolver: zodResolver(zodFormSchema),
     defaultValues: {
-      position: ItemsEstimate.length + 1,
+      position:
+        ItemsEstimate.filter((item) => item.type !== "UPCOMING").length + 1,
       discount: undefined,
     },
   });
+
+  const unitPrice = watch("unitPrice");
+  const discount = watch("discount");
 
   const handleSubmitForm = async (data: FormSchema) => {
     try {
@@ -67,9 +72,9 @@ export default function AddMOItem({
       // Créer une copie du tableau
       const updatedItems = [...ItemsEstimate];
 
-      // Décaler les items dont la position est >= à la nouvelle position
+      // Décaler uniquement les items PART et LABOR dont la position est >= à la nouvelle position
       updatedItems.forEach((item) => {
-        if (item.position >= data.position) {
+        if (item.type !== "UPCOMING" && item.position >= data.position) {
           item.position += 1;
         }
       });
@@ -77,8 +82,12 @@ export default function AddMOItem({
       // Ajouter le nouvel item
       updatedItems.push(newItem);
 
-      // Trier par position
-      updatedItems.sort((a, b) => a.position - b.position);
+      // Trier par type puis par position
+      updatedItems.sort((a, b) => {
+        if (a.type === "UPCOMING" && b.type !== "UPCOMING") return 1;
+        if (a.type !== "UPCOMING" && b.type === "UPCOMING") return -1;
+        return a.position - b.position;
+      });
 
       // Mettre à jour l'état
       setSelectedItems(updatedItems);
@@ -146,19 +155,44 @@ export default function AddMOItem({
           step="1"
         />
         <SelectField
-          items={Array.from({ length: ItemsEstimate.length + 1 }, (_, i) => ({
-            value: (i + 1).toString(),
-            label: `Position ${i + 1}`,
-          }))}
+          items={Array.from(
+            {
+              length:
+                ItemsEstimate.filter((item) => item.type !== "UPCOMING")
+                  .length + 1,
+            },
+            (_, i) => ({
+              value: (i + 1).toString(),
+              label: `Position ${i + 1}`,
+            }),
+          )}
           label="Position"
           name="position"
           placeHolder="Choisissez la position"
           setValue={setValue}
-          defaultValue={(ItemsEstimate.length + 1).toString()}
+          defaultValue={(
+            ItemsEstimate.filter((item) => item.type !== "UPCOMING").length + 1
+          ).toString()}
           error={errors.position}
           nonempty
         />
       </div>
+      {unitPrice && discount && (
+        <div className="mt-4 rounded-lg border border-green-600 bg-green-50 p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-700">
+              Prix final après rabais:
+            </span>
+            <span className="text-lg font-bold text-green-600">
+              {(unitPrice - (unitPrice * discount) / 100).toFixed(2)} CHF
+            </span>
+          </div>
+          <div className="mt-1 text-xs text-gray-500">
+            {unitPrice.toFixed(2)} CHF - {discount}% ={" "}
+            {(unitPrice - (unitPrice * discount) / 100).toFixed(2)} CHF
+          </div>
+        </div>
+      )}
       <div className="mt-4 flex w-full justify-end gap-3">
         <Button variant="outline" type="button" onClick={() => setOpen(false)}>
           Fermer

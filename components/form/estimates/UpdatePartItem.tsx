@@ -96,21 +96,31 @@ export default function UpdatePartItem({
         return;
       }
 
-      // Si la position a changé, réorganiser les positions
+      // Si la position a changé, réorganiser les positions uniquement parmi les items PART et LABOR
       if (oldPosition !== newPosition) {
-        updatedItems.forEach((item) => {
+        updatedItems.forEach((currentItem) => {
+          // Ne traiter que les items PART et LABOR (sauf celui qu'on modifie)
+          if (currentItem.type === "UPCOMING" || currentItem.id === item.id)
+            return;
+
           // Si l'item monte (nouvelle position < ancienne position)
           if (newPosition < oldPosition) {
             // Décaler vers le bas les items entre la nouvelle et l'ancienne position
-            if (item.position >= newPosition && item.position < oldPosition) {
-              item.position += 1;
+            if (
+              currentItem.position >= newPosition &&
+              currentItem.position < oldPosition
+            ) {
+              currentItem.position += 1;
             }
           }
           // Si l'item descend (nouvelle position > ancienne position)
           else {
             // Décaler vers le haut les items entre l'ancienne et la nouvelle position
-            if (item.position > oldPosition && item.position <= newPosition) {
-              item.position -= 1;
+            if (
+              currentItem.position > oldPosition &&
+              currentItem.position <= newPosition
+            ) {
+              currentItem.position -= 1;
             }
           }
         });
@@ -126,8 +136,12 @@ export default function UpdatePartItem({
         position: newPosition,
       };
 
-      // Trier par position
-      updatedItems.sort((a, b) => a.position - b.position);
+      // Trier par type puis par position
+      updatedItems.sort((a, b) => {
+        if (a.type === "UPCOMING" && b.type !== "UPCOMING") return 1;
+        if (a.type !== "UPCOMING" && b.type === "UPCOMING") return -1;
+        return a.position - b.position;
+      });
 
       // Mettre à jour l'état
       setSelectedItems(updatedItems);
@@ -220,10 +234,17 @@ export default function UpdatePartItem({
               nonempty
             />
             <SelectField
-              items={Array.from({ length: ItemsEstimate.length }, (_, i) => ({
-                value: (i + 1).toString(),
-                label: `Position ${i + 1}`,
-              }))}
+              items={Array.from(
+                {
+                  length: ItemsEstimate.filter(
+                    (item) => item.type !== "UPCOMING",
+                  ).length,
+                },
+                (_, i) => ({
+                  value: (i + 1).toString(),
+                  label: `Position ${i + 1}`,
+                }),
+              )}
               label="Position"
               name="position"
               placeHolder="Choisissez la position"

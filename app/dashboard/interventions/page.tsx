@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import {
   CalendarIcon,
   UserIcon,
-  EyeIcon,
   FileTextIcon,
   ShieldIcon,
   CarIcon,
@@ -16,14 +15,6 @@ import LoadingPage from "@/components/LoadingPage";
 import ErrorPage from "@/components/ErrorPage";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { FILE_SERVER_URL } from "@/lib/config";
 import { TypeClient } from "@/generated/prisma/enums";
 import { GeistMono } from "geist/font/mono";
 import {
@@ -43,6 +34,7 @@ import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 import { putInTrash } from "@/lib/actions/intervention";
+import InformationsDialog from "@/components/InformationsDialog";
 
 type FetchAllInterventions = {
   id: string;
@@ -152,7 +144,7 @@ export default function InterventionsPage() {
                     return (
                       <Card
                         key={intervention.id}
-                        className={`${isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 flex h-[190px] w-[600px] items-start justify-between gap-0 p-6`}
+                        className={`${isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 flex h-47.5 w-150 items-start justify-between gap-0 p-6`}
                       >
                         <div className="flex w-full flex-row items-center justify-between">
                           <div className="flex w-full flex-wrap items-center gap-3">
@@ -240,77 +232,8 @@ export default function InterventionsPage() {
                               </div>
                             </div>
                           </div>
-                          <div className="flex h-full w-[250px] flex-col justify-center gap-2">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="col-span-2 gap-2 bg-transparent"
-                                  disabled={!intervention.medias}
-                                >
-                                  <EyeIcon className="size-4" />
-                                  Photos et vidéos
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-h-[80vh] min-w-[30vw] overflow-y-auto">
-                                <DialogHeader>
-                                  <DialogTitle>Photos et vidéos</DialogTitle>
-                                </DialogHeader>
-                                <div className="flex flex-wrap gap-5">
-                                  <p>{intervention.description}</p>
-                                  {intervention.medias
-                                    ?.split(",")
-                                    .map((file, index) => {
-                                      const fileName = file.trim();
-                                      const isVideo =
-                                        /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(
-                                          fileName,
-                                        );
-                                      const isImage =
-                                        /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i.test(
-                                          fileName,
-                                        );
-
-                                      if (isVideo) {
-                                        return (
-                                          <div
-                                            key={index}
-                                            className="bg-muted relative aspect-video overflow-hidden rounded-lg"
-                                          >
-                                            <video
-                                              controls
-                                              className="h-full w-full object-contain"
-                                              src={`${FILE_SERVER_URL}/uploads/${fileName}`}
-                                            >
-                                              Votre navigateur ne supporte pas
-                                              la lecture de vidéos.
-                                            </video>
-                                          </div>
-                                        );
-                                      }
-
-                                      if (isImage) {
-                                        return (
-                                          <div
-                                            key={index}
-                                            className="bg-muted relative aspect-video overflow-hidden rounded-lg border border-black/20"
-                                          >
-                                            {/* eslint-disable-next-line */}
-                                            <img
-                                              src={`${FILE_SERVER_URL}/uploads/${fileName}`}
-                                              alt={`Image ${index + 1}`}
-                                              className="object-contain"
-                                            />
-                                          </div>
-                                        );
-                                      }
-
-                                      return null;
-                                    })}
-                                </div>
-                              </DialogContent>
-                            </Dialog>
+                          <div className="flex h-full w-62.5 flex-col justify-center gap-2">
+                            <InformationsDialog estimate={{ intervention }} />
 
                             <div className="flex w-full gap-2">
                               <AlertDialog>

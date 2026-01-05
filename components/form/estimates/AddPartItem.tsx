@@ -48,7 +48,8 @@ export default function AddPartItem({
   } = useForm<FormSchema>({
     resolver: zodResolver(zodFormSchema),
     defaultValues: {
-      position: ItemsEstimate.length + 1,
+      position:
+        ItemsEstimate.filter((item) => item.type !== "UPCOMING").length + 1,
     },
   });
 
@@ -119,9 +120,9 @@ export default function AddPartItem({
       // Créer une copie du tableau
       const updatedItems = [...ItemsEstimate];
 
-      // Décaler les items dont la position est >= à la nouvelle position
+      // Décaler uniquement les items PART et LABOR dont la position est >= à la nouvelle position
       updatedItems.forEach((item) => {
-        if (item.position >= data.position) {
+        if (item.type !== "UPCOMING" && item.position >= data.position) {
           item.position += 1;
         }
       });
@@ -129,8 +130,12 @@ export default function AddPartItem({
       // Ajouter le nouvel item
       updatedItems.push(newItem);
 
-      // Trier par position
-      updatedItems.sort((a, b) => a.position - b.position);
+      // Trier par type puis par position
+      updatedItems.sort((a, b) => {
+        if (a.type === "UPCOMING" && b.type !== "UPCOMING") return 1;
+        if (a.type !== "UPCOMING" && b.type === "UPCOMING") return -1;
+        return a.position - b.position;
+      });
 
       // Mettre à jour l'état
       setSelectedItems(updatedItems);
@@ -276,15 +281,24 @@ export default function AddPartItem({
           nonempty
         />
         <SelectField
-          items={Array.from({ length: ItemsEstimate.length + 1 }, (_, i) => ({
-            value: (i + 1).toString(),
-            label: `Position ${i + 1}`,
-          }))}
+          items={Array.from(
+            {
+              length:
+                ItemsEstimate.filter((item) => item.type !== "UPCOMING")
+                  .length + 1,
+            },
+            (_, i) => ({
+              value: (i + 1).toString(),
+              label: `Position ${i + 1}`,
+            }),
+          )}
           label="Position"
           name="position"
           placeHolder="Choisissez la position"
           setValue={setValue}
-          defaultValue={(ItemsEstimate.length + 1).toString()}
+          defaultValue={(
+            ItemsEstimate.filter((item) => item.type !== "UPCOMING").length + 1
+          ).toString()}
           error={errors.position}
           nonempty
         />

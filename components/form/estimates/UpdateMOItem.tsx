@@ -62,6 +62,7 @@ export default function UpdateMOItem({
     register,
     handleSubmit,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<FormSchema>({
     resolver: zodResolver(zodFormSchema),
@@ -73,6 +74,9 @@ export default function UpdateMOItem({
       position: item.position,
     },
   });
+
+  const unitPrice = watch("unitPrice");
+  const discount = watch("discount");
 
   // Initialiser la valeur de position quand le dialog s'ouvre
   useEffect(() => {
@@ -97,21 +101,31 @@ export default function UpdateMOItem({
         return;
       }
 
-      // Si la position a changé, réorganiser les positions
+      // Si la position a changé, réorganiser les positions uniquement parmi les items PART et LABOR
       if (oldPosition !== newPosition) {
-        updatedItems.forEach((item) => {
+        updatedItems.forEach((currentItem) => {
+          // Ne traiter que les items PART et LABOR (sauf celui qu'on modifie)
+          if (currentItem.type === "UPCOMING" || currentItem.id === item.id)
+            return;
+
           // Si l'item monte (nouvelle position < ancienne position)
           if (newPosition < oldPosition) {
             // Décaler vers le bas les items entre la nouvelle et l'ancienne position
-            if (item.position >= newPosition && item.position < oldPosition) {
-              item.position += 1;
+            if (
+              currentItem.position >= newPosition &&
+              currentItem.position < oldPosition
+            ) {
+              currentItem.position += 1;
             }
           }
           // Si l'item descend (nouvelle position > ancienne position)
           else {
             // Décaler vers le haut les items entre l'ancienne et la nouvelle position
-            if (item.position > oldPosition && item.position <= newPosition) {
-              item.position -= 1;
+            if (
+              currentItem.position > oldPosition &&
+              currentItem.position <= newPosition
+            ) {
+              currentItem.position -= 1;
             }
           }
         });
@@ -127,8 +141,12 @@ export default function UpdateMOItem({
         position: newPosition,
       };
 
-      // Trier par position
-      updatedItems.sort((a, b) => a.position - b.position);
+      // Trier par type puis par position
+      updatedItems.sort((a, b) => {
+        if (a.type === "UPCOMING" && b.type !== "UPCOMING") return 1;
+        if (a.type !== "UPCOMING" && b.type === "UPCOMING") return -1;
+        return a.position - b.position;
+      });
 
       // Mettre à jour l'état
       setSelectedItems(updatedItems);
@@ -221,10 +239,17 @@ export default function UpdateMOItem({
               defaultValue={item.discount?.toString() || undefined}
             />
             <SelectField
-              items={Array.from({ length: ItemsEstimate.length }, (_, i) => ({
-                value: (i + 1).toString(),
-                label: `Position ${i + 1}`,
-              }))}
+              items={Array.from(
+                {
+                  length: ItemsEstimate.filter(
+                    (item) => item.type !== "UPCOMING",
+                  ).length,
+                },
+                (_, i) => ({
+                  value: (i + 1).toString(),
+                  label: `Position ${i + 1}`,
+                }),
+              )}
               label="Position"
               name="position"
               placeHolder="Choisissez la position"
@@ -234,6 +259,22 @@ export default function UpdateMOItem({
               nonempty
             />
           </div>
+          {unitPrice && discount && (
+            <div className="rounded-lg border border-green-600 bg-green-50 p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-700">
+                  Prix final après rabais:
+                </span>
+                <span className="text-lg font-bold text-green-600">
+                  {(unitPrice - (unitPrice * discount) / 100).toFixed(2)} CHF
+                </span>
+              </div>
+              <div className="mt-1 text-xs text-gray-500">
+                {unitPrice.toFixed(2)} CHF - {discount}% ={" "}
+                {(unitPrice - (unitPrice * discount) / 100).toFixed(2)} CHF
+              </div>
+            </div>
+          )}
           <DialogFooter>
             <DialogClose asChild>
               <Button variant="outline">Annuler</Button>

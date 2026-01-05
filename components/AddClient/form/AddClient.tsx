@@ -1,7 +1,6 @@
 "use client";
 
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form";
+import { UseFormReturn } from "react-hook-form";
 import z from "zod";
 import { FormField } from "@/components/form/FormField";
 import { Button } from "../../ui/button";
@@ -10,52 +9,73 @@ import { Mail, Phone } from "lucide-react";
 import { addClientIndividual } from "@/lib/actions/client";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
+import { SharedFormData } from "../CustomTabs";
+import { useState } from "react";
 
-export default function AddClient() {
+const individualSchema = z.object({
+  firstName: z.string().nonempty("Le prénom est requis."),
+  name: z.string().nonempty("Le nom est requis."),
+  email: z
+    .string()
+    .email("Ce n'est pas un e-mail.")
+    .nonempty("L'e-mail est requis."),
+  phone: z
+    .string()
+    .nonempty("Le numéro de téléphone est requis.")
+    .regex(
+      /^[\d\s\+\-\(\)]+$/,
+      "Le numéro de téléphone contient des caractères invalides",
+    )
+    .min(8, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
+  address: z.string().optional(),
+  postalCode: z
+    .number()
+    .int("Le code postal doit être un nombre entier")
+    .min(1000, "Le format est incorrecte")
+    .max(99999, "Le format est incorrecte")
+    .optional(),
+  city: z
+    .string()
+    .optional()
+    .refine(
+      (val) => !val || /^[a-zA-ZÀ-ÿ\s\-']+$/.test(val),
+      "La ville ne doit contenir que des lettres",
+    ),
+});
+
+type IndividualFormData = z.infer<typeof individualSchema>;
+
+interface AddClientProps {
+  sharedForm: UseFormReturn<SharedFormData>;
+}
+
+export default function AddClient({ sharedForm }: AddClientProps) {
   const router = useRouter();
-
-  const zodFormSchema = z.object({
-    firstName: z.string().nonempty("Le prénom est requis."),
-    name: z.string().nonempty("Le nom est requis."),
-    email: z.email("Ce n'est pas un e-mail.").nonempty("L'e-mail est requis."),
-    phone: z
-      .string()
-      .nonempty("Le numéro de téléphone est requis.")
-      .regex(
-        /^[\d\s\+\-\(\)]+$/,
-        "Le numéro de téléphone contient des caractères invalides",
-      )
-      .min(8, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
-    address: z.string().optional(),
-    postalCode: z
-      .number()
-      .int("Le code postal doit être un nombre entier")
-      .min(1000, "Le format est incorrecte")
-      .max(99999, "Le format est incorrecte")
-      .optional(),
-    city: z
-      .string()
-      .optional()
-      .refine(
-        (val) => !val || /^[a-zA-ZÀ-ÿ\s\-']+$/.test(val),
-        "La ville ne doit contenir que des lettres",
-      ),
-  });
-  type FormSchema = z.infer<typeof zodFormSchema>;
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm<FormSchema>({
-    resolver: zodResolver(zodFormSchema),
-    defaultValues: {
-      postalCode: undefined,
-    },
-  });
+    formState: { errors },
+  } = sharedForm;
 
-  const handleSubmitForm = async (data: FormSchema) => {
-    const response = await addClientIndividual({ data });
+  const handleSubmitForm = async (data: SharedFormData) => {
+    // Valider avec le schéma spécifique
+    const validationResult = individualSchema.safeParse(data);
+
+    if (!validationResult.success) {
+      validationResult.error.issues.forEach((err) => {
+        toast.error(err.message);
+      });
+      return;
+    }
+
+    setIsSubmitting(true);
+    const response = await addClientIndividual({
+      data: validationResult.data as IndividualFormData,
+    });
+    setIsSubmitting(false);
+
     if (response.success) {
       toast.success(response.message);
       router.push(`/client-handle/${response.clientId}`);

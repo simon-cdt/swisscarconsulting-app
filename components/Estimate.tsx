@@ -1,20 +1,12 @@
-import React from "react";
 import { Card } from "./ui/card";
-import { CalendarIcon, CarIcon, EyeIcon, UserIcon } from "lucide-react";
+import { CalendarIcon, CarIcon, UserIcon } from "lucide-react";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
 import { Button } from "./ui/button";
-import { FILE_SERVER_URL } from "@/lib/config";
 import Link from "next/link";
 import { TypeClient } from "@/generated/prisma/enums";
 import { GeistMono } from "geist/font/mono";
+import InformationsDialog from "./InformationsDialog";
 
 export default function Estimate({
   estimate,
@@ -63,7 +55,7 @@ export default function Estimate({
   return (
     <Card
       key={estimate.id}
-      className={`${isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 w-[400px] p-6 transition-colors`}
+      className={`${isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 w-100 p-6 transition-colors`}
     >
       <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
         {/* Informations principales */}
@@ -112,74 +104,7 @@ export default function Estimate({
         </div>
 
         <div className="flex h-full flex-col justify-center gap-2">
-          <Dialog>
-            <DialogTrigger asChild>
-              <Button
-                variant="outline"
-                size="sm"
-                className="col-span-2 gap-2 bg-transparent"
-              >
-                <EyeIcon className="size-4" />
-                Informations
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="max-h-[80vh] w-fit max-w-[30vw] overflow-y-auto">
-              <DialogHeader>
-                <DialogTitle>Photos et vidéos</DialogTitle>
-              </DialogHeader>
-              <div className="flex flex-wrap gap-5">
-                <div className="bg-muted/30 max-h-64 overflow-y-auto rounded-md border p-4">
-                  <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
-                    {estimate.intervention.description}
-                  </p>
-                </div>
-                {estimate.intervention.medias?.split(",").map((file, index) => {
-                  const fileName = file.trim();
-                  const isVideo = /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(
-                    fileName,
-                  );
-                  const isImage = /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i.test(
-                    fileName,
-                  );
-
-                  if (isVideo) {
-                    return (
-                      <div
-                        key={index}
-                        className="bg-muted relative aspect-video overflow-hidden rounded-lg"
-                      >
-                        <video
-                          controls
-                          className="h-full w-full object-contain"
-                          src={`${FILE_SERVER_URL}/uploads/${fileName}`}
-                        >
-                          Votre navigateur ne supporte pas la lecture de vidéos.
-                        </video>
-                      </div>
-                    );
-                  }
-
-                  if (isImage) {
-                    return (
-                      <div
-                        key={index}
-                        className="bg-muted relative aspect-video overflow-hidden rounded-lg border border-black/20"
-                      >
-                        {/* eslint-disable-next-line */}
-                        <img
-                          src={`${FILE_SERVER_URL}/uploads/${fileName}`}
-                          alt={`Image ${index + 1}`}
-                          className="object-contain"
-                        />
-                      </div>
-                    );
-                  }
-
-                  return null;
-                })}
-              </div>
-            </DialogContent>
-          </Dialog>
+          <InformationsDialog estimate={estimate} />
           <Link href={`/dashboard/estimates/${estimate.id}`} className="w-full">
             <Button
               className={`${estimate.intervention.vehicule.client.typeClient === "individual" ? "individual-btn" : "company-btn"} w-full`}

@@ -14,7 +14,7 @@ interface FormFieldProps {
   register: any;
   error?: FieldError;
   icon?: React.ReactNode;
-  defaultValue?: string;
+  defaultValue?: string | number;
   textarea?: boolean;
   nonempty?: boolean;
   step?: string;
@@ -57,7 +57,7 @@ export const FormField = ({
         )}
         {richText && setValue ? (
           <RichTextEditor
-            value={defaultValue}
+            value={defaultValue as string}
             onChange={(value) => setValue(name, value)}
             placeholder={placeholder}
           />

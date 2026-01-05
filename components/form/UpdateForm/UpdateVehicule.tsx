@@ -66,22 +66,78 @@ export function UpdateVehicule({
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const zodFormSchema = z.object({
-    brand: z.string().nonempty("La marque est requise."),
-    model: z.string().nonempty("Le modèle est requis."),
-    year: z
-      .string()
-      .length(4, "L'année doit contenir 4 chiffres.")
-      .regex(/^\d+$/, "L'année doit être un nombre."),
-    licensePlate: z
-      .string()
-      .nonempty("La plaque d'immatriculation est requise."),
-    insuranceId: z.string().optional(),
-    chassisNumber: z.string().optional(),
-    registrationNumber: z.string().optional(),
-    lastExpertise: z.date().optional(),
-    certificateImage: z.instanceof(File).optional(),
-  });
+  const formatLicensePlate = (value: string) => {
+    // Supprimer tous les caractères non alphanumériques
+    const cleaned = value.toUpperCase().replace(/[^A-Z0-9]/g, "");
+
+    if (cleaned.length === 0) return "";
+
+    let formatted = "";
+
+    // Ajouter les 2 premières lettres
+    if (cleaned.length <= 2) {
+      formatted = cleaned;
+    }
+    // Ajouter un tiret après 2 lettres
+    else if (cleaned.length <= 5) {
+      formatted = cleaned.slice(0, 2) + "-" + cleaned.slice(2);
+    }
+    // Si après 3 chiffres il y a des lettres (plaque française)
+    else if (cleaned.length > 5 && /[A-Z]/.test(cleaned[5])) {
+      formatted =
+        cleaned.slice(0, 2) +
+        "-" +
+        cleaned.slice(2, 5) +
+        "-" +
+        cleaned.slice(5);
+    }
+    // Sinon plaque suisse
+    else {
+      formatted = cleaned.slice(0, 2) + "-" + cleaned.slice(2);
+    }
+
+    return formatted;
+  };
+
+  const zodFormSchema = z
+    .object({
+      brand: z.string().nonempty("La marque est requise."),
+      model: z.string().nonempty("Le modèle est requis."),
+      year: z
+        .number("L'année doit être un nombre.")
+        .int("L'année doit être un nombre entier.")
+        .min(1900, "L'année doit être au moins 1900.")
+        .max(
+          new Date().getFullYear(),
+          `L'année ne peut pas être supérieure à ${new Date().getFullYear()}.`,
+        ),
+      licensePlate: z
+        .string()
+        .nonempty("La plaque d'immatriculation est requise."),
+      insuranceId: z.string().optional(),
+      chassisNumber: z.string().optional(),
+      registrationNumber: z.string().optional(),
+      lastExpertise: z
+        .date()
+        .max(
+          new Date(),
+          "La date de la dernière expertise ne peut pas être dans le futur.",
+        )
+        .optional(),
+      certificateImage: z.instanceof(File).optional(),
+    })
+    .refine(
+      (data) => {
+        if (!data.lastExpertise || !data.year) return true;
+        const expertiseYear = data.lastExpertise.getFullYear();
+        return expertiseYear >= data.year;
+      },
+      {
+        message:
+          "La date d'expertise ne peut pas être avant l'année du véhicule.",
+        path: ["lastExpertise"],
+      },
+    );
   type FormSchema = z.infer<typeof zodFormSchema>;
 
   const {
@@ -121,7 +177,7 @@ export function UpdateVehicule({
         data: {
           brand: data.brand,
           model: data.model,
-          year: parseInt(data.year, 10),
+          year: data.year,
           licensePlate: data.licensePlate,
           certificateImage: uploadedUrl.length === 0 ? null : uploadedUrl[0],
           insuranceId: data.insuranceId,
@@ -153,7 +209,7 @@ export function UpdateVehicule({
             <Edit className="size-4" />
           </Button>
         </DialogTrigger>
-        <DialogContent className="sm:max-w-[600px]">
+        <DialogContent className="sm:max-w-150">
           <DialogHeader>
             <DialogTitle>Modifier la voiture</DialogTitle>
             <DialogDescription>
@@ -181,10 +237,11 @@ export function UpdateVehicule({
             <FormField
               label="Année"
               name="year"
-              type="text"
-              defaultValue={vehicule.year.toString()}
+              type="number"
+              defaultValue={vehicule.year}
               error={errors.year}
               register={register}
+              step="1"
             />
             <FormField
               label="Plaque d'immatriculation"
@@ -193,6 +250,10 @@ export function UpdateVehicule({
               defaultValue={vehicule.licensePlate}
               error={errors.licensePlate}
               register={register}
+              onChange={(e) => {
+                const formatted = formatLicensePlate(e.target.value);
+                setValue("licensePlate", formatted);
+              }}
             />
             <SelectSearch
               label="Séléctionne une assurance"
