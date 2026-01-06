@@ -50,5 +50,59 @@ export async function GET() {
     },
   });
 
-  return NextResponse.json(interventions);
+  const estimates = await db.estimate.findMany({
+    where: {
+      deleted: true,
+    },
+    select: {
+      id: true,
+      intervention: {
+        select: {
+          date: true,
+          description: true,
+          medias: true,
+          user: {
+            select: {
+              username: true,
+            },
+          },
+          vehicule: {
+            select: {
+              brand: true,
+              model: true,
+              licensePlate: true,
+              client: {
+                select: {
+                  name: true,
+                  firstName: true,
+                  companyName: true,
+                  typeClient: true,
+                },
+              },
+            },
+          },
+        },
+      },
+    },
+    orderBy: {
+      createdAt: "asc",
+    },
+  });
+
+  const combined = [
+    ...interventions.map((intervention) => ({
+      ...intervention,
+      type: "intervention" as const,
+    })),
+    ...estimates.map((estimate) => ({
+      ...estimate,
+      type: "estimate" as const,
+    })),
+  ].sort(
+    (a, b) =>
+      new Date(b.type === "estimate" ? b.intervention.date : b.date).getTime() -
+      new Date(a.type === "estimate" ? a.intervention.date : a.date).getTime(),
+  );
+
+  return NextResponse.json(combined);
 }

@@ -35,6 +35,8 @@ import { FILE_SERVER_URL } from "@/lib/config";
 import AddUpcomingItem from "@/components/form/estimates/AddUpcomingItem";
 import UpdateUpcomingItem from "@/components/form/estimates/UpdateUpcomingItem";
 import { updateEstimateItems } from "@/lib/actions/estimate";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 type FetchEstimate = {
   id: string;
@@ -99,15 +101,27 @@ export default function QuoteGeneratorPage() {
     // Filtrer l'item à supprimer
     const updatedItems = selectedItems.filter((item) => item.id !== id);
 
-    // Décaler les positions des items qui étaient après l'item supprimé
+    // Décaler les positions des items de la même catégorie qui étaient après l'item supprimé
     updatedItems.forEach((item) => {
-      if (item.position > itemToRemove.position) {
+      if (
+        item.type === itemToRemove.type &&
+        item.position > itemToRemove.position
+      ) {
         item.position -= 1;
       }
     });
 
-    // Trier par position
-    updatedItems.sort((a, b) => a.position - b.position);
+    // Trier par type puis par position
+    updatedItems.sort((a, b) => {
+      // PART en premier
+      if (a.type === "PART" && b.type !== "PART") return -1;
+      if (a.type !== "PART" && b.type === "PART") return 1;
+      // LABOR en deuxième
+      if (a.type === "LABOR" && b.type === "UPCOMING") return -1;
+      if (a.type === "UPCOMING" && b.type === "LABOR") return 1;
+      // Sinon trier par position
+      return a.position - b.position;
+    });
 
     setSelectedItems(updatedItems);
 
@@ -407,17 +421,16 @@ export default function QuoteGeneratorPage() {
                         <div className="max-h-96 space-y-2 overflow-y-auto">
                           {selectedItems
                             .sort((a, b) => {
-                              // Séparer les items UPCOMING des autres
-                              if (
-                                a.type === "UPCOMING" &&
-                                b.type !== "UPCOMING"
-                              )
-                                return 1;
-                              if (
-                                a.type !== "UPCOMING" &&
-                                b.type === "UPCOMING"
-                              )
+                              // PART en premier
+                              if (a.type === "PART" && b.type !== "PART")
                                 return -1;
+                              if (a.type !== "PART" && b.type === "PART")
+                                return 1;
+                              // LABOR en deuxième
+                              if (a.type === "LABOR" && b.type === "UPCOMING")
+                                return -1;
+                              if (a.type === "UPCOMING" && b.type === "LABOR")
+                                return 1;
                               // Sinon, trier par position
                               return a.position - b.position;
                             })
@@ -583,14 +596,17 @@ export default function QuoteGeneratorPage() {
                         <div className="flex flex-row justify-between">
                           <div>
                             <p className="font-semibold">
-                              Swiss Car Consulting
+                              Swiss Car Consulting SA
                             </p>
-                            <p>18, rue des travaux</p>
-                            <p>1234, Ville</p>
+                            <p>Route des Jeunes, 13</p>
+                            <p>1227, Carouge</p>
                             <p>Tel: +41 79 123 45 67</p>
-                            <p>Mail: exemple@mail.com</p>
+                            <p>Mail: contact@swisscarconsulting.ch</p>
                           </div>
                           <div>
+                            <p className="mb-2">
+                              {format(new Date(), "PPP", { locale: fr }) + ","}
+                            </p>
                             <p className="font-semibold">
                               {estimate.intervention.vehicule.client
                                 .typeClient === TypeClient.individual
@@ -621,26 +637,27 @@ export default function QuoteGeneratorPage() {
                               )}
                           </div>
                         </div>
-                        <div className="">
-                          <h2 className="mb-2 text-xl font-semibold text-black">
-                            Véhicule
-                          </h2>
+                        <div className="flex items-center gap-1">
                           <p className="text-black">
+                            <strong>Véhicule : </strong>
                             {estimate.intervention.vehicule.brand}{" "}
                             {estimate.intervention.vehicule.model} (
                             {estimate.intervention.vehicule.year})
                           </p>
+                          <p>/</p>
                           <p className="text-black">
                             <strong>Plaque:</strong>{" "}
                             {estimate.intervention.vehicule.licensePlate}
                           </p>
                         </div>
 
-                        {/* Tableau des pièces et main d'œuvre */}
-                        <div>
-                          {selectedItems.filter(
-                            (item) => item.type !== "UPCOMING",
-                          ).length > 0 ? (
+                        {/* Tableau des pièces */}
+                        {selectedItems.filter((item) => item.type === "PART")
+                          .length > 0 && (
+                          <div>
+                            <h3 className="mb-2 text-lg font-semibold text-black">
+                              Pièces
+                            </h3>
                             <table className="w-full border border-black/50">
                               <thead>
                                 <tr className="bg-blue-400">
@@ -660,7 +677,73 @@ export default function QuoteGeneratorPage() {
                               </thead>
                               <tbody>
                                 {selectedItems
-                                  .filter((item) => item.type !== "UPCOMING")
+                                  .filter((item) => item.type === "PART")
+                                  .sort((a, b) => a.position - b.position)
+                                  .map((item, i, arr) => (
+                                    <tr
+                                      key={item.id}
+                                      className={`${arr.length - 1 !== i && "border-b"} border-black/50`}
+                                    >
+                                      <td className="flex w-full flex-col gap-1 p-1">
+                                        <div
+                                          className="prose prose-sm text-sm font-semibold wrap-break-word text-black"
+                                          dangerouslySetInnerHTML={{
+                                            __html: item.designation,
+                                          }}
+                                        />
+                                        <div
+                                          className="prose prose-sm text-xs wrap-break-word text-black/70"
+                                          dangerouslySetInnerHTML={{
+                                            __html: item.description || "",
+                                          }}
+                                        />
+                                      </td>
+                                      <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
+                                        {item.quantity ?? 0}
+                                      </td>
+                                      <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
+                                        {item.unitPrice.toFixed(2)} CHF
+                                      </td>
+                                      <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
+                                        {(
+                                          item.unitPrice * (item.quantity ?? 0)
+                                        ).toFixed(2)}{" "}
+                                        CHF
+                                      </td>
+                                    </tr>
+                                  ))}
+                              </tbody>
+                            </table>
+                          </div>
+                        )}
+
+                        {/* Tableau de la main d'œuvre */}
+                        {selectedItems.filter((item) => item.type === "LABOR")
+                          .length > 0 && (
+                          <div className="mt-6">
+                            <h3 className="mb-2 text-lg font-semibold text-black">
+                              Main d&apos;œuvre
+                            </h3>
+                            <table className="w-full border border-black/50">
+                              <thead>
+                                <tr className="bg-green-400">
+                                  <th className="w-[55%] border border-black/50 text-center text-sm">
+                                    Désignation
+                                  </th>
+                                  <th className="w-[15%] border border-black/50 px-2 text-center text-sm">
+                                    Quantité
+                                  </th>
+                                  <th className="w-[15%] border border-black/50 text-center text-sm">
+                                    Prix unitaire
+                                  </th>
+                                  <th className="w-[15%] border border-black/50 text-center text-sm">
+                                    Total HT
+                                  </th>
+                                </tr>
+                              </thead>
+                              <tbody>
+                                {selectedItems
+                                  .filter((item) => item.type === "LABOR")
                                   .sort((a, b) => a.position - b.position)
                                   .map((item, i, arr) => (
                                     <tr
@@ -710,12 +793,8 @@ export default function QuoteGeneratorPage() {
                                   ))}
                               </tbody>
                             </table>
-                          ) : (
-                            <p className="text-gray-500 italic">
-                              Aucune prestation ajoutée
-                            </p>
-                          )}
-                        </div>
+                          </div>
+                        )}
 
                         {/* Tableau des items à venir */}
                         {selectedItems.filter(
@@ -723,7 +802,7 @@ export default function QuoteGeneratorPage() {
                         ).length > 0 && (
                           <div className="mt-6">
                             <h3 className="mb-2 text-lg font-semibold text-black">
-                              À venir
+                              À prévoir
                             </h3>
                             <table className="w-full border border-black/50">
                               <thead>
@@ -744,7 +823,7 @@ export default function QuoteGeneratorPage() {
                                     >
                                       <td className="flex w-full flex-col gap-1 p-1">
                                         <div
-                                          className="prose prose-sm text-sm font-semibold wrap-break-word text-red-500"
+                                          className="prose prose-sm text-sm font-semibold wrap-break-word text-red-500 uppercase"
                                           dangerouslySetInnerHTML={{
                                             __html: item.designation,
                                           }}

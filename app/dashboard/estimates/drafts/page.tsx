@@ -42,7 +42,7 @@ function useEstimatesDraft() {
 }
 
 export default function EstimateDraft() {
-  const { data: estimates, isLoading, isError } = useEstimatesDraft();
+  const { data: estimates, isLoading, isError, refetch } = useEstimatesDraft();
 
   return (
     <>
@@ -79,6 +79,7 @@ export default function EstimateDraft() {
                         estimate={estimate}
                         isIndividual={isIndividual}
                         key={estimate.id}
+                        refetch={refetch}
                       />
                     );
                   })

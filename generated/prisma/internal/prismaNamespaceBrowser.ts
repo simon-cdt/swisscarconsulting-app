@@ -147,6 +147,7 @@ export const EstimateScalarFieldEnum = {
   id: 'id',
   interventionId: 'interventionId',
   status: 'status',
+  deleted: 'deleted',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

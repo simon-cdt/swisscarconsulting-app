@@ -25,6 +25,7 @@ import { FILE_SERVER_URL } from "@/lib/config";
 import SelectSearch from "../SelectSearch";
 import DateInputField from "../DateInputField";
 import { useQuery } from "@tanstack/react-query";
+import { formatLicensePlate } from "@/lib/utils";
 
 type FetchInsurances = {
   id: string;
@@ -65,39 +66,6 @@ export function UpdateVehicule({
   const { data: insurances, isLoading, isError } = useInsurances();
 
   const [isOpen, setIsOpen] = useState(false);
-
-  const formatLicensePlate = (value: string) => {
-    // Supprimer tous les caractères non alphanumériques
-    const cleaned = value.toUpperCase().replace(/[^A-Z0-9]/g, "");
-
-    if (cleaned.length === 0) return "";
-
-    let formatted = "";
-
-    // Ajouter les 2 premières lettres
-    if (cleaned.length <= 2) {
-      formatted = cleaned;
-    }
-    // Ajouter un tiret après 2 lettres
-    else if (cleaned.length <= 5) {
-      formatted = cleaned.slice(0, 2) + "-" + cleaned.slice(2);
-    }
-    // Si après 3 chiffres il y a des lettres (plaque française)
-    else if (cleaned.length > 5 && /[A-Z]/.test(cleaned[5])) {
-      formatted =
-        cleaned.slice(0, 2) +
-        "-" +
-        cleaned.slice(2, 5) +
-        "-" +
-        cleaned.slice(5);
-    }
-    // Sinon plaque suisse
-    else {
-      formatted = cleaned.slice(0, 2) + "-" + cleaned.slice(2);
-    }
-
-    return formatted;
-  };
 
   const zodFormSchema = z
     .object({

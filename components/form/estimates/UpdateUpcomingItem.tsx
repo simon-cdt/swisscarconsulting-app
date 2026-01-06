@@ -121,8 +121,13 @@ export default function UpdateUpcomingItem({
 
       // Trier par type puis par position
       updatedItems.sort((a, b) => {
-        if (a.type === "UPCOMING" && b.type !== "UPCOMING") return 1;
-        if (a.type !== "UPCOMING" && b.type === "UPCOMING") return -1;
+        // PART en premier
+        if (a.type === "PART" && b.type !== "PART") return -1;
+        if (a.type !== "PART" && b.type === "PART") return 1;
+        // LABOR en deuxième
+        if (a.type === "LABOR" && b.type === "UPCOMING") return -1;
+        if (a.type === "UPCOMING" && b.type === "LABOR") return 1;
+        // Sinon trier par position
         return a.position - b.position;
       });
 

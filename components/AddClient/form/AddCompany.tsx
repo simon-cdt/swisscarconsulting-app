@@ -1,6 +1,7 @@
 "use client";
 
-import { UseFormReturn } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import z from "zod";
 import { FormField } from "@/components/form/FormField";
 import { Button } from "../../ui/button";
@@ -10,73 +11,133 @@ import { addClientCompany } from "@/lib/actions/client";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { SharedFormData } from "../CustomTabs";
-import { useState } from "react";
+import { useEffect } from "react";
 
-const companySchema = z.object({
-  companyName: z.string().nonempty("Le nom de l'entreprise est requis."),
-  email: z
-    .string()
-    .email("Ce n'est pas un e-mail.")
-    .nonempty("L'e-mail est requis."),
-  phone: z
-    .string()
-    .nonempty("Le numéro de téléphone est requis.")
-    .regex(
-      /^[\d\s\+\-\(\)]+$/,
-      "Le numéro de téléphone contient des caractères invalides",
-    )
-    .min(8, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
-  contactFirstName: z.string().nonempty("Le prénom du contact est requis."),
-  contactName: z.string().nonempty("Le nom du contact est requis."),
-  address: z.string().optional(),
-  postalCode: z
-    .number()
-    .int("Le code postal doit être un nombre entier")
-    .min(1000, "Le format est incorrecte")
-    .max(99999, "Le format est incorrecte")
-    .optional(),
-  city: z
-    .string()
-    .optional()
-    .refine(
-      (val) => !val || /^[a-zA-ZÀ-ÿ\s\-']+$/.test(val),
-      "La ville ne doit contenir que des lettres",
-    ),
-});
+type AddCompanyProps = {
+  sharedData: SharedFormData;
+  setSharedData: (data: SharedFormData) => void;
+};
 
-type CompanyFormData = z.infer<typeof companySchema>;
-
-interface AddCompanyProps {
-  sharedForm: UseFormReturn<SharedFormData>;
-}
-
-export default function AddCompany({ sharedForm }: AddCompanyProps) {
+export default function AddCompany({
+  sharedData,
+  setSharedData,
+}: AddCompanyProps) {
   const router = useRouter();
-  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const zodFormSchema = z.object({
+    companyName: z.string().nonempty("Le nom de l'entreprise est requis."),
+    email: z.email("Ce n'est pas e-mail.").nonempty("L'e-mail est requis."),
+    phone: z
+      .string()
+      .nonempty("Le numéro de téléphone est requis.")
+      .regex(
+        /^[\d\s\+\-\(\)]+$/,
+        "Le numéro de téléphone contient des caractères invalides",
+      )
+      .min(8, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
+    contactFirstName: z.string().nonempty("Le prénom du contact est requis."),
+    contactName: z.string().nonempty("Le nom du contact est requis."),
+    address: z.string().optional(),
+    postalCode: z
+      .number()
+      .int("Le code postal doit être un nombre entier")
+      .min(1000, "Le format est incorrecte")
+      .max(99999, "Le format est incorrecte")
+      .optional(),
+    city: z
+      .string()
+      .optional()
+      .refine(
+        (val) => !val || /^[a-zA-ZÀ-ÿ\s\-']+$/.test(val),
+        "La ville ne doit contenir que des lettres",
+      ),
+  });
+  type FormSchema = z.infer<typeof zodFormSchema>;
 
   const {
     register,
     handleSubmit,
-    formState: { errors },
-  } = sharedForm;
+    formState: { errors, isSubmitting },
+    watch,
+    setValue,
+  } = useForm<FormSchema>({
+    resolver: zodResolver(zodFormSchema),
+    defaultValues: {
+      companyName: "",
+      contactFirstName: sharedData.firstName,
+      contactName: sharedData.name,
+      email: sharedData.email,
+      phone: sharedData.phone,
+      address: sharedData.address,
+      postalCode: sharedData.postalCode,
+      city: sharedData.city,
+    },
+  });
 
-  const handleSubmitForm = async (data: SharedFormData) => {
-    // Valider avec le schéma spécifique
-    const validationResult = companySchema.safeParse(data);
+  //eslint-disable-next-line
+  const watchedContactFirstName = watch("contactFirstName");
+  const watchedContactName = watch("contactName");
+  const watchedEmail = watch("email");
+  const watchedPhone = watch("phone");
+  const watchedAddress = watch("address");
+  const watchedPostalCode = watch("postalCode");
+  const watchedCity = watch("city");
 
-    if (!validationResult.success) {
-      validationResult.error.issues.forEach((err) => {
-        toast.error(err.message);
-      });
-      return;
-    }
-
-    setIsSubmitting(true);
-    const response = await addClientCompany({
-      data: validationResult.data as CompanyFormData,
+  useEffect(() => {
+    setSharedData({
+      firstName: watchedContactFirstName || "",
+      name: watchedContactName || "",
+      email: watchedEmail || "",
+      phone: watchedPhone || "",
+      address: watchedAddress || "",
+      postalCode: watchedPostalCode,
+      city: watchedCity || "",
     });
-    setIsSubmitting(false);
+  }, [
+    watchedContactFirstName,
+    watchedContactName,
+    watchedEmail,
+    watchedPhone,
+    watchedAddress,
+    watchedPostalCode,
+    watchedCity,
+    setSharedData,
+  ]);
 
+  // Mettre à jour les valeurs du formulaire quand sharedData change (depuis l'autre formulaire)
+  useEffect(() => {
+    setValue("contactFirstName", sharedData.firstName, {
+      shouldValidate: false,
+      shouldDirty: false,
+    });
+    setValue("contactName", sharedData.name, {
+      shouldValidate: false,
+      shouldDirty: false,
+    });
+    setValue("email", sharedData.email, {
+      shouldValidate: false,
+      shouldDirty: false,
+    });
+    setValue("phone", sharedData.phone, {
+      shouldValidate: false,
+      shouldDirty: false,
+    });
+    setValue("address", sharedData.address, {
+      shouldValidate: false,
+      shouldDirty: false,
+    });
+    setValue("postalCode", sharedData.postalCode, {
+      shouldValidate: false,
+      shouldDirty: false,
+    });
+    setValue("city", sharedData.city, {
+      shouldValidate: false,
+      shouldDirty: false,
+    });
+  }, [sharedData, setValue]);
+
+  const handleSubmitForm = async (data: FormSchema) => {
+    const response = await addClientCompany({ data });
     if (response.success) {
       toast.success(response.message);
       router.push(`/client-handle/${response.clientId}`);
@@ -169,7 +230,7 @@ export default function AddCompany({ sharedForm }: AddCompanyProps) {
         className="w-full bg-amber-500 hover:bg-amber-600"
         disabled={isSubmitting}
       >
-        {isSubmitting ? <Spinner /> : "Créer un client entreprise"}
+        {isSubmitting ? <Spinner /> : "Créer un client particulier"}
       </Button>
     </form>
   );

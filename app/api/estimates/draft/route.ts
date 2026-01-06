@@ -18,6 +18,7 @@ export async function GET() {
   const estimates = await db.estimate.findMany({
     where: {
       status: "DRAFT",
+      deleted: false,
     },
     select: {
       id: true,

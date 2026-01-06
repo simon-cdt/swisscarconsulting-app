@@ -28,6 +28,7 @@ export type EstimateMinAggregateOutputType = {
   id: string | null
   interventionId: string | null
   status: $Enums.EstimateStatus | null
+  deleted: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -36,6 +37,7 @@ export type EstimateMaxAggregateOutputType = {
   id: string | null
   interventionId: string | null
   status: $Enums.EstimateStatus | null
+  deleted: boolean | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -44,6 +46,7 @@ export type EstimateCountAggregateOutputType = {
   id: number
   interventionId: number
   status: number
+  deleted: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -54,6 +57,7 @@ export type EstimateMinAggregateInputType = {
   id?: true
   interventionId?: true
   status?: true
+  deleted?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -62,6 +66,7 @@ export type EstimateMaxAggregateInputType = {
   id?: true
   interventionId?: true
   status?: true
+  deleted?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -70,6 +75,7 @@ export type EstimateCountAggregateInputType = {
   id?: true
   interventionId?: true
   status?: true
+  deleted?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -151,6 +157,7 @@ export type EstimateGroupByOutputType = {
   id: string
   interventionId: string
   status: $Enums.EstimateStatus
+  deleted: boolean
   createdAt: Date
   updatedAt: Date | null
   _count: EstimateCountAggregateOutputType | null
@@ -180,6 +187,7 @@ export type EstimateWhereInput = {
   id?: Prisma.StringFilter<"Estimate"> | string
   interventionId?: Prisma.StringFilter<"Estimate"> | string
   status?: Prisma.EnumEstimateStatusFilter<"Estimate"> | $Enums.EstimateStatus
+  deleted?: Prisma.BoolFilter<"Estimate"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Estimate"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
   items?: Prisma.EstimateItemListRelationFilter
@@ -190,6 +198,7 @@ export type EstimateOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   interventionId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  deleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   items?: Prisma.EstimateItemOrderByRelationAggregateInput
@@ -204,6 +213,7 @@ export type EstimateWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.EstimateWhereInput | Prisma.EstimateWhereInput[]
   interventionId?: Prisma.StringFilter<"Estimate"> | string
   status?: Prisma.EnumEstimateStatusFilter<"Estimate"> | $Enums.EstimateStatus
+  deleted?: Prisma.BoolFilter<"Estimate"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Estimate"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
   items?: Prisma.EstimateItemListRelationFilter
@@ -214,6 +224,7 @@ export type EstimateOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   interventionId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  deleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.EstimateCountOrderByAggregateInput
@@ -228,6 +239,7 @@ export type EstimateScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Estimate"> | string
   interventionId?: Prisma.StringWithAggregatesFilter<"Estimate"> | string
   status?: Prisma.EnumEstimateStatusWithAggregatesFilter<"Estimate"> | $Enums.EstimateStatus
+  deleted?: Prisma.BoolWithAggregatesFilter<"Estimate"> | boolean
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Estimate"> | Date | string
   updatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Estimate"> | Date | string | null
 }
@@ -235,6 +247,7 @@ export type EstimateScalarWhereWithAggregatesInput = {
 export type EstimateCreateInput = {
   id?: string
   status?: $Enums.EstimateStatus
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
   items?: Prisma.EstimateItemCreateNestedManyWithoutEstimateInput
@@ -245,6 +258,7 @@ export type EstimateUncheckedCreateInput = {
   id?: string
   interventionId: string
   status?: $Enums.EstimateStatus
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
   items?: Prisma.EstimateItemUncheckedCreateNestedManyWithoutEstimateInput
@@ -253,6 +267,7 @@ export type EstimateUncheckedCreateInput = {
 export type EstimateUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEstimateStatusFieldUpdateOperationsInput | $Enums.EstimateStatus
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.EstimateItemUpdateManyWithoutEstimateNestedInput
@@ -263,6 +278,7 @@ export type EstimateUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   interventionId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEstimateStatusFieldUpdateOperationsInput | $Enums.EstimateStatus
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.EstimateItemUncheckedUpdateManyWithoutEstimateNestedInput
@@ -272,6 +288,7 @@ export type EstimateCreateManyInput = {
   id?: string
   interventionId: string
   status?: $Enums.EstimateStatus
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -279,6 +296,7 @@ export type EstimateCreateManyInput = {
 export type EstimateUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEstimateStatusFieldUpdateOperationsInput | $Enums.EstimateStatus
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -287,6 +305,7 @@ export type EstimateUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   interventionId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEstimateStatusFieldUpdateOperationsInput | $Enums.EstimateStatus
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -311,6 +330,7 @@ export type EstimateCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   interventionId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  deleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -319,6 +339,7 @@ export type EstimateMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   interventionId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  deleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -327,6 +348,7 @@ export type EstimateMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   interventionId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  deleted?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -399,6 +421,7 @@ export type EstimateUpdateOneRequiredWithoutItemsNestedInput = {
 export type EstimateCreateWithoutInterventionInput = {
   id?: string
   status?: $Enums.EstimateStatus
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
   items?: Prisma.EstimateItemCreateNestedManyWithoutEstimateInput
@@ -407,6 +430,7 @@ export type EstimateCreateWithoutInterventionInput = {
 export type EstimateUncheckedCreateWithoutInterventionInput = {
   id?: string
   status?: $Enums.EstimateStatus
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
   items?: Prisma.EstimateItemUncheckedCreateNestedManyWithoutEstimateInput
@@ -445,6 +469,7 @@ export type EstimateScalarWhereInput = {
   id?: Prisma.StringFilter<"Estimate"> | string
   interventionId?: Prisma.StringFilter<"Estimate"> | string
   status?: Prisma.EnumEstimateStatusFilter<"Estimate"> | $Enums.EstimateStatus
+  deleted?: Prisma.BoolFilter<"Estimate"> | boolean
   createdAt?: Prisma.DateTimeFilter<"Estimate"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
 }
@@ -452,6 +477,7 @@ export type EstimateScalarWhereInput = {
 export type EstimateCreateWithoutItemsInput = {
   id?: string
   status?: $Enums.EstimateStatus
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
   intervention: Prisma.InterventionCreateNestedOneWithoutEstimatesInput
@@ -461,6 +487,7 @@ export type EstimateUncheckedCreateWithoutItemsInput = {
   id?: string
   interventionId: string
   status?: $Enums.EstimateStatus
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -484,6 +511,7 @@ export type EstimateUpdateToOneWithWhereWithoutItemsInput = {
 export type EstimateUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEstimateStatusFieldUpdateOperationsInput | $Enums.EstimateStatus
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   intervention?: Prisma.InterventionUpdateOneRequiredWithoutEstimatesNestedInput
@@ -493,6 +521,7 @@ export type EstimateUncheckedUpdateWithoutItemsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   interventionId?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEstimateStatusFieldUpdateOperationsInput | $Enums.EstimateStatus
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -500,6 +529,7 @@ export type EstimateUncheckedUpdateWithoutItemsInput = {
 export type EstimateCreateManyInterventionInput = {
   id?: string
   status?: $Enums.EstimateStatus
+  deleted?: boolean
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -507,6 +537,7 @@ export type EstimateCreateManyInterventionInput = {
 export type EstimateUpdateWithoutInterventionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEstimateStatusFieldUpdateOperationsInput | $Enums.EstimateStatus
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.EstimateItemUpdateManyWithoutEstimateNestedInput
@@ -515,6 +546,7 @@ export type EstimateUpdateWithoutInterventionInput = {
 export type EstimateUncheckedUpdateWithoutInterventionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEstimateStatusFieldUpdateOperationsInput | $Enums.EstimateStatus
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.EstimateItemUncheckedUpdateManyWithoutEstimateNestedInput
@@ -523,6 +555,7 @@ export type EstimateUncheckedUpdateWithoutInterventionInput = {
 export type EstimateUncheckedUpdateManyWithoutInterventionInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumEstimateStatusFieldUpdateOperationsInput | $Enums.EstimateStatus
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -562,6 +595,7 @@ export type EstimateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   id?: boolean
   interventionId?: boolean
   status?: boolean
+  deleted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   items?: boolean | Prisma.Estimate$itemsArgs<ExtArgs>
@@ -575,11 +609,12 @@ export type EstimateSelectScalar = {
   id?: boolean
   interventionId?: boolean
   status?: boolean
+  deleted?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EstimateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "interventionId" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["estimate"]>
+export type EstimateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "interventionId" | "status" | "deleted" | "createdAt" | "updatedAt", ExtArgs["result"]["estimate"]>
 export type EstimateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | Prisma.Estimate$itemsArgs<ExtArgs>
   intervention?: boolean | Prisma.InterventionDefaultArgs<ExtArgs>
@@ -596,6 +631,7 @@ export type $EstimatePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     id: string
     interventionId: string
     status: $Enums.EstimateStatus
+    deleted: boolean
     createdAt: Date
     updatedAt: Date | null
   }, ExtArgs["result"]["estimate"]>
@@ -972,6 +1008,7 @@ export interface EstimateFieldRefs {
   readonly id: Prisma.FieldRef<"Estimate", 'String'>
   readonly interventionId: Prisma.FieldRef<"Estimate", 'String'>
   readonly status: Prisma.FieldRef<"Estimate", 'EstimateStatus'>
+  readonly deleted: Prisma.FieldRef<"Estimate", 'Boolean'>
   readonly createdAt: Prisma.FieldRef<"Estimate", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Estimate", 'DateTime'>
 }

@@ -47,7 +47,7 @@ export default function AddMOItem({
     resolver: zodResolver(zodFormSchema),
     defaultValues: {
       position:
-        ItemsEstimate.filter((item) => item.type !== "UPCOMING").length + 1,
+        ItemsEstimate.filter((item) => item.type === "LABOR").length + 1,
       discount: undefined,
     },
   });
@@ -72,9 +72,9 @@ export default function AddMOItem({
       // Créer une copie du tableau
       const updatedItems = [...ItemsEstimate];
 
-      // Décaler uniquement les items PART et LABOR dont la position est >= à la nouvelle position
+      // Décaler uniquement les items LABOR dont la position est >= à la nouvelle position
       updatedItems.forEach((item) => {
-        if (item.type !== "UPCOMING" && item.position >= data.position) {
+        if (item.type === "LABOR" && item.position >= data.position) {
           item.position += 1;
         }
       });
@@ -84,8 +84,13 @@ export default function AddMOItem({
 
       // Trier par type puis par position
       updatedItems.sort((a, b) => {
-        if (a.type === "UPCOMING" && b.type !== "UPCOMING") return 1;
-        if (a.type !== "UPCOMING" && b.type === "UPCOMING") return -1;
+        // PART en premier
+        if (a.type === "PART" && b.type !== "PART") return -1;
+        if (a.type !== "PART" && b.type === "PART") return 1;
+        // LABOR en deuxième
+        if (a.type === "LABOR" && b.type === "UPCOMING") return -1;
+        if (a.type === "UPCOMING" && b.type === "LABOR") return 1;
+        // Sinon trier par position
         return a.position - b.position;
       });
 
@@ -158,8 +163,8 @@ export default function AddMOItem({
           items={Array.from(
             {
               length:
-                ItemsEstimate.filter((item) => item.type !== "UPCOMING")
-                  .length + 1,
+                ItemsEstimate.filter((item) => item.type === "LABOR").length +
+                1,
             },
             (_, i) => ({
               value: (i + 1).toString(),
@@ -171,7 +176,7 @@ export default function AddMOItem({
           placeHolder="Choisissez la position"
           setValue={setValue}
           defaultValue={(
-            ItemsEstimate.filter((item) => item.type !== "UPCOMING").length + 1
+            ItemsEstimate.filter((item) => item.type === "LABOR").length + 1
           ).toString()}
           error={errors.position}
           nonempty

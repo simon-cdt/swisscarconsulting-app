@@ -14,6 +14,23 @@ export default function InformationsDialog({
 }: {
   estimate: { intervention: { description: string; medias: string | null } };
 }) {
+  // Séparer et trier les médias : images d'abord, puis vidéos
+  const sortedMedias =
+    estimate.intervention.medias
+      ?.split(",")
+      .map((file) => file.trim())
+      .sort((a, b) => {
+        const aIsVideo = /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(a);
+        const bIsVideo = /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(b);
+
+        // Si a est une vidéo et b est une image, b vient en premier
+        if (aIsVideo && !bIsVideo) return 1;
+        // Si a est une image et b est une vidéo, a vient en premier
+        if (!aIsVideo && bIsVideo) return -1;
+        // Sinon, garder l'ordre original
+        return 0;
+      }) || [];
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -22,7 +39,7 @@ export default function InformationsDialog({
           Informations
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] w-fit max-w-[90vw] overflow-y-auto">
+      <DialogContent className="max-h-[90vh] w-fit! max-w-[90vw]! overflow-y-auto">
         <DialogHeader className="pt-3">
           <DialogTitle>Photos et vidéos</DialogTitle>
         </DialogHeader>
@@ -33,8 +50,7 @@ export default function InformationsDialog({
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {estimate.intervention.medias?.split(",").map((file, index) => {
-              const fileName = file.trim();
+            {sortedMedias.map((fileName, index) => {
               const isVideo = /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(fileName);
               const isImage = /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i.test(
                 fileName,
@@ -61,7 +77,7 @@ export default function InformationsDialog({
                 return (
                   <div
                     key={index}
-                    className="bg-muted relative flex h-75 items-center justify-center overflow-hidden rounded-lg"
+                    className="bg-muted relative flex h-75 max-w-[45%] min-w-75 flex-1 items-center justify-center overflow-hidden rounded-lg"
                   >
                     {/* eslint-disable-next-line */}
                     <img

@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import {
   CalendarIcon,
   UserIcon,
-  EyeIcon,
   CarIcon,
   X,
   ArchiveRestore,
@@ -15,14 +14,6 @@ import LoadingPage from "@/components/LoadingPage";
 import ErrorPage from "@/components/ErrorPage";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import { FILE_SERVER_URL } from "@/lib/config";
 import { TypeClient } from "@/generated/prisma/enums";
 import { GeistMono } from "geist/font/mono";
 import {
@@ -41,27 +32,56 @@ import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 import { restoreIntervention } from "@/lib/actions/intervention";
+import InformationsDialog from "@/components/InformationsDialog";
+import { Badge } from "@/components/ui/badge";
+import { restoreEstimate } from "@/lib/actions/estimate";
 
-type FetchAllTrash = {
-  id: string;
-  date: Date;
-  description: string;
-  medias: string | null;
-  user: {
-    username: string;
-  };
-  vehicule: {
-    brand: string;
-    model: string;
-    licensePlate: string;
-    client: {
-      name: string | null;
-      firstName: string | null;
-      companyName: string | null;
-      typeClient: TypeClient;
-    };
-  };
-}[];
+type FetchAllTrash = [
+  | {
+      id: string;
+      date: Date;
+      description: string;
+      medias: string | null;
+      user: {
+        username: string;
+      };
+      vehicule: {
+        brand: string;
+        model: string;
+        licensePlate: string;
+        client: {
+          name: string | null;
+          firstName: string | null;
+          companyName: string | null;
+          typeClient: TypeClient;
+        };
+      };
+      type: "intervention";
+    }
+  | {
+      id: string;
+      intervention: {
+        date: Date;
+        description: string;
+        medias: string | null;
+        user: {
+          username: string;
+        };
+        vehicule: {
+          brand: string;
+          model: string;
+          licensePlate: string;
+          client: {
+            name: string | null;
+            firstName: string | null;
+            companyName: string | null;
+            typeClient: TypeClient;
+          };
+        };
+      };
+      type: "estimate";
+    },
+];
 
 function useTrash() {
   return useQuery({
@@ -122,200 +142,284 @@ export default function TrashPage() {
                     </p>
                   </div>
                 ) : (
-                  item.map((intervention) => {
+                  item.map((item) => {
                     const isIndividual =
-                      intervention.vehicule.client.typeClient === "individual";
-                    return (
-                      <Card
-                        key={intervention.id}
-                        className={`${isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 flex h-47.5 w-150 items-start justify-between gap-0 p-6`}
-                      >
-                        <div className="flex w-full flex-row items-center justify-between">
-                          <div className="flex w-full flex-wrap items-center gap-3">
-                            <div className="text-muted-foreground flex items-center gap-2">
-                              <CalendarIcon className="size-4" />
-                              <span className="text-sm font-medium">
-                                {format(intervention.date, "PP", {
-                                  locale: fr,
-                                })}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                        <div className="flex w-full flex-row justify-between">
-                          {/* Informations principales */}
-                          <div className="flex h-full w-full flex-col justify-between gap-2">
-                            <div className="space-y-2">
-                              <h3 className="text-foreground text-lg font-semibold">
-                                {getClientDisplayName(
-                                  intervention.vehicule.client,
-                                )}
-                              </h3>
-
-                              <div className="text-muted-foreground flex items-center gap-2 text-sm">
-                                <CarIcon className="size-4" />
-                                <span>
-                                  {intervention.vehicule.brand}{" "}
-                                  {intervention.vehicule.model} /{" "}
-                                  <span className={`${GeistMono.className}`}>
-                                    {intervention.vehicule.licensePlate}
-                                  </span>
-                                </span>
-                              </div>
-
-                              <p className="text-muted-foreground text-sm">
-                                {truncateText(intervention.description)}
-                              </p>
-
+                      item.type === "intervention"
+                        ? item.vehicule.client.typeClient === "individual"
+                        : item.intervention.vehicule.client.typeClient ===
+                          "individual";
+                    if (item.type === "intervention") {
+                      return (
+                        <Card
+                          key={item.id}
+                          className={`${isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 flex h-47.5 w-150 items-start justify-between gap-0 p-6`}
+                        >
+                          <div className="flex w-full flex-row items-center justify-between">
+                            <div className="flex w-full flex-wrap items-center gap-3">
                               <div className="text-muted-foreground flex items-center gap-2">
-                                <UserIcon className="size-4" />
-                                <span className="text-sm">
-                                  Pris en charge par:{" "}
-                                  <span className="text-foreground font-mono font-medium">
-                                    {intervention.user.username}
-                                  </span>
+                                <CalendarIcon className="size-4" />
+                                <span className="text-sm font-medium">
+                                  {format(item.date, "PP", {
+                                    locale: fr,
+                                  })}
                                 </span>
                               </div>
                             </div>
+                            <div className="flex w-full justify-end">
+                              <Badge className="border-purple-500 bg-purple-50 text-purple-600">
+                                Intervention
+                              </Badge>
+                            </div>
                           </div>
-                          <div className="flex h-full w-62.5 flex-col justify-center gap-2">
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button
-                                  variant="outline"
-                                  size="sm"
-                                  className="col-span-2 gap-2 bg-transparent"
-                                  disabled={!intervention.medias}
-                                >
-                                  <EyeIcon className="size-4" />
-                                  Photos et vidéos
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="max-h-[80vh] min-w-[30vw] overflow-y-auto">
-                                <DialogHeader>
-                                  <DialogTitle>Photos et vidéos</DialogTitle>
-                                </DialogHeader>
-                                <div className="flex flex-wrap gap-5">
-                                  <p>{intervention.description}</p>
-                                  {intervention.medias
-                                    ?.split(",")
-                                    .map((file, index) => {
-                                      const fileName = file.trim();
-                                      const isVideo =
-                                        /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(
-                                          fileName,
-                                        );
-                                      const isImage =
-                                        /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i.test(
-                                          fileName,
-                                        );
+                          <div className="flex w-full flex-row justify-between">
+                            {/* Informations principales */}
+                            <div className="flex h-full w-full flex-col justify-between gap-2">
+                              <div className="space-y-2">
+                                <h3 className="text-foreground text-lg font-semibold">
+                                  {getClientDisplayName(item.vehicule.client)}
+                                </h3>
 
-                                      if (isVideo) {
-                                        return (
-                                          <div
-                                            key={index}
-                                            className="bg-muted relative aspect-video overflow-hidden rounded-lg"
-                                          >
-                                            <video
-                                              controls
-                                              className="h-full w-full object-contain"
-                                              src={`${FILE_SERVER_URL}/uploads/${fileName}`}
-                                            >
-                                              Votre navigateur ne supporte pas
-                                              la lecture de vidéos.
-                                            </video>
-                                          </div>
-                                        );
-                                      }
-
-                                      if (isImage) {
-                                        return (
-                                          <div
-                                            key={index}
-                                            className="bg-muted relative aspect-video overflow-hidden rounded-lg border border-black/20"
-                                          >
-                                            {/* eslint-disable-next-line */}
-                                            <img
-                                              src={`${FILE_SERVER_URL}/uploads/${fileName}`}
-                                              alt={`Image ${index + 1}`}
-                                              className="object-contain"
-                                            />
-                                          </div>
-                                        );
-                                      }
-
-                                      return null;
-                                    })}
+                                <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                                  <CarIcon className="size-4" />
+                                  <span>
+                                    {item.vehicule.brand} {item.vehicule.model}{" "}
+                                    /{" "}
+                                    <span className={`${GeistMono.className}`}>
+                                      {item.vehicule.licensePlate}
+                                    </span>
+                                  </span>
                                 </div>
-                              </DialogContent>
-                            </Dialog>
 
-                            <div className="flex w-full gap-2">
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
+                                <p className="text-muted-foreground text-sm">
+                                  {truncateText(item.description)}
+                                </p>
+
+                                <div className="text-muted-foreground flex items-center gap-2">
+                                  <UserIcon className="size-4" />
+                                  <span className="text-sm">
+                                    Pris en charge par:{" "}
+                                    <span className="text-foreground font-mono font-medium">
+                                      {item.user.username}
+                                    </span>
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex h-full w-62.5 flex-col justify-center gap-2">
+                              <InformationsDialog
+                                estimate={{
+                                  intervention: {
+                                    description: item.description,
+                                    medias: item.medias,
+                                  },
+                                }}
+                              />
+
+                              <div className="flex w-full gap-2">
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="default"
+                                      className="bg-chart-2 hover:bg-chart-2/90 w-full gap-2"
+                                    >
+                                      <ArchiveRestore className="size-4" />
+                                      Restaurer
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Êtes-vous sûr ?
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        L&apos;intervention va de nouveau
+                                        pouvoir être gérée.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>
+                                        Annuler
+                                      </AlertDialogCancel>
+                                      <AlertDialogAction
+                                        className="bg-chart-2 hover:bg-chart-2/90 gap-2"
+                                        onClick={async () => {
+                                          setLoading(true);
+                                          const response =
+                                            await restoreIntervention({
+                                              interventionId: item.id,
+                                            });
+
+                                          if (response.success) {
+                                            toast.success(response.message);
+                                            setLoading(false);
+                                            router.push(
+                                              "/dashboard/interventions",
+                                            );
+                                          } else {
+                                            setLoading(false);
+                                            toast.error(response.message);
+                                          }
+                                        }}
+                                        disabled={isLoading}
+                                      >
+                                        {loading ? <Spinner /> : "Restaurer"}
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+
+                                <Button
+                                  size="sm"
+                                  className="w-full gap-2 bg-red-600 text-white hover:bg-red-700"
+                                >
+                                  <X className="size-4" />
+                                  Supprimer
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </Card>
+                      );
+                    } else {
+                      return (
+                        <Card
+                          key={item.id}
+                          className={`${isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 h-47.5 w-150 p-6 transition-colors`}
+                        >
+                          <div className="flex w-full flex-col gap-1">
+                            <div className="flex w-full flex-row items-center justify-between">
+                              <div className="flex w-full flex-wrap items-center gap-3">
+                                <div className="text-muted-foreground flex items-center gap-2">
+                                  <CalendarIcon className="size-4" />
+                                  <span className="text-sm font-medium">
+                                    {format(item.intervention.date, "PP", {
+                                      locale: fr,
+                                    })}
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="flex w-full justify-end">
+                                <Badge className="border-blue-500 bg-blue-50 text-blue-600">
+                                  Devis
+                                </Badge>
+                              </div>
+                            </div>
+                            <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
+                              {/* Informations principales */}
+                              <div className="flex h-full flex-col justify-between gap-2">
+                                <div className="space-y-2">
+                                  <h3 className="text-foreground text-lg font-semibold">
+                                    {getClientDisplayName(
+                                      item.intervention.vehicule.client,
+                                    )}
+                                  </h3>
+
+                                  <div className="text-muted-foreground flex items-center gap-2 text-sm">
+                                    <CarIcon className="size-4" />
+                                    <span>
+                                      {item.intervention.vehicule.brand}{" "}
+                                      {item.intervention.vehicule.model} /{" "}
+                                      <span
+                                        className={`${GeistMono.className}`}
+                                      >
+                                        {
+                                          item.intervention.vehicule
+                                            .licensePlate
+                                        }
+                                      </span>
+                                    </span>
+                                  </div>
+
+                                  <p className="text-muted-foreground text-sm">
+                                    {truncateText(
+                                      item.intervention.description,
+                                    )}
+                                  </p>
+
+                                  <div className="text-muted-foreground flex items-center gap-2">
+                                    <UserIcon className="size-4" />
+                                    <span className="text-sm">
+                                      Pris en charge par:{" "}
+                                      <span className="text-foreground font-mono font-medium">
+                                        {item.intervention.user.username}
+                                      </span>
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+
+                              <div className="flex h-full w-62.5 flex-col justify-center gap-2">
+                                <InformationsDialog estimate={item} />
+
+                                <div className="flex w-full gap-2">
+                                  <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                      <Button
+                                        size="sm"
+                                        variant="default"
+                                        className="bg-chart-2 hover:bg-chart-2/90 w-full gap-2"
+                                      >
+                                        <ArchiveRestore className="size-4" />
+                                        Restaurer
+                                      </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                      <AlertDialogHeader>
+                                        <AlertDialogTitle>
+                                          Êtes-vous sûr ?
+                                        </AlertDialogTitle>
+                                        <AlertDialogDescription>
+                                          Le devis va de nouveau pouvoir être
+                                          géré.
+                                        </AlertDialogDescription>
+                                      </AlertDialogHeader>
+                                      <AlertDialogFooter>
+                                        <AlertDialogCancel>
+                                          Annuler
+                                        </AlertDialogCancel>
+                                        <AlertDialogAction
+                                          className="bg-chart-2 hover:bg-chart-2/90 gap-2"
+                                          onClick={async () => {
+                                            setLoading(true);
+                                            const response =
+                                              await restoreEstimate({
+                                                estimateId: item.id,
+                                              });
+
+                                            if (response.success) {
+                                              toast.success(response.message);
+                                              setLoading(false);
+                                              router.push(
+                                                `/dashboard/estimates/${response.estimateStatus === "DRAFT" ? "drafts" : "todo"}`,
+                                              );
+                                            } else {
+                                              setLoading(false);
+                                              toast.error(response.message);
+                                            }
+                                          }}
+                                          disabled={isLoading}
+                                        >
+                                          {loading ? <Spinner /> : "Restaurer"}
+                                        </AlertDialogAction>
+                                      </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                  </AlertDialog>
+
                                   <Button
                                     size="sm"
-                                    variant="default"
-                                    className="bg-chart-2 hover:bg-chart-2/90 w-full gap-2"
+                                    className="w-full gap-2 bg-red-600 text-white hover:bg-red-700"
                                   >
-                                    <ArchiveRestore className="size-4" />
-                                    Restaurer
+                                    <X className="size-4" />
+                                    Supprimer
                                   </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      Êtes-vous sûr ?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      L&apos;intervention va de nouveau pouvoir
-                                      être gérée.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                      Annuler
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                      className="bg-chart-2 hover:bg-chart-2/90 gap-2"
-                                      onClick={async () => {
-                                        setLoading(true);
-                                        const response =
-                                          await restoreIntervention({
-                                            interventionId: intervention.id,
-                                          });
-
-                                        if (response.success) {
-                                          toast.success(response.message);
-                                          setLoading(false);
-                                          router.push(
-                                            "/dashboard/interventions",
-                                          );
-                                        } else {
-                                          setLoading(false);
-                                          toast.error(response.message);
-                                        }
-                                      }}
-                                      disabled={isLoading}
-                                    >
-                                      {loading ? <Spinner /> : "Restaurer"}
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
-
-                              <Button
-                                size="sm"
-                                className="w-full gap-2 bg-red-600 text-white hover:bg-red-700"
-                              >
-                                <X className="size-4" />
-                                Supprimer
-                              </Button>
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </Card>
-                    );
+                        </Card>
+                      );
+                    }
                   })
                 )}
               </div>

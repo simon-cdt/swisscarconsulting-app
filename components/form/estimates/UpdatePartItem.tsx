@@ -96,12 +96,11 @@ export default function UpdatePartItem({
         return;
       }
 
-      // Si la position a changé, réorganiser les positions uniquement parmi les items PART et LABOR
+      // Si la position a changé, réorganiser les positions uniquement parmi les items PART
       if (oldPosition !== newPosition) {
         updatedItems.forEach((currentItem) => {
-          // Ne traiter que les items PART et LABOR (sauf celui qu'on modifie)
-          if (currentItem.type === "UPCOMING" || currentItem.id === item.id)
-            return;
+          // Ne traiter que les items PART (sauf celui qu'on modifie)
+          if (currentItem.type !== "PART" || currentItem.id === item.id) return;
 
           // Si l'item monte (nouvelle position < ancienne position)
           if (newPosition < oldPosition) {
@@ -138,8 +137,13 @@ export default function UpdatePartItem({
 
       // Trier par type puis par position
       updatedItems.sort((a, b) => {
-        if (a.type === "UPCOMING" && b.type !== "UPCOMING") return 1;
-        if (a.type !== "UPCOMING" && b.type === "UPCOMING") return -1;
+        // PART en premier
+        if (a.type === "PART" && b.type !== "PART") return -1;
+        if (a.type !== "PART" && b.type === "PART") return 1;
+        // LABOR en deuxième
+        if (a.type === "LABOR" && b.type === "UPCOMING") return -1;
+        if (a.type === "UPCOMING" && b.type === "LABOR") return 1;
+        // Sinon trier par position
         return a.position - b.position;
       });
 
@@ -236,9 +240,8 @@ export default function UpdatePartItem({
             <SelectField
               items={Array.from(
                 {
-                  length: ItemsEstimate.filter(
-                    (item) => item.type !== "UPCOMING",
-                  ).length,
+                  length: ItemsEstimate.filter((item) => item.type === "PART")
+                    .length,
                 },
                 (_, i) => ({
                   value: (i + 1).toString(),

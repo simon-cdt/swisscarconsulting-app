@@ -18,6 +18,7 @@ export async function GET() {
   const estimates = await db.estimate.findMany({
     where: {
       status: "TODO",
+      deleted: false,
     },
     select: {
       id: true,

@@ -101,11 +101,11 @@ export default function UpdateMOItem({
         return;
       }
 
-      // Si la position a changé, réorganiser les positions uniquement parmi les items PART et LABOR
+      // Si la position a changé, réorganiser les positions uniquement parmi les items LABOR
       if (oldPosition !== newPosition) {
         updatedItems.forEach((currentItem) => {
-          // Ne traiter que les items PART et LABOR (sauf celui qu'on modifie)
-          if (currentItem.type === "UPCOMING" || currentItem.id === item.id)
+          // Ne traiter que les items LABOR (sauf celui qu'on modifie)
+          if (currentItem.type !== "LABOR" || currentItem.id === item.id)
             return;
 
           // Si l'item monte (nouvelle position < ancienne position)
@@ -143,8 +143,13 @@ export default function UpdateMOItem({
 
       // Trier par type puis par position
       updatedItems.sort((a, b) => {
-        if (a.type === "UPCOMING" && b.type !== "UPCOMING") return 1;
-        if (a.type !== "UPCOMING" && b.type === "UPCOMING") return -1;
+        // PART en premier
+        if (a.type === "PART" && b.type !== "PART") return -1;
+        if (a.type !== "PART" && b.type === "PART") return 1;
+        // LABOR en deuxième
+        if (a.type === "LABOR" && b.type === "UPCOMING") return -1;
+        if (a.type === "UPCOMING" && b.type === "LABOR") return 1;
+        // Sinon trier par position
         return a.position - b.position;
       });
 
@@ -241,9 +246,8 @@ export default function UpdateMOItem({
             <SelectField
               items={Array.from(
                 {
-                  length: ItemsEstimate.filter(
-                    (item) => item.type !== "UPCOMING",
-                  ).length,
+                  length: ItemsEstimate.filter((item) => item.type === "LABOR")
+                    .length,
                 },
                 (_, i) => ({
                   value: (i + 1).toString(),

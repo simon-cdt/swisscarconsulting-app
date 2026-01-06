@@ -42,7 +42,7 @@ function useEstimatesTodo() {
 }
 
 export default function EstimateTodo() {
-  const { data: estimates, isLoading, isError } = useEstimatesTodo();
+  const { data: estimates, isLoading, isError, refetch } = useEstimatesTodo();
 
   return (
     <>
@@ -79,6 +79,7 @@ export default function EstimateTodo() {
                         estimate={estimate}
                         isIndividual={isIndividual}
                         key={estimate.id}
+                        refetch={refetch}
                       />
                     );
                   })
