@@ -1043,7 +1043,6 @@ export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnu
 
 
 export const ClientOrderByRelevanceFieldEnum = {
-  id: 'id',
   email: 'email',
   phone: 'phone',
   address: 'address',
@@ -1060,7 +1059,6 @@ export type ClientOrderByRelevanceFieldEnum = (typeof ClientOrderByRelevanceFiel
 
 export const VehiculeOrderByRelevanceFieldEnum = {
   id: 'id',
-  clientId: 'clientId',
   brand: 'brand',
   model: 'model',
   licensePlate: 'licensePlate',
@@ -1147,16 +1145,16 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
 
 
 /**
- * Reference to a field of type 'TypeClient'
+ * Reference to a field of type 'Int'
  */
-export type EnumTypeClientFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TypeClient'>
+export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
     
 
 
 /**
- * Reference to a field of type 'Int'
+ * Reference to a field of type 'TypeClient'
  */
-export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int'>
+export type EnumTypeClientFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TypeClient'>
     
 
 

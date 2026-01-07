@@ -80,6 +80,7 @@ export default function EstimateTodo() {
                         isIndividual={isIndividual}
                         key={estimate.id}
                         refetch={refetch}
+                        type="TODO"
                       />
                     );
                   })

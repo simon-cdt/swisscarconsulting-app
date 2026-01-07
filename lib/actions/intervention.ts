@@ -111,3 +111,64 @@ export const restoreIntervention = async ({
     return { success: false, message: "Une erreur est survenue" };
   }
 };
+
+export const addMediasIntervention = async ({
+  data,
+}: {
+  data: {
+    interventionId: string;
+    medias: string;
+  };
+}): Promise<
+  | { success: false; message: string }
+  | {
+      success: true;
+      message: "Les médias ont bien été ajoutés à l'intervention.";
+    }
+> => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+      return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+
+    const intervention = await db.intervention.findUnique({
+      where: {
+        id: data.interventionId,
+      },
+      select: {
+        id: true,
+        medias: true,
+      },
+    });
+
+    console.log(data.interventionId);
+
+    if (!intervention) {
+      return { success: false, message: "Intervention non trouvée." };
+    }
+
+    let allMedias = "";
+    if (!intervention?.medias || intervention.medias === "") {
+      allMedias = data.medias;
+    } else {
+      allMedias = intervention.medias + "," + data.medias;
+    }
+
+    await db.intervention.update({
+      where: {
+        id: data.interventionId,
+      },
+      data: {
+        medias: allMedias,
+      },
+    });
+    return {
+      success: true,
+      message: "Les médias ont bien été ajoutés à l'intervention.",
+    };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Une erreur est survenue" };
+  }
+};

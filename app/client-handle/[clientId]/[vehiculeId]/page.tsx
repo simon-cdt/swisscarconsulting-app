@@ -48,7 +48,7 @@ type FetchClientAndVehicule = {
     } | null;
   };
   client: {
-    id: string;
+    id: number;
     typeClient: TypeClient;
     companyName: null;
     name: string | null;

@@ -7,13 +7,34 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { EyeIcon } from "lucide-react";
+import { EyeIcon, ImageIcon, Download } from "lucide-react";
 
 export default function InformationsDialog({
   estimate,
+  onlyMedias,
 }: {
-  estimate: { intervention: { description: string; medias: string | null } };
+  estimate: { intervention: { description?: string; medias: string | null } };
+  onlyMedias?: boolean;
 }) {
+  // Fonction pour télécharger un média
+  const handleDownload = async (fileName: string) => {
+    try {
+      const url = `${FILE_SERVER_URL}/uploads/${fileName}`;
+      const response = await fetch(url);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = fileName;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Erreur lors du téléchargement:", error);
+    }
+  };
+
   // Séparer et trier les médias : images d'abord, puis vidéos
   const sortedMedias =
     estimate.intervention.medias
@@ -34,9 +55,18 @@ export default function InformationsDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="col-span-2 gap-2">
-          <EyeIcon className="size-4" />
-          Informations
+        <Button variant="outline" size="sm" className="col-span-2 w-full gap-2">
+          {onlyMedias ? (
+            <>
+              <ImageIcon className="mr-2 h-4 w-4" />
+              {"Voir les médias"}
+            </>
+          ) : (
+            <>
+              <EyeIcon className="size-4" />
+              {"Informations"}
+            </>
+          )}
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] w-fit! max-w-[90vw]! overflow-y-auto">
@@ -44,11 +74,13 @@ export default function InformationsDialog({
           <DialogTitle>Photos et vidéos</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-5">
-          <div className="bg-muted/30 max-h-64 overflow-y-auto rounded-md border p-4">
-            <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
-              {estimate.intervention.description}
-            </p>
-          </div>
+          {!onlyMedias && (
+            <div className="bg-muted/30 max-h-64 overflow-y-auto rounded-md border p-4">
+              <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
+                {estimate.intervention.description}
+              </p>
+            </div>
+          )}
           <div className="flex flex-wrap gap-2">
             {sortedMedias.map((fileName, index) => {
               const isVideo = /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(fileName);
@@ -69,6 +101,13 @@ export default function InformationsDialog({
                     >
                       Votre navigateur ne supporte pas la lecture de vidéos.
                     </video>
+                    <button
+                      onClick={() => handleDownload(fileName)}
+                      className="absolute top-2 right-2 cursor-pointer rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
+                      title="Télécharger"
+                    >
+                      <Download className="h-4 w-4" />
+                    </button>
                   </div>
                 );
               }
@@ -85,6 +124,13 @@ export default function InformationsDialog({
                       alt={`Image ${index + 1}`}
                       className="h-full w-full object-contain"
                     />
+                    <button
+                      onClick={() => handleDownload(fileName)}
+                      className="absolute top-2 right-2 cursor-pointer rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
+                      title="Télécharger"
+                    >
+                      <Download className="h-4 w-4" />
+                    </button>
                   </div>
                 );
               }

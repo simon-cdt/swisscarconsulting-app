@@ -1,6 +1,6 @@
 "use client";
 
-import CustomTabs from "@/components/AddClient/CustomTabs";
+import CustomTabs from "@/components/form/addClient/CustomTabs";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import {

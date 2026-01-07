@@ -80,6 +80,7 @@ export default function EstimateDraft() {
                         isIndividual={isIndividual}
                         key={estimate.id}
                         refetch={refetch}
+                        type="DRAFT"
                       />
                     );
                   })

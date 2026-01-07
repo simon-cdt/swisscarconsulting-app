@@ -1,8 +1,8 @@
 "use client";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import AddClient from "./form/AddClient";
-import AddCompany from "./form/AddCompany";
+import AddClient from "./AddClient";
+import AddCompany from "./AddCompany";
 import { Building, User2 } from "lucide-react";
 import { useState } from "react";
 

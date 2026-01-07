@@ -49,7 +49,7 @@ export function AddVehicule({
   refetch,
 }: {
   typeClient: TypeClient;
-  clientId: string;
+  clientId: number;
   refetch: () => void;
 }) {
   const { data: insurances, isLoading, isError } = useInsurances();

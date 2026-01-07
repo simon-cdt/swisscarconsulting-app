@@ -15,7 +15,7 @@ export function UpdateClientCompany({
   setIsOpen,
 }: {
   client: {
-    id: string;
+    id: number;
     name: string | null;
     firstName: string | null;
     companyName: string | null;
@@ -43,7 +43,13 @@ export function UpdateClientCompany({
         "Le numéro de téléphone contient des caractères invalides",
       )
       .min(8, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
-    address: z.string().optional(),
+    address: z
+      .string()
+      .optional()
+      .refine(
+        (val) => !val || (/\d/.test(val) && /[a-zA-ZÀ-ÿ]/.test(val)),
+        "L'adresse doit contenir au moins un chiffre et une lettre",
+      ),
     postalCode: z
       .number()
       .int("Le code postal doit être un nombre entier")

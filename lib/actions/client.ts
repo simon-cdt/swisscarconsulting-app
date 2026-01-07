@@ -18,7 +18,7 @@ export const addClientIndividual = async ({
   };
 }): Promise<
   | { success: false; message: string }
-  | { success: true; message: "Le client a bien été ajouté"; clientId: string }
+  | { success: true; message: "Le client a bien été ajouté"; clientId: number }
 > => {
   try {
     const session = await getServerSession(authOptions);
@@ -70,7 +70,7 @@ export const addClientCompany = async ({
   };
 }): Promise<
   | { success: false; message: string }
-  | { success: true; message: "Le client a bien été ajouté"; clientId: string }
+  | { success: true; message: "Le client a bien été ajouté"; clientId: number }
 > => {
   try {
     const session = await getServerSession(authOptions);
@@ -112,7 +112,7 @@ export const updateClientIndividual = async ({
   clientId,
   data,
 }: {
-  clientId: string;
+  clientId: number;
   data: {
     name: string;
     firstName: string;
@@ -160,7 +160,7 @@ export const updateClientCompany = async ({
   clientId,
   data,
 }: {
-  clientId: string;
+  clientId: number;
   data: {
     companyName: string;
     email: string;

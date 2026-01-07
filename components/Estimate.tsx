@@ -4,7 +4,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { TypeClient } from "@/generated/prisma/enums";
+import { EstimateStatus, TypeClient } from "@/generated/prisma/enums";
 import { GeistMono } from "geist/font/mono";
 import InformationsDialog from "./InformationsDialog";
 import {
@@ -25,6 +25,7 @@ export default function Estimate({
   estimate,
   isIndividual,
   refetch,
+  type,
 }: {
   estimate: {
     id: string;
@@ -51,6 +52,7 @@ export default function Estimate({
   };
   isIndividual: boolean;
   refetch: () => void;
+  type: EstimateStatus;
 }) {
   const truncateText = (text: string, maxLength = 27) => {
     if (text.length <= maxLength) return text;
@@ -165,7 +167,9 @@ export default function Estimate({
               <Button
                 className={`${estimate.intervention.vehicule.client.typeClient === "individual" ? "individual-btn" : "company-btn"} w-full`}
               >
-                Faire le devis
+                {type === "TODO"
+                  ? "Faire le devis"
+                  : type === "DRAFT" && "Modifier le devis"}
               </Button>
             </Link>
           </div>

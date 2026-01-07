@@ -12,7 +12,7 @@ export const addClientVehicule = async ({
     model: string;
     year: number;
     licensePlate: string;
-    clientId: string;
+    clientId: number;
     insuranceId: string | undefined;
     chassisNumber: string | undefined;
     registrationNumber: string | undefined;

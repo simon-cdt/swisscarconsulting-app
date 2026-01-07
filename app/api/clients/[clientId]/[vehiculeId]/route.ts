@@ -37,7 +37,7 @@ export async function GET(
     },
   });
   const client = await db.client.findUnique({
-    where: { id: clientId },
+    where: { id: Number(clientId) },
     select: {
       id: true,
       typeClient: true,

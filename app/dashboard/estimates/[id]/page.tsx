@@ -31,12 +31,13 @@ import toast from "react-hot-toast";
 import AddMOItem from "@/components/form/estimates/AddMOItem";
 import UpdatePartItem from "@/components/form/estimates/UpdatePartItem";
 import UpdateMOItem from "@/components/form/estimates/UpdateMOItem";
-import { FILE_SERVER_URL } from "@/lib/config";
 import AddUpcomingItem from "@/components/form/estimates/AddUpcomingItem";
 import UpdateUpcomingItem from "@/components/form/estimates/UpdateUpcomingItem";
 import { updateEstimateItems } from "@/lib/actions/estimate";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import AddMedias from "@/components/form/AddMedias";
+import InformationsDialog from "@/components/InformationsDialog";
 
 type FetchEstimate = {
   id: string;
@@ -85,7 +86,12 @@ function useEstimate({ id }: { id: string }) {
 export default function QuoteGeneratorPage() {
   const params = useParams<{ id: string }>();
 
-  const { data: estimate, isLoading, isError } = useEstimate({ id: params.id });
+  const {
+    data: estimate,
+    isLoading,
+    isError,
+    refetch,
+  } = useEstimate({ id: params.id });
 
   const [selectedItems, setSelectedItems] = useState<ItemEstimate>([]);
   const loadingItems = useRef(false);
@@ -265,9 +271,15 @@ export default function QuoteGeneratorPage() {
 
                   <Card className="w-full border-2">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <ImageIcon className="h-5 w-5 text-black/50" />
-                        {"Photos et Vidéos"}
+                      <CardTitle className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <ImageIcon className="h-5 w-5 text-black/50" />
+                          {"Photos et Vidéos"}
+                        </div>
+                        <AddMedias
+                          refetch={refetch}
+                          interventionId={estimate.intervention.id}
+                        />
                       </CardTitle>
                       <CardDescription>
                         {estimate.intervention.medias
@@ -276,74 +288,7 @@ export default function QuoteGeneratorPage() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <Dialog>
-                        <DialogTrigger asChild>
-                          <Button
-                            variant="outline"
-                            className="w-full bg-transparent"
-                            disabled={!estimate.intervention.medias}
-                          >
-                            <ImageIcon className="mr-2 h-4 w-4" />
-                            {"Voir les médias"}
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent className="max-h-[80vh] min-w-[30vw] overflow-y-auto">
-                          <DialogHeader>
-                            <DialogTitle>Photos et vidéos</DialogTitle>
-                          </DialogHeader>
-                          <div className="flex flex-wrap gap-2">
-                            {estimate.intervention.medias
-                              ?.split(",")
-                              .map((file, index) => {
-                                const fileName = file.trim();
-                                const isVideo =
-                                  /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(
-                                    fileName,
-                                  );
-                                const isImage =
-                                  /\.(jpg|jpeg|png|gif|webp|svg|bmp)$/i.test(
-                                    fileName,
-                                  );
-
-                                if (isVideo) {
-                                  return (
-                                    <div
-                                      key={index}
-                                      className="bg-muted relative col-span-full aspect-video overflow-hidden rounded-lg"
-                                    >
-                                      <video
-                                        controls
-                                        className="h-full w-full object-contain"
-                                        src={`${FILE_SERVER_URL}/uploads/${fileName}`}
-                                      >
-                                        Votre navigateur ne supporte pas la
-                                        lecture de vidéos.
-                                      </video>
-                                    </div>
-                                  );
-                                }
-
-                                if (isImage) {
-                                  return (
-                                    <div
-                                      key={index}
-                                      className="bg-muted relative flex h-75 items-center justify-center overflow-hidden rounded-lg"
-                                    >
-                                      {/* eslint-disable-next-line */}
-                                      <img
-                                        src={`${FILE_SERVER_URL}/uploads/${fileName}`}
-                                        alt={`Image ${index + 1}`}
-                                        className="h-full w-full object-contain"
-                                      />
-                                    </div>
-                                  );
-                                }
-
-                                return null;
-                              })}
-                          </div>
-                        </DialogContent>
-                      </Dialog>
+                      <InformationsDialog onlyMedias estimate={estimate} />
                     </CardContent>
                   </Card>
                 </div>
@@ -356,7 +301,7 @@ export default function QuoteGeneratorPage() {
                         <span>{"Items du devis"}</span>
                         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                           <DialogTrigger asChild>
-                            <Button size="sm">
+                            <Button size="sm" variant={"outline"}>
                               <Plus className="mr-2 h-4 w-4" />
                               Ajouter
                             </Button>

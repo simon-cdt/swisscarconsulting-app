@@ -29,7 +29,7 @@ export default function UpdateClient({
 }: {
   typeClient: TypeClient;
   client: {
-    id: string;
+    id: number;
 
     name: string | null;
     firstName: string | null;

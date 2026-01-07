@@ -208,7 +208,6 @@ export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnu
 
 
 export const ClientOrderByRelevanceFieldEnum = {
-  id: 'id',
   email: 'email',
   phone: 'phone',
   address: 'address',
@@ -225,7 +224,6 @@ export type ClientOrderByRelevanceFieldEnum = (typeof ClientOrderByRelevanceFiel
 
 export const VehiculeOrderByRelevanceFieldEnum = {
   id: 'id',
-  clientId: 'clientId',
   brand: 'brand',
   model: 'model',
   licensePlate: 'licensePlate',

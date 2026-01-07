@@ -25,7 +25,7 @@ type FetchAllVehiculesOfClient = {
     licensePlate: string;
   }[];
   client: {
-    id: string;
+    id: number;
     typeClient: TypeClient;
     phone: string;
     email: string;
@@ -40,7 +40,7 @@ type FetchAllVehiculesOfClient = {
   };
 };
 
-function useVehicules({ clientId }: { clientId: string }) {
+function useVehicules({ clientId }: { clientId: number }) {
   return useQuery({
     queryKey: ["vehicules", clientId],
     queryFn: async (): Promise<FetchAllVehiculesOfClient> => {
@@ -57,7 +57,7 @@ export default function ClientVehiculePage() {
   const router = useRouter();
 
   const { data, isLoading, isError, refetch } = useVehicules({
-    clientId: id as string,
+    clientId: Number(id),
   });
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -191,7 +191,7 @@ export default function ClientVehiculePage() {
                   </div>
                   <AddVehicule
                     typeClient={data ? data.client.typeClient : "individual"}
-                    clientId={data ? data.client.id : ""}
+                    clientId={data ? data.client.id : 0}
                     refetch={refetch}
                   />
                 </div>

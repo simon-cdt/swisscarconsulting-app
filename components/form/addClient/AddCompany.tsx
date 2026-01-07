@@ -7,27 +7,26 @@ import { FormField } from "@/components/form/FormField";
 import { Button } from "../../ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Mail, Phone } from "lucide-react";
-import { addClientIndividual } from "@/lib/actions/client";
+import { addClientCompany } from "@/lib/actions/client";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
-import { SharedFormData } from "../CustomTabs";
+import { SharedFormData } from "./CustomTabs";
 import { useEffect } from "react";
 
-type AddClientProps = {
+type AddCompanyProps = {
   sharedData: SharedFormData;
   setSharedData: (data: SharedFormData) => void;
 };
 
-export default function AddClient({
+export default function AddCompany({
   sharedData,
   setSharedData,
-}: AddClientProps) {
+}: AddCompanyProps) {
   const router = useRouter();
 
   const zodFormSchema = z.object({
-    firstName: z.string().nonempty("Le prénom est requis."),
-    name: z.string().nonempty("Le nom est requis."),
-    email: z.email("Ce n'est pas un e-mail.").nonempty("L'e-mail est requis."),
+    companyName: z.string().nonempty("Le nom de l'entreprise est requis."),
+    email: z.email("Ce n'est pas e-mail.").nonempty("L'e-mail est requis."),
     phone: z
       .string()
       .nonempty("Le numéro de téléphone est requis.")
@@ -36,7 +35,15 @@ export default function AddClient({
         "Le numéro de téléphone contient des caractères invalides",
       )
       .min(8, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
-    address: z.string().optional(),
+    contactFirstName: z.string().nonempty("Le prénom du contact est requis."),
+    contactName: z.string().nonempty("Le nom du contact est requis."),
+    address: z
+      .string()
+      .optional()
+      .refine(
+        (val) => !val || (/\d/.test(val) && /[a-zA-ZÀ-ÿ]/.test(val)),
+        "L'adresse doit contenir au moins un chiffre et une lettre",
+      ),
     postalCode: z
       .number()
       .int("Le code postal doit être un nombre entier")
@@ -62,8 +69,9 @@ export default function AddClient({
   } = useForm<FormSchema>({
     resolver: zodResolver(zodFormSchema),
     defaultValues: {
-      firstName: sharedData.firstName,
-      name: sharedData.name,
+      companyName: "",
+      contactFirstName: sharedData.firstName,
+      contactName: sharedData.name,
       email: sharedData.email,
       phone: sharedData.phone,
       address: sharedData.address,
@@ -73,8 +81,8 @@ export default function AddClient({
   });
 
   //eslint-disable-next-line
-  const watchedFirstName = watch("firstName");
-  const watchedName = watch("name");
+  const watchedContactFirstName = watch("contactFirstName");
+  const watchedContactName = watch("contactName");
   const watchedEmail = watch("email");
   const watchedPhone = watch("phone");
   const watchedAddress = watch("address");
@@ -83,8 +91,8 @@ export default function AddClient({
 
   useEffect(() => {
     setSharedData({
-      firstName: watchedFirstName || "",
-      name: watchedName || "",
+      firstName: watchedContactFirstName || "",
+      name: watchedContactName || "",
       email: watchedEmail || "",
       phone: watchedPhone || "",
       address: watchedAddress || "",
@@ -92,8 +100,8 @@ export default function AddClient({
       city: watchedCity || "",
     });
   }, [
-    watchedFirstName,
-    watchedName,
+    watchedContactFirstName,
+    watchedContactName,
     watchedEmail,
     watchedPhone,
     watchedAddress,
@@ -104,11 +112,11 @@ export default function AddClient({
 
   // Mettre à jour les valeurs du formulaire quand sharedData change (depuis l'autre formulaire)
   useEffect(() => {
-    setValue("firstName", sharedData.firstName, {
+    setValue("contactFirstName", sharedData.firstName, {
       shouldValidate: false,
       shouldDirty: false,
     });
-    setValue("name", sharedData.name, {
+    setValue("contactName", sharedData.name, {
       shouldValidate: false,
       shouldDirty: false,
     });
@@ -135,7 +143,7 @@ export default function AddClient({
   }, [sharedData, setValue]);
 
   const handleSubmitForm = async (data: FormSchema) => {
-    const response = await addClientIndividual({ data });
+    const response = await addClientCompany({ data });
     if (response.success) {
       toast.success(response.message);
       router.push(`/client-handle/${response.clientId}`);
@@ -146,43 +154,53 @@ export default function AddClient({
 
   return (
     <form onSubmit={handleSubmit(handleSubmitForm)} className="grid gap-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid gap-4">
         <FormField
-          label="Prénom"
-          name="firstName"
+          label="Nom de l'entreprise"
+          name="companyName"
           type="text"
           register={register}
-          error={errors.firstName}
+          error={errors.companyName}
           nonempty
         />
-        <FormField
-          label="Nom"
-          name="name"
-          type="text"
-          register={register}
-          error={errors.name}
-          nonempty
-        />
-        <FormField
-          label="E-mail"
-          name="email"
-          type="email"
-          register={register}
-          error={errors.email}
-          nonempty
-          icon={<Mail className="size-4" />}
-          placeholder="exemple@mail.com"
-        />
-        <FormField
-          label="Numéro de téléphone"
-          name="phone"
-          type="tel"
-          register={register}
-          error={errors.phone}
-          placeholder="+41 79 123 45 67"
-          nonempty
-          icon={<Phone className="size-4" />}
-        />
+        <div className="grid grid-cols-2 gap-4">
+          <FormField
+            label="E-mail"
+            name="email"
+            type="email"
+            register={register}
+            error={errors.email}
+            nonempty
+            icon={<Mail className="size-4" />}
+            placeholder="exemple@mail.com"
+          />
+          <FormField
+            label="Numéro de téléphone"
+            name="phone"
+            type="text"
+            register={register}
+            error={errors.phone}
+            placeholder="+41 79 123 45 67"
+            nonempty
+            icon={<Phone className="size-4" />}
+          />
+          <FormField
+            label="Prénom du contact"
+            name="contactFirstName"
+            type="text"
+            register={register}
+            error={errors.contactFirstName}
+            nonempty
+          />
+          <FormField
+            label="Nom du contact"
+            name="contactName"
+            type="text"
+            register={register}
+            error={errors.contactName}
+            nonempty
+          />
+        </div>
       </div>
       <div className="grid gap-4">
         <FormField
@@ -208,14 +226,14 @@ export default function AddClient({
             type="number"
             register={register}
             error={errors.postalCode}
-            step="1"
             placeholder="1204"
+            step="1"
           />
         </div>
       </div>
       <Button
         type="submit"
-        className="w-full bg-sky-500 hover:bg-sky-600"
+        className="w-full bg-amber-500 hover:bg-amber-600"
         disabled={isSubmitting}
       >
         {isSubmitting ? <Spinner /> : "Créer un client particulier"}
