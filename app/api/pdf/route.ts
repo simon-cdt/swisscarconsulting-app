@@ -1,64 +1,35 @@
 import { NextRequest, NextResponse } from "next/server";
-import puppeteer from "puppeteer";
+import { renderToBuffer } from "@react-pdf/renderer";
+import React from "react";
+import { EstimatePDF } from "@/lib/pdf/EstimatePDF";
+import { readFileSync } from "fs";
+import { join } from "path";
 
 export async function POST(request: NextRequest) {
   try {
-    const { html } = await request.json();
+    const { data } = await request.json();
 
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
+    // Lire le logo et le convertir en base64
+    const logoPath = join(process.cwd(), "public", "logo.png");
+    const logoBuffer = readFileSync(logoPath);
+    const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
 
-    const page = await browser.newPage();
+    // Ajouter le logo en base64 aux données
+    const dataWithLogo = {
+      ...data,
+      logoBase64,
+    };
 
-    // Charger le HTML avec un document complet
-    const fullHtml = `
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <meta charset="UTF-8">
-          <link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700&display=swap" rel="stylesheet">
-          <script src="https://cdn.tailwindcss.com"></script>
-          <style>
-            * { margin: 0; padding: 0; box-sizing: border-box; }
-            body { font-family: 'Geist', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
-            @page { margin: 0; }
-            html, body { height: 100%; }
-            .pdf-container { 
-              position: relative; 
-              min-height: 100vh;
-              display: flex;
-              flex-direction: column;
-            }
-            .pdf-content {
-              flex: 1;
-            }
-            .pdf-footer {
-              margin-top: auto;
-            }
-          </style>
-        </head>
-        <body>
-          ${html}
-        </body>
-      </html>
-    `;
+    // Générer le PDF avec React PDF
+    const buffer = await renderToBuffer(
+      // @ts-expect-error ça fonctionne quand meme
+      React.createElement(EstimatePDF, { data: dataWithLogo }),
+    );
 
-    await page.setContent(fullHtml, { waitUntil: "networkidle0" });
-
-    // Générer le PDF
-    const pdf = await page.pdf({
-      format: "A4",
-      printBackground: true,
-    });
-
-    await browser.close();
-
-    return new NextResponse(Buffer.from(pdf), {
+    return new NextResponse(new Uint8Array(buffer), {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="devis-${Date.now()}.pdf"`,
+        "Content-Disposition": `attachment; filename="devis-${data.intervention.vehicule.licensePlate}-${Date.now()}.pdf"`,
       },
     });
   } catch (error) {

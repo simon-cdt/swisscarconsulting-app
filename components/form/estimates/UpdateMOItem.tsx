@@ -37,6 +37,7 @@ export default function UpdateMOItem({
     unitPrice: number;
     position: number;
     discount: number | null;
+    quantity: number;
   };
   setSelectedItems: React.Dispatch<React.SetStateAction<ItemEstimate>>;
   estimateId: string;
@@ -44,7 +45,6 @@ export default function UpdateMOItem({
   const [open, setOpen] = useState(false);
 
   const zodFormSchema = z.object({
-    designation: z.string().nonempty("La désignation est requise."),
     description: z.string().optional(),
     unitPrice: z
       .number("Un nombre est attendu")
@@ -54,6 +54,10 @@ export default function UpdateMOItem({
       .min(1, "Le rabais doit être au minimum 1%")
       .max(100, "Le rabais doit être au maximum 100%")
       .optional(),
+    quantity: z
+      .number("Un nombre est attendu")
+      .int("La quantité doit être un entier")
+      .positive("La quantité doit être positive"),
     position: z.number().min(1, "La position doit être positive."),
   });
   type FormSchema = z.infer<typeof zodFormSchema>;
@@ -67,15 +71,17 @@ export default function UpdateMOItem({
   } = useForm<FormSchema>({
     resolver: zodResolver(zodFormSchema),
     defaultValues: {
-      designation: item.designation,
       description: item.description || undefined,
       unitPrice: item.unitPrice,
+      quantity: item.quantity,
       discount: item.discount || undefined,
       position: item.position,
     },
   });
 
+  // eslint-disable-next-line
   const unitPrice = watch("unitPrice");
+  const quantity = watch("quantity");
   const discount = watch("discount");
 
   // Initialiser la valeur de position quand le dialog s'ouvre
@@ -134,9 +140,10 @@ export default function UpdateMOItem({
       // Mettre à jour l'item modifié
       updatedItems[itemIndex] = {
         ...updatedItems[itemIndex],
-        designation: data.designation,
+        designation: "Main d'œuvre",
         description: data.description || null,
         unitPrice: data.unitPrice,
+        quantity: data.quantity,
         discount: data.discount ?? null,
         position: newPosition,
       };
@@ -200,19 +207,8 @@ export default function UpdateMOItem({
               Modifiez les informations de l&apos;item sélectionné.
             </DialogDescription>
           </DialogHeader>
-          <div className="grid w-full grid-cols-3 gap-4">
-            <div className="col-span-3">
-              <FormField
-                label="Désignation"
-                name="designation"
-                register={register}
-                type="text"
-                error={errors.designation}
-                nonempty
-                defaultValue={item.designation}
-              />
-            </div>
-            <div className="col-span-3">
+          <div className="grid w-full grid-cols-2 gap-4">
+            <div className="col-span-2">
               <FormField
                 label="Description"
                 name="description"
@@ -229,10 +225,20 @@ export default function UpdateMOItem({
               name="unitPrice"
               register={register}
               type="number"
-              step="0.01"
+              step="1"
               error={errors.unitPrice}
               nonempty
               defaultValue={item.unitPrice.toString()}
+            />
+            <FormField
+              label="Nombre d'heure(s)"
+              name="quantity"
+              register={register}
+              type="number"
+              step="1"
+              error={errors.quantity}
+              nonempty
+              defaultValue={item.quantity.toString()}
             />
             <FormField
               label="Rabais (%)"
@@ -263,18 +269,19 @@ export default function UpdateMOItem({
               nonempty
             />
           </div>
-          {unitPrice && discount && (
-            <div className="rounded-lg border border-green-600 bg-green-50 p-4">
+          {unitPrice && discount && quantity && discount > 1 && (
+            <div className="mt-4 rounded-lg border border-green-600 bg-green-50 p-4">
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-700">
                   Prix final après rabais:
                 </span>
                 <span className="text-lg font-bold text-green-600">
-                  {(unitPrice - (unitPrice * discount) / 100).toFixed(2)} CHF
+                  {((unitPrice * quantity * (100 - discount)) / 100).toFixed(2)}{" "}
+                  CHF
                 </span>
               </div>
               <div className="mt-1 text-xs text-gray-500">
-                {unitPrice.toFixed(2)} CHF - {discount}% ={" "}
+                {(unitPrice * quantity).toFixed(2)} CHF - {discount}% ={" "}
                 {(unitPrice - (unitPrice * discount) / 100).toFixed(2)} CHF
               </div>
             </div>

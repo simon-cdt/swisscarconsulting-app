@@ -7,17 +7,34 @@ import {
   DialogTrigger,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { EyeIcon, ImageIcon, Download } from "lucide-react";
+import { EyeIcon, ImageIcon, Download, Trash } from "lucide-react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { deleteMediasIntervention } from "@/lib/actions/intervention";
+import toast from "react-hot-toast";
 
 export default function InformationsDialog({
   estimate,
   onlyMedias,
+  refetch,
 }: {
-  estimate: { intervention: { description?: string; medias: string | null } };
+  estimate: {
+    intervention: { id: string; description?: string; medias: string | null };
+  };
   onlyMedias?: boolean;
+  refetch: () => void;
 }) {
   // Fonction pour télécharger un média
-  const handleDownload = async (fileName: string) => {
+  const handleDownload = async ({ fileName }: { fileName: string }) => {
     try {
       const url = `${FILE_SERVER_URL}/uploads/${fileName}`;
       const response = await fetch(url);
@@ -32,6 +49,34 @@ export default function InformationsDialog({
       window.URL.revokeObjectURL(blobUrl);
     } catch (error) {
       console.error("Erreur lors du téléchargement:", error);
+    }
+  };
+
+  const handleDelete = async ({ fileName }: { fileName: string }) => {
+    try {
+      const response = await fetch(`${FILE_SERVER_URL}/files/${fileName}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        const deleteMedia = await deleteMediasIntervention({
+          data: {
+            interventionId: estimate.intervention.id,
+            mediasToDelete: fileName,
+          },
+        });
+        if (deleteMedia.success) {
+          toast.success(deleteMedia.message);
+          refetch();
+        } else {
+          toast.error(deleteMedia.message);
+        }
+      } else {
+        toast.error("Erreur lors de la suppression du fichier");
+      }
+    } catch (error) {
+      toast.error("Erreur lors de la suppression du fichier");
+      console.error("Erreur lors de la suppression:", error);
     }
   };
 
@@ -55,7 +100,21 @@ export default function InformationsDialog({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline" size="sm" className="col-span-2 w-full gap-2">
+        <Button
+          variant="outline"
+          size="sm"
+          className="col-span-2 w-full gap-2"
+          disabled={
+            (onlyMedias &&
+              (!estimate.intervention.medias ||
+                estimate.intervention.medias === "")) ||
+            (!onlyMedias &&
+              (!estimate.intervention.medias ||
+                estimate.intervention.medias === "") &&
+              (!estimate.intervention.description ||
+                estimate.intervention.description === ""))
+          }
+        >
           {onlyMedias ? (
             <>
               <ImageIcon className="mr-2 h-4 w-4" />
@@ -74,13 +133,15 @@ export default function InformationsDialog({
           <DialogTitle>Photos et vidéos</DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-5">
-          {!onlyMedias && (
-            <div className="bg-muted/30 max-h-64 overflow-y-auto rounded-md border p-4">
-              <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
-                {estimate.intervention.description}
-              </p>
-            </div>
-          )}
+          {!onlyMedias &&
+            estimate.intervention.description &&
+            estimate.intervention.description !== "" && (
+              <div className="bg-muted/30 max-h-64 overflow-y-auto rounded-md border p-4">
+                <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
+                  {estimate.intervention.description}
+                </p>
+              </div>
+            )}
           <div className="flex flex-wrap gap-2">
             {sortedMedias.map((fileName, index) => {
               const isVideo = /\.(mp4|webm|ogg|mov|avi|mkv)$/i.test(fileName);
@@ -101,13 +162,21 @@ export default function InformationsDialog({
                     >
                       Votre navigateur ne supporte pas la lecture de vidéos.
                     </video>
-                    <button
-                      onClick={() => handleDownload(fileName)}
-                      className="absolute top-2 right-2 cursor-pointer rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
-                      title="Télécharger"
-                    >
-                      <Download className="h-4 w-4" />
-                    </button>
+                    <div className="absolute top-2 right-2">
+                      <button
+                        onClick={() => handleDownload({ fileName })}
+                        className="cursor-pointer rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
+                        title="Télécharger"
+                      >
+                        <Download className="h-4 w-4" />
+                      </button>
+                      <button
+                        className="cursor-pointer rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
+                        title="Supprimer"
+                      >
+                        <Trash className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                 );
               }
@@ -124,13 +193,47 @@ export default function InformationsDialog({
                       alt={`Image ${index + 1}`}
                       className="h-full w-full object-contain"
                     />
-                    <button
-                      onClick={() => handleDownload(fileName)}
-                      className="absolute top-2 right-2 cursor-pointer rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
-                      title="Télécharger"
-                    >
-                      <Download className="h-4 w-4" />
-                    </button>
+                    <div className="absolute top-2 right-2 flex gap-2">
+                      <button
+                        onClick={() => handleDownload({ fileName })}
+                        className="trans cursor-pointer rounded-full bg-black/50 p-2 text-white hover:bg-black/70"
+                        title="Télécharger"
+                      >
+                        <Download className="h-4 w-4" />
+                      </button>
+
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button
+                            className="trans cursor-pointer rounded-full bg-red-200 p-2 transition-colors hover:bg-red-300"
+                            title="Supprimer"
+                          >
+                            <Trash className="h-4 w-4 text-red-600" />
+                          </button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Êtes-vous sûr de vouloir supprimer ce média ?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Cette action est irréversible. Le média sera
+                              définitivement supprimé et ne pourra pas être
+                              récupéré.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-red-500 hover:bg-red-600"
+                              onClick={() => handleDelete({ fileName })}
+                            >
+                              Supprimer
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
                   </div>
                 );
               }

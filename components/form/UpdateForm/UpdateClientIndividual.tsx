@@ -41,7 +41,7 @@ export function UpdateClientIndividual({
         /^[\d\s\+\-\(\)]+$/,
         "Le numéro de téléphone contient des caractères invalides",
       )
-      .min(8, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
+      .min(9, "Le numéro de téléphone doit contenir au moins 9 chiffres"),
     address: z
       .string()
       .optional()

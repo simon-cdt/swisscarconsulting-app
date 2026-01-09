@@ -34,7 +34,7 @@ export default function AddCompany({
         /^[\d\s\+\-\(\)]+$/,
         "Le numéro de téléphone contient des caractères invalides",
       )
-      .min(8, "Le numéro de téléphone doit contenir au moins 8 chiffres"),
+      .min(9, "Le numéro de téléphone doit contenir au moins 9 chiffres"),
     contactFirstName: z.string().nonempty("Le prénom du contact est requis."),
     contactName: z.string().nonempty("Le nom du contact est requis."),
     address: z

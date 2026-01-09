@@ -25,8 +25,39 @@ export const addEstimate = async ({
       return { success: false, message: "Vous n'êtes pas connecté" };
     }
 
+    // Générer l'ID du devis au format annee-mois-incrementation
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const yearPrefix = `${year}-`;
+
+    // Trouver le dernier devis de l'année pour obtenir l'incrément
+    const lastEstimate = await db.estimate.findFirst({
+      where: {
+        id: {
+          startsWith: yearPrefix,
+        },
+      },
+      orderBy: {
+        id: "desc",
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    let increment = 1;
+    if (lastEstimate) {
+      const parts = lastEstimate.id.split("-");
+      const lastIncrement = parseInt(parts[parts.length - 1]);
+      increment = lastIncrement + 1;
+    }
+
+    const estimateId = `${year}-${month}-${increment}`;
+
     const estimate = await db.estimate.create({
       data: {
+        id: estimateId,
         interventionId: data.interventionId,
       },
       select: {
@@ -191,6 +222,112 @@ export const restoreEstimate = async ({
       message: "Le devis a bien été restauré.",
       estimateStatus: updatedEstimate.status,
     };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Une erreur est survenue" };
+  }
+};
+
+export const validateEstimate = async ({
+  estimateId,
+}: {
+  estimateId: string;
+}): Promise<
+  | { success: false; message: string }
+  | { success: true; message: "Le devis a bien été validé." }
+> => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+      return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+    const estimate = await db.estimate.findUnique({
+      where: { id: estimateId },
+      select: { id: true },
+    });
+    if (!estimate) {
+      return { success: false, message: "Devis introuvable" };
+    }
+
+    await db.estimate.update({
+      where: { id: estimateId },
+      data: {
+        status: "PENDING",
+      },
+    });
+
+    return { success: true, message: "Le devis a bien été validé." };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Une erreur est survenue" };
+  }
+};
+
+export const refuseEstimate = async ({
+  estimateId,
+}: {
+  estimateId: string;
+}): Promise<
+  | { success: false; message: string }
+  | { success: true; message: "Le devis a bien été refusé." }
+> => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+      return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+
+    const estimate = await db.estimate.findUnique({
+      where: { id: estimateId },
+      select: { id: true },
+    });
+    if (!estimate) {
+      return { success: false, message: "Devis introuvable" };
+    }
+
+    await db.estimate.update({
+      where: { id: estimateId },
+      data: {
+        status: "DRAFT",
+      },
+    });
+    return { success: true, message: "Le devis a bien été refusé." };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Une erreur est survenue" };
+  }
+};
+
+export const acceptEstimate = async ({
+  estimateId,
+}: {
+  estimateId: string;
+}): Promise<
+  | { success: false; message: string }
+  | { success: true; message: "Le devis a bien été accepté." }
+> => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+      return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+
+    const estimate = await db.estimate.findUnique({
+      where: { id: estimateId },
+      select: { id: true },
+    });
+
+    if (!estimate) {
+      return { success: false, message: "Devis introuvable" };
+    }
+
+    await db.estimate.update({
+      where: { id: estimateId },
+      data: {
+        status: "ACCEPTED",
+      },
+    });
+    return { success: true, message: "Le devis a bien été accepté." };
   } catch (error) {
     console.error(error);
     return { success: false, message: "Une erreur est survenue" };

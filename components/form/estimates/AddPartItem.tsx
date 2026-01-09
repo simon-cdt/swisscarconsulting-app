@@ -59,7 +59,7 @@ export default function AddPartItem({
   const [descriptionValue, setDescriptionValue] = useState("");
   const suggestionsRef = useRef<HTMLDivElement>(null);
 
-  // Surveiller les changements dans le champ de désignation
+  // eslint-disable-next-line
   const designation = watch("designation");
 
   // Filtrer les suggestions basées sur la recherche

@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { FileText, ImageIcon, Download, Plus, X } from "lucide-react";
+import { FileText, ImageIcon, Plus, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -19,9 +19,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { TypeClient } from "@/generated/prisma/enums";
+import { EstimateStatus, TypeClient } from "@/generated/prisma/enums";
 import { useQuery } from "@tanstack/react-query";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import LoadingPage from "@/components/LoadingPage";
 import ErrorPage from "@/components/ErrorPage";
 import { ItemEstimate } from "@/types/types";
@@ -33,14 +33,24 @@ import UpdatePartItem from "@/components/form/estimates/UpdatePartItem";
 import UpdateMOItem from "@/components/form/estimates/UpdateMOItem";
 import AddUpcomingItem from "@/components/form/estimates/AddUpcomingItem";
 import UpdateUpcomingItem from "@/components/form/estimates/UpdateUpcomingItem";
-import { updateEstimateItems } from "@/lib/actions/estimate";
-import { format } from "date-fns";
-import { fr } from "date-fns/locale";
+import { updateEstimateItems, validateEstimate } from "@/lib/actions/estimate";
 import AddMedias from "@/components/form/AddMedias";
 import InformationsDialog from "@/components/InformationsDialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 type FetchEstimate = {
   id: string;
+  status: EstimateStatus;
   items: ItemEstimate;
   intervention: {
     id: string;
@@ -85,6 +95,7 @@ function useEstimate({ id }: { id: string }) {
 
 export default function QuoteGeneratorPage() {
   const params = useParams<{ id: string }>();
+  const router = useRouter();
 
   const {
     data: estimate,
@@ -97,6 +108,7 @@ export default function QuoteGeneratorPage() {
   const loadingItems = useRef(false);
 
   const [dialogOpen, setDialogOpen] = useState(false);
+  const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
 
   const handleRemoveItem = async (id: string) => {
     // Trouver l'item à supprimer pour récupérer sa position
@@ -155,77 +167,91 @@ export default function QuoteGeneratorPage() {
     }, 0);
   };
 
-  const generatePDF = async () => {
-    if (!estimate) return;
-
-    try {
-      const previewElement = document.getElementById("pdf-preview");
-      if (!previewElement) return;
-
-      // Cloner l'élément pour ne pas modifier l'original
-      const clonedElement = previewElement.cloneNode(true) as HTMLElement;
-
-      // Convertir l'image en base64
-      const img = clonedElement.querySelector(
-        'img[alt="logo"]',
-      ) as HTMLImageElement;
-      if (img) {
-        const canvas = document.createElement("canvas");
-        const ctx = canvas.getContext("2d");
-        const image = new Image();
-        image.crossOrigin = "anonymous";
-
-        await new Promise((resolve, reject) => {
-          image.onload = () => {
-            canvas.width = image.width;
-            canvas.height = image.height;
-            ctx?.drawImage(image, 0, 0);
-            const base64 = canvas.toDataURL("image/png");
-            img.src = base64;
-            resolve(null);
-          };
-          image.onerror = reject;
-          image.src = "/logo.png";
-        });
-      }
-
-      // Capturer le HTML avec les styles inline
-      const html = clonedElement.outerHTML;
-
-      const response = await fetch("/api/pdf", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ html }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Erreur lors de la génération du PDF");
-      }
-
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `devis-${estimate.intervention.vehicule.licensePlate}-${Date.now()}.pdf`;
-      document.body.appendChild(a);
-      a.click();
-      window.URL.revokeObjectURL(url);
-      document.body.removeChild(a);
-      toast.success("PDF généré avec succès");
-    } catch (error) {
-      console.error(error);
-      toast.error("Erreur lors de la génération du PDF");
-    }
-  };
-
   useEffect(() => {
     if (estimate?.items && !loadingItems.current) {
       setSelectedItems(estimate.items);
       loadingItems.current = true;
     }
   }, [estimate?.items, loadingItems]);
+
+  // Générer la prévisualisation du PDF
+  useEffect(() => {
+    const generatePreview = async () => {
+      if (!estimate) return;
+
+      console.log(selectedItems);
+
+      try {
+        const pdfData = {
+          id: estimate.id,
+          items: selectedItems.map((item) => ({
+            id: item.id,
+            type: item.type,
+            designation: item.designation,
+            description: item.description,
+            unitPrice: item.unitPrice,
+            quantity: item.quantity,
+            discount: item.discount,
+            position: item.position,
+          })),
+          intervention: {
+            vehicule: {
+              brand: estimate.intervention.vehicule.brand,
+              model: estimate.intervention.vehicule.model,
+              year: estimate.intervention.vehicule.year,
+              licensePlate: estimate.intervention.vehicule.licensePlate,
+              client: {
+                id: estimate.intervention.vehicule.client.id,
+                typeClient: estimate.intervention.vehicule.client.typeClient,
+                firstName: estimate.intervention.vehicule.client.firstName,
+                name: estimate.intervention.vehicule.client.name,
+                companyName: estimate.intervention.vehicule.client.companyName,
+                address: estimate.intervention.vehicule.client.address,
+                city: estimate.intervention.vehicule.client.city,
+                postalCode: estimate.intervention.vehicule.client.postalCode,
+              },
+            },
+          },
+        };
+
+        const response = await fetch("/api/pdf", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ data: pdfData }),
+        });
+
+        if (!response.ok) {
+          throw new Error(
+            "Erreur lors de la génération de la prévisualisation",
+          );
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        // Nettoyer l'ancienne URL si elle existe
+        if (pdfPreviewUrl) {
+          window.URL.revokeObjectURL(pdfPreviewUrl);
+        }
+
+        setPdfPreviewUrl(url);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    generatePreview();
+
+    // Cleanup function
+    return () => {
+      if (pdfPreviewUrl) {
+        window.URL.revokeObjectURL(pdfPreviewUrl);
+      }
+    };
+    // eslint-disable-next-line
+  }, [estimate, selectedItems]);
 
   return (
     <>
@@ -288,7 +314,11 @@ export default function QuoteGeneratorPage() {
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <InformationsDialog onlyMedias estimate={estimate} />
+                      <InformationsDialog
+                        onlyMedias
+                        estimate={estimate}
+                        refetch={refetch}
+                      />
                     </CardContent>
                   </Card>
                 </div>
@@ -301,7 +331,14 @@ export default function QuoteGeneratorPage() {
                         <span>{"Items du devis"}</span>
                         <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
                           <DialogTrigger asChild>
-                            <Button size="sm" variant={"outline"}>
+                            <Button
+                              size="sm"
+                              variant={"outline"}
+                              disabled={
+                                estimate.status === "ACCEPTED" ||
+                                estimate.status === "PENDING"
+                              }
+                            >
                               <Plus className="mr-2 h-4 w-4" />
                               Ajouter
                             </Button>
@@ -402,13 +439,18 @@ export default function QuoteGeneratorPage() {
                                 </div>
                                 <div className="flex w-[47%] items-center justify-between">
                                   <div className="w-[53%]">
-                                    {item.type === "UPCOMING" ? null : (
+                                    {item.type ===
+                                    "UPCOMING" ? null : item.type ===
+                                      "LABOR" ? (
                                       <>
                                         <div className="text-primary font-semibold">
-                                          {item.unitPrice
+                                          {(
+                                            item.unitPrice *
+                                            (item.quantity || 1)
+                                          )
                                             .toFixed(2)
                                             .replaceAll(".", ",")}{" "}
-                                          .-
+                                          CHF
                                           {item.discount && (
                                             <span className="ml-1 text-xs text-red-600">
                                               (-{item.discount}%)
@@ -433,50 +475,67 @@ export default function QuoteGeneratorPage() {
                                           </div>
                                         )}
                                       </>
-                                    )}
-                                  </div>
-                                  <div className="flex w-[40%]">
-                                    {item.type === "PART" ? (
-                                      <UpdatePartItem
-                                        ItemsEstimate={selectedItems}
-                                        setSelectedItems={setSelectedItems}
-                                        item={{
-                                          ...item,
-                                          unitPrice: item.unitPrice,
-                                        }}
-                                        estimateId={params.id}
-                                      />
-                                    ) : item.type === "LABOR" ? (
-                                      <UpdateMOItem
-                                        ItemsEstimate={selectedItems}
-                                        setSelectedItems={setSelectedItems}
-                                        item={{
-                                          ...item,
-                                          unitPrice: item.unitPrice,
-                                        }}
-                                        estimateId={params.id}
-                                      />
                                     ) : (
-                                      item.type === "UPCOMING" && (
-                                        <UpdateUpcomingItem
-                                          ItemsEstimate={selectedItems}
-                                          setSelectedItems={setSelectedItems}
-                                          item={{
-                                            ...item,
-                                          }}
-                                          estimateId={params.id}
-                                        />
-                                      )
+                                      <>
+                                        <div className="text-primary font-semibold">
+                                          {item.unitPrice
+                                            .toFixed(2)
+                                            .replaceAll(".", ",")}{" "}
+                                          CHF
+                                        </div>
+                                      </>
                                     )}
-                                    <Button
-                                      variant="ghost"
-                                      size="sm"
-                                      onClick={() => handleRemoveItem(item.id)}
-                                      className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-full p-0"
-                                    >
-                                      <X className="h-4 w-4" />
-                                    </Button>
                                   </div>
+                                  {estimate.status !== "ACCEPTED" &&
+                                    estimate.status !== "PENDING" && (
+                                      <div className="flex w-[40%]">
+                                        {item.type === "PART" ? (
+                                          <UpdatePartItem
+                                            ItemsEstimate={selectedItems}
+                                            setSelectedItems={setSelectedItems}
+                                            item={{
+                                              ...item,
+                                              unitPrice: item.unitPrice,
+                                            }}
+                                            estimateId={params.id}
+                                          />
+                                        ) : item.type === "LABOR" ? (
+                                          <UpdateMOItem
+                                            ItemsEstimate={selectedItems}
+                                            setSelectedItems={setSelectedItems}
+                                            item={{
+                                              ...item,
+                                              unitPrice: item.unitPrice,
+                                              quantity: item.quantity || 1,
+                                            }}
+                                            estimateId={params.id}
+                                          />
+                                        ) : (
+                                          item.type === "UPCOMING" && (
+                                            <UpdateUpcomingItem
+                                              ItemsEstimate={selectedItems}
+                                              setSelectedItems={
+                                                setSelectedItems
+                                              }
+                                              item={{
+                                                ...item,
+                                              }}
+                                              estimateId={params.id}
+                                            />
+                                          )
+                                        )}
+                                        <Button
+                                          variant="ghost"
+                                          size="sm"
+                                          onClick={() =>
+                                            handleRemoveItem(item.id)
+                                          }
+                                          className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-full p-0"
+                                        >
+                                          <X className="h-4 w-4" />
+                                        </Button>
+                                      </div>
+                                    )}
                                 </div>
                               </div>
                             ))}
@@ -498,25 +557,61 @@ export default function QuoteGeneratorPage() {
                           </span>
                         </p>
                       </div>
-                      <div className="flex gap-4">
-                        <Button
-                          onClick={generatePDF}
-                          disabled={selectedItems.length === 0}
-                          className="flex gap-2"
-                        >
-                          <Download className="size-4" />
-                          {"Générer le PDF"}
-                        </Button>
-                      </div>
                     </CardFooter>
                   </Card>
                 </div>
               </div>
+
               {/* Prévisualisation du PDF */}
               <Card className="relative mb-6 border-2">
-                <Button className="absolute top-5 right-5 bg-emerald-600 hover:bg-emerald-700">
-                  Valider le PDF
-                </Button>
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button
+                      className="absolute top-5 right-5 bg-emerald-600 hover:bg-emerald-700"
+                      disabled={
+                        estimate.status === "ACCEPTED" ||
+                        estimate.status === "PENDING"
+                      }
+                    >
+                      {estimate.status === "PENDING"
+                        ? "Devis en attente"
+                        : estimate.status === "ACCEPTED"
+                          ? "Devis accepté"
+                          : "Valider le PDF"}
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>
+                        Êtes-vous sûr de valider le PDF ?
+                      </AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Vous devrez ensuite l&apos;envoyer au client pour
+                        qu&apos;il le valide à son tour !
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-emerald-600 hover:bg-emerald-700"
+                        onClick={async () => {
+                          const response = await validateEstimate({
+                            estimateId: estimate.id,
+                          });
+
+                          if (response.success) {
+                            toast.success(response.message);
+                            router.push("/dashboard/estimates/pending");
+                          } else {
+                            toast.error(response.message);
+                          }
+                        }}
+                      >
+                        Valider
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2">
                     <FileText className="text-primary h-5 w-5" />
@@ -527,313 +622,19 @@ export default function QuoteGeneratorPage() {
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="flex justify-center">
-                  <div className="h-280.75 w-198.5 border bg-white">
-                    <div
-                      id="pdf-preview"
-                      className="pdf-container relative flex h-full w-full flex-col rounded p-14"
-                    >
-                      <div className="pdf-content flex flex-col gap-4">
-                        <div className="flex flex-col">
-                          {/* eslint-disable-next-line */}
-                          <img src={"/logo.png"} alt="logo" className="w-60" />
-                          {/* <div>info devis</div> */}
-                        </div>
-                        <div className="flex flex-row justify-between">
-                          <div>
-                            <p className="font-semibold">
-                              Swiss Car Consulting SA
-                            </p>
-                            <p>Route des Jeunes, 13</p>
-                            <p>1227, Carouge</p>
-                            <p>Tel: +41 79 123 45 67</p>
-                            <p>Mail: contact@swisscarconsulting.ch</p>
-                          </div>
-                          <div>
-                            <p className="mb-2">
-                              {format(new Date(), "PPP", { locale: fr }) + ","}
-                            </p>
-                            <p className="font-semibold">
-                              {estimate.intervention.vehicule.client
-                                .typeClient === TypeClient.individual
-                                ? `${estimate.intervention.vehicule.client.firstName} ${estimate.intervention.vehicule.client.name}`
-                                : estimate.intervention.vehicule.client
-                                    .companyName}
-                            </p>
-                            {estimate.intervention.vehicule.client.address &&
-                              estimate.intervention.vehicule.client.city &&
-                              estimate.intervention.vehicule.client
-                                .postalCode && (
-                                <>
-                                  <p>
-                                    {
-                                      estimate.intervention.vehicule.client
-                                        .address
-                                    }
-                                  </p>
-                                  <p>
-                                    {
-                                      estimate.intervention.vehicule.client
-                                        .postalCode
-                                    }
-                                    ,{" "}
-                                    {estimate.intervention.vehicule.client.city}
-                                  </p>
-                                </>
-                              )}
-                          </div>
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <p className="text-black">
-                            <strong>Véhicule : </strong>
-                            {estimate.intervention.vehicule.brand}{" "}
-                            {estimate.intervention.vehicule.model} (
-                            {estimate.intervention.vehicule.year})
-                          </p>
-                          <p>/</p>
-                          <p className="text-black">
-                            <strong>Plaque:</strong>{" "}
-                            {estimate.intervention.vehicule.licensePlate}
-                          </p>
-                        </div>
-
-                        {/* Tableau des pièces */}
-                        {selectedItems.filter((item) => item.type === "PART")
-                          .length > 0 && (
-                          <div>
-                            <h3 className="mb-2 text-lg font-semibold text-black">
-                              Pièces
-                            </h3>
-                            <table className="w-full border border-black/50">
-                              <thead>
-                                <tr className="bg-blue-400">
-                                  <th className="w-[55%] border border-black/50 text-center text-sm">
-                                    Désignation
-                                  </th>
-                                  <th className="w-[15%] border border-black/50 px-2 text-center text-sm">
-                                    Quantité
-                                  </th>
-                                  <th className="w-[15%] border border-black/50 text-center text-sm">
-                                    Prix unitaire
-                                  </th>
-                                  <th className="w-[15%] border border-black/50 text-center text-sm">
-                                    Total HT
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {selectedItems
-                                  .filter((item) => item.type === "PART")
-                                  .sort((a, b) => a.position - b.position)
-                                  .map((item, i, arr) => (
-                                    <tr
-                                      key={item.id}
-                                      className={`${arr.length - 1 !== i && "border-b"} border-black/50`}
-                                    >
-                                      <td className="flex w-full flex-col gap-1 p-1">
-                                        <div
-                                          className="prose prose-sm text-sm font-semibold wrap-break-word text-black"
-                                          dangerouslySetInnerHTML={{
-                                            __html: item.designation,
-                                          }}
-                                        />
-                                        <div
-                                          className="prose prose-sm text-xs wrap-break-word text-black/70"
-                                          dangerouslySetInnerHTML={{
-                                            __html: item.description || "",
-                                          }}
-                                        />
-                                      </td>
-                                      <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
-                                        {item.quantity ?? 0}
-                                      </td>
-                                      <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
-                                        {item.unitPrice.toFixed(2)} CHF
-                                      </td>
-                                      <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
-                                        {(
-                                          item.unitPrice * (item.quantity ?? 0)
-                                        ).toFixed(2)}{" "}
-                                        CHF
-                                      </td>
-                                    </tr>
-                                  ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
-
-                        {/* Tableau de la main d'œuvre */}
-                        {selectedItems.filter((item) => item.type === "LABOR")
-                          .length > 0 && (
-                          <div className="mt-6">
-                            <h3 className="mb-2 text-lg font-semibold text-black">
-                              Main d&apos;œuvre
-                            </h3>
-                            <table className="w-full border border-black/50">
-                              <thead>
-                                <tr className="bg-green-400">
-                                  <th className="w-[55%] border border-black/50 text-center text-sm">
-                                    Désignation
-                                  </th>
-                                  <th className="w-[15%] border border-black/50 px-2 text-center text-sm">
-                                    Quantité
-                                  </th>
-                                  <th className="w-[15%] border border-black/50 text-center text-sm">
-                                    Prix unitaire
-                                  </th>
-                                  <th className="w-[15%] border border-black/50 text-center text-sm">
-                                    Total HT
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {selectedItems
-                                  .filter((item) => item.type === "LABOR")
-                                  .sort((a, b) => a.position - b.position)
-                                  .map((item, i, arr) => (
-                                    <tr
-                                      key={item.id}
-                                      className={`${arr.length - 1 !== i && "border-b"} border-black/50`}
-                                    >
-                                      <td className="flex w-full flex-col gap-1 p-1">
-                                        <div
-                                          className="prose prose-sm text-sm font-semibold wrap-break-word text-black"
-                                          dangerouslySetInnerHTML={{
-                                            __html: item.designation,
-                                          }}
-                                        />
-                                        <div
-                                          className="prose prose-sm text-xs wrap-break-word text-black/70"
-                                          dangerouslySetInnerHTML={{
-                                            __html: item.description || "",
-                                          }}
-                                        />
-                                      </td>
-                                      <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
-                                        {item.quantity ?? 0}
-                                      </td>
-                                      <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
-                                        {item.unitPrice.toFixed(2)} CHF
-                                        {item.discount && (
-                                          <div className="text-xs text-red-600">
-                                            -{item.discount}%
-                                          </div>
-                                        )}
-                                      </td>
-                                      <td className="border border-black/50 p-0.5 text-right align-bottom text-sm text-black">
-                                        {(() => {
-                                          const itemTotal =
-                                            item.unitPrice *
-                                            (item.quantity ?? 0);
-                                          const discountAmount = item.discount
-                                            ? (itemTotal * item.discount) / 100
-                                            : 0;
-                                          return (
-                                            itemTotal - discountAmount
-                                          ).toFixed(2);
-                                        })()}{" "}
-                                        CHF
-                                      </td>
-                                    </tr>
-                                  ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
-
-                        {/* Tableau des items à venir */}
-                        {selectedItems.filter(
-                          (item) => item.type === "UPCOMING",
-                        ).length > 0 && (
-                          <div className="mt-6">
-                            <h3 className="mb-2 text-lg font-semibold text-black">
-                              À prévoir
-                            </h3>
-                            <table className="w-full border border-black/50">
-                              <thead>
-                                <tr className="bg-red-400">
-                                  <th className="w-full border border-black/50 text-center text-sm">
-                                    Désignation
-                                  </th>
-                                </tr>
-                              </thead>
-                              <tbody>
-                                {selectedItems
-                                  .filter((item) => item.type === "UPCOMING")
-                                  .sort((a, b) => a.position - b.position)
-                                  .map((item, i, arr) => (
-                                    <tr
-                                      key={item.id}
-                                      className={`${arr.length - 1 !== i && "border-b"} border-black/50`}
-                                    >
-                                      <td className="flex w-full flex-col gap-1 p-1">
-                                        <div
-                                          className="prose prose-sm text-sm font-semibold wrap-break-word text-red-500 uppercase"
-                                          dangerouslySetInnerHTML={{
-                                            __html: item.designation,
-                                          }}
-                                        />
-                                        <div
-                                          className="prose prose-sm text-xs wrap-break-word text-black/70"
-                                          dangerouslySetInnerHTML={{
-                                            __html: item.description || "",
-                                          }}
-                                        />
-                                      </td>
-                                    </tr>
-                                  ))}
-                              </tbody>
-                            </table>
-                          </div>
-                        )}
-                      </div>
-
-                      <div className="pdf-footer mt-auto border-t-2 border-black pt-4">
-                        <div className="flex justify-between">
-                          <div className="text-left text-sm text-black">
-                            <p className="mb-2 font-semibold">
-                              Conditions de paiement :
-                            </p>
-                            <p className="mb-1">
-                              Paiement à effectuer dans un délai de 30 jours
-                            </p>
-                            <p className="mb-1">
-                              Date limite :{" "}
-                              {new Date(
-                                new Date().setMonth(new Date().getMonth() + 1),
-                              ).toLocaleDateString("fr-CH")}
-                            </p>
-                            <p className="mt-3 font-semibold">IBAN :</p>
-                            <p>CH00 0000 0000 0000 0000 0</p>
-                          </div>
-                          <div className="text-right">
-                            <div className="mb-2 flex justify-between gap-8">
-                              <p className="text-base text-black">Total HT :</p>
-                              <p className="text-base font-semibold text-black">
-                                {calculateTotal().toFixed(2)} CHF
-                              </p>
-                            </div>
-                            <div className="mb-2 flex justify-between gap-8">
-                              <p className="text-base text-black">
-                                TVA (10%) :
-                              </p>
-                              <p className="text-base font-semibold text-black">
-                                {(calculateTotal() * 0.1).toFixed(2)} CHF
-                              </p>
-                            </div>
-                            <div className="flex justify-between gap-8 border-t-2 border-black pt-2">
-                              <p className="text-xl font-bold text-black">
-                                Total TTC :
-                              </p>
-                              <p className="text-xl font-bold text-black">
-                                {(calculateTotal() * 1.1).toFixed(2)} CHF
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
+                  {pdfPreviewUrl ? (
+                    <iframe
+                      src={`${pdfPreviewUrl}#zoom=100`}
+                      className="h-297.5 w-full border"
+                      title="Prévisualisation du PDF"
+                    />
+                  ) : (
+                    <div className="flex h-297.5 w-full items-center justify-center border bg-gray-50">
+                      <p className="text-gray-500">
+                        Chargement de la prévisualisation...
+                      </p>
                     </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
             </div>

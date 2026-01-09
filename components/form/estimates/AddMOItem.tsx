@@ -23,7 +23,6 @@ export default function AddMOItem({
   estimateId: string;
 }) {
   const zodFormSchema = z.object({
-    designation: z.string().nonempty("La désignation est requise."),
     description: z.string().optional(),
     unitPrice: z
       .number("Un nombre est attendu")
@@ -33,6 +32,10 @@ export default function AddMOItem({
       .min(1, "Le rabais doit être au minimum 1%")
       .max(100, "Le rabais doit être au maximum 100%")
       .optional(),
+    quantity: z
+      .number("Un nombre est attendu")
+      .int("La quantité doit être un entier")
+      .positive("La quantité doit être positive"),
     position: z.number().min(1, "La position doit être positive."),
   });
   type FormSchema = z.infer<typeof zodFormSchema>;
@@ -48,11 +51,12 @@ export default function AddMOItem({
     defaultValues: {
       position:
         ItemsEstimate.filter((item) => item.type === "LABOR").length + 1,
-      discount: undefined,
     },
   });
 
+  // eslint-disable-next-line
   const unitPrice = watch("unitPrice");
+  const quantity = watch("quantity");
   const discount = watch("discount");
 
   const handleSubmitForm = async (data: FormSchema) => {
@@ -61,10 +65,10 @@ export default function AddMOItem({
       const newItem = {
         id: crypto.randomUUID(),
         type: "LABOR" as const,
-        designation: data.designation,
+        designation: "Main d'œuvre",
         description: data.description || null,
         unitPrice: data.unitPrice,
-        quantity: 1,
+        quantity: data.quantity,
         discount: data.discount ?? null,
         position: data.position,
       };
@@ -120,18 +124,8 @@ export default function AddMOItem({
   };
   return (
     <form onSubmit={handleSubmit(handleSubmitForm)} className="w-full">
-      <div className="grid w-full grid-cols-3 gap-4">
-        <div className="col-span-3">
-          <FormField
-            label="Désignation"
-            name="designation"
-            register={register}
-            type="text"
-            error={errors.designation}
-            nonempty
-          />
-        </div>
-        <div className="col-span-3">
+      <div className="grid w-full grid-cols-2 gap-4">
+        <div className="col-span-2">
           <FormField
             label="Description"
             name="description"
@@ -149,6 +143,16 @@ export default function AddMOItem({
           type="number"
           step="1"
           error={errors.unitPrice}
+          nonempty
+          defaultValue={100}
+        />
+        <FormField
+          label="Nombre d'heure(s)"
+          name="quantity"
+          register={register}
+          type="number"
+          step="1"
+          error={errors.quantity}
           nonempty
         />
         <FormField
@@ -182,18 +186,18 @@ export default function AddMOItem({
           nonempty
         />
       </div>
-      {unitPrice && discount && (
+      {unitPrice && discount && quantity && discount > 1 && (
         <div className="mt-4 rounded-lg border border-green-600 bg-green-50 p-4">
           <div className="flex items-center justify-between">
             <span className="text-sm text-gray-700">
               Prix final après rabais:
             </span>
             <span className="text-lg font-bold text-green-600">
-              {(unitPrice - (unitPrice * discount) / 100).toFixed(2)} CHF
+              {((unitPrice * quantity * (100 - discount)) / 100).toFixed(2)} CHF
             </span>
           </div>
           <div className="mt-1 text-xs text-gray-500">
-            {unitPrice.toFixed(2)} CHF - {discount}% ={" "}
+            {(unitPrice * quantity).toFixed(2)} CHF - {discount}% ={" "}
             {(unitPrice - (unitPrice * discount) / 100).toFixed(2)} CHF
           </div>
         </div>

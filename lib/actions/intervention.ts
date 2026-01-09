@@ -142,8 +142,6 @@ export const addMediasIntervention = async ({
       },
     });
 
-    console.log(data.interventionId);
-
     if (!intervention) {
       return { success: false, message: "Intervention non trouvée." };
     }
@@ -166,6 +164,65 @@ export const addMediasIntervention = async ({
     return {
       success: true,
       message: "Les médias ont bien été ajoutés à l'intervention.",
+    };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Une erreur est survenue" };
+  }
+};
+
+export const deleteMediasIntervention = async ({
+  data,
+}: {
+  data: {
+    interventionId: string;
+    mediasToDelete: string;
+  };
+}): Promise<
+  | { success: false; message: string }
+  | {
+      success: true;
+      message: "Les médias ont bien été supprimés de l'intervention.";
+    }
+> => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+      return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+    const intervention = await db.intervention.findUnique({
+      where: {
+        id: data.interventionId,
+      },
+      select: {
+        id: true,
+        medias: true,
+      },
+    });
+    if (!intervention) {
+      return { success: false, message: "Intervention non trouvée." };
+    }
+
+    const mediasArray = intervention.medias?.split(",") || [];
+    const mediasToDeleteArray = data.mediasToDelete.split(",");
+
+    const updatedMediasArray = mediasArray.filter(
+      (media) => !mediasToDeleteArray.includes(media),
+    );
+
+    const updatedMedias = updatedMediasArray.join(",");
+
+    await db.intervention.update({
+      where: {
+        id: data.interventionId,
+      },
+      data: {
+        medias: updatedMedias === "" ? null : updatedMedias,
+      },
+    });
+    return {
+      success: true,
+      message: "Les médias ont bien été supprimés de l'intervention.",
     };
   } catch (error) {
     console.error(error);
