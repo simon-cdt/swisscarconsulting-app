@@ -96,7 +96,7 @@ function useTrash() {
 export default function TrashPage() {
   const router = useRouter();
 
-  const { data: item, isLoading, isError } = useTrash();
+  const { data: item, isLoading, isError, refetch } = useTrash();
 
   const [loading, setLoading] = useState(false);
 
@@ -209,10 +209,12 @@ export default function TrashPage() {
                               <InformationsDialog
                                 estimate={{
                                   intervention: {
+                                    id: item.id,
                                     description: item.description,
                                     medias: item.medias,
                                   },
                                 }}
+                                refetch={refetch}
                               />
 
                               <div className="flex w-full gap-2">
@@ -350,7 +352,16 @@ export default function TrashPage() {
                               </div>
 
                               <div className="flex h-full w-62.5 flex-col justify-center gap-2">
-                                <InformationsDialog estimate={item} />
+                                <InformationsDialog
+                                  estimate={{
+                                    ...item,
+                                    intervention: {
+                                      ...item.intervention,
+                                      id: item.id,
+                                    },
+                                  }}
+                                  refetch={refetch}
+                                />
 
                                 <div className="flex w-full gap-2">
                                   <AlertDialog>

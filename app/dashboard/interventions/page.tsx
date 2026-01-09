@@ -233,7 +233,10 @@ export default function InterventionsPage() {
                             </div>
                           </div>
                           <div className="flex h-full w-62.5 flex-col justify-center gap-2">
-                            <InformationsDialog estimate={{ intervention }} />
+                            <InformationsDialog
+                              estimate={{ intervention }}
+                              refetch={refetch}
+                            />
 
                             <div className="flex w-full gap-2">
                               <AlertDialog>
