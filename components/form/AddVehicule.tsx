@@ -25,8 +25,11 @@ import { useState } from "react";
 import { FILE_SERVER_URL } from "@/lib/config";
 import SelectSearch from "@/components/form/SelectSearch";
 import { useQuery } from "@tanstack/react-query";
-import DateInputField from "./DateInputField";
-import { formatLicensePlate } from "@/lib/utils";
+import {
+  formatLicensePlate,
+  formatExpertiseDate,
+  formatRegistrationNumber,
+} from "@/lib/utils";
 
 type FetchInsurances = {
   id: string;
@@ -73,12 +76,40 @@ export function AddVehicule({
         .nonempty("La plaque d'immatriculation est requise."),
       insuranceId: z.string().optional(),
       chassisNumber: z.string().optional(),
-      registrationNumber: z.string().optional(),
+      registrationNumber: z
+        .string()
+        .refine(
+          (value) => {
+            if (!value) return true;
+            const regex = /^\d{3}\.\d{3}\.\d{3}$/;
+            return regex.test(value);
+          },
+          {
+            message: "Le format du matricule doit être xxx.xxx.xxx",
+          },
+        )
+        .optional(),
       lastExpertise: z
-        .date()
-        .max(
-          new Date(),
-          "La date de la dernière expertise ne peut pas être dans le futur.",
+        .string()
+        .refine(
+          (value) => {
+            if (!value) return true;
+            const [day, month, yearStr] = value.split("/");
+            if (!day || !month || !yearStr) return false;
+
+            let year = parseInt(yearStr);
+            // Convertir l'année à 2 chiffres en 4 chiffres
+            if (year < 100) {
+              year = year >= 50 ? 1900 + year : 2000 + year;
+            }
+
+            const date = new Date(year, parseInt(month) - 1, parseInt(day));
+            return date <= new Date();
+          },
+          {
+            message:
+              "La date de la dernière expertise ne peut pas être dans le futur.",
+          },
         )
         .optional(),
       certificateImage: z.instanceof(File).optional(),
@@ -86,8 +117,16 @@ export function AddVehicule({
     .refine(
       (data) => {
         if (!data.lastExpertise || !data.year) return true;
-        const expertiseYear = data.lastExpertise.getFullYear();
-        return expertiseYear >= data.year;
+        // eslint-disable-next-line
+        const [day, month, yearStr] = data.lastExpertise.split("/");
+        let year = parseInt(yearStr);
+
+        // Convertir l'année à 2 chiffres en 4 chiffres
+        if (year < 100) {
+          year = year >= 50 ? 1900 + year : 2000 + year;
+        }
+
+        return year >= data.year;
       },
       {
         message:
@@ -124,6 +163,21 @@ export function AddVehicule({
         uploadedUrl = json.files.map((url: string) => `${url}`);
       }
 
+      // Convertir la date d'expertise en objet Date si elle existe
+      let expertiseDate: Date | undefined = undefined;
+      if (data.lastExpertise) {
+        const [day, month, yearStr] = data.lastExpertise.split("/");
+        let year = parseInt(yearStr);
+
+        // Si l'année a 2 chiffres, convertir en 4 chiffres
+        if (year < 100) {
+          // Si l'année est >= 50, on considère que c'est 19xx, sinon 20xx
+          year = year >= 50 ? 1900 + year : 2000 + year;
+        }
+
+        expertiseDate = new Date(year, parseInt(month) - 1, parseInt(day));
+      }
+
       const newData = {
         clientId: clientId,
         brand: data.brand,
@@ -133,7 +187,7 @@ export function AddVehicule({
         insuranceId: data.insuranceId,
         chassisNumber: data.chassisNumber,
         registrationNumber: data.registrationNumber,
-        lastExpertise: data.lastExpertise,
+        lastExpertise: expertiseDate,
         certificateImage: uploadedUrl[0],
       };
 
@@ -240,12 +294,23 @@ export function AddVehicule({
               register={register}
               type="text"
               error={errors.registrationNumber}
+              placeholder="123.456.789"
+              onChange={(e) => {
+                const formatted = formatRegistrationNumber(e.target.value);
+                setValue("registrationNumber", formatted);
+              }}
             />
-            <DateInputField
-              name="lastExpertise"
+            <FormField
               label="Dernière expertise"
-              setValue={setValue}
+              name="lastExpertise"
+              register={register}
+              type="text"
               error={errors.lastExpertise}
+              placeholder={format(new Date(), "dd/MM/yyyy") as string}
+              onChange={(e) => {
+                const formatted = formatExpertiseDate(e.target.value);
+                setValue("lastExpertise", formatted);
+              }}
             />
             <div className="col-span-2">
               <UploadImage

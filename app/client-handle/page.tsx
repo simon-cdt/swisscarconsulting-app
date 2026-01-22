@@ -14,13 +14,13 @@ import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import { Building, Phone, Search, User2, UserPlus } from "lucide-react";
 import { ReactNode, useState } from "react";
-import { parsePhoneNumberFromString } from "libphonenumber-js";
 import { GeistMono } from "geist/font/mono";
 import Link from "next/link";
 import { TypeClient } from "@/generated/prisma/enums";
+import { formatPhoneNumber } from "@/lib/utils";
 
 type FetchAllClients = {
-  id: string;
+  id: number;
   name: string;
   companyName: string | null;
   phone: string;
@@ -47,6 +47,7 @@ export default function ClientHandlePage() {
     clients &&
     clients.filter(
       (customer) =>
+        customer.id.toString().toLowerCase().includes(search.toLowerCase()) ||
         customer.name.toLowerCase().includes(search.toLowerCase()) ||
         customer.phone.toLowerCase().includes(search.toLowerCase()) ||
         customer.companyName?.toLowerCase().includes(search.toLowerCase()) ||
@@ -70,7 +71,7 @@ export default function ClientHandlePage() {
                 Créer un nouveau client
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px]">
+            <DialogContent className="sm:max-w-150">
               <DialogHeader>
                 <DialogTitle>Créer un client</DialogTitle>
               </DialogHeader>
@@ -92,7 +93,7 @@ export default function ClientHandlePage() {
             className="border-indigo-400 focus-visible:ring-indigo-200"
             onChange={(e) => setSearch(e.target.value)}
           />
-          <div className="flex max-h-[250px] w-full flex-col gap-3 overflow-y-auto">
+          <div className="flex max-h-62.5 w-full flex-col gap-3 overflow-y-auto">
             {search !== "" &&
               (isLoading ? null : isError ? null : searchClients &&
                 searchClients.length === 0 ? (
@@ -123,11 +124,7 @@ export default function ClientHandlePage() {
                       bold
                     />
                     <ItemClient
-                      name={
-                        parsePhoneNumberFromString(
-                          customer.phone,
-                        )?.formatInternational() || customer.phone
-                      }
+                      name={formatPhoneNumber(customer.phone)}
                       icon={<Phone />}
                     />
                     <p>

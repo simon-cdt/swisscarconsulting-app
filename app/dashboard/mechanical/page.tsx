@@ -90,10 +90,10 @@ export default function EstimateAccepted() {
             <div className="container mx-auto px-4 py-8">
               <div className="mb-8">
                 <h1 className="text-foreground mb-2 text-4xl font-bold text-balance">
-                  Devis acceptés
+                  Devis accepté et entrain de se faire
                 </h1>
                 <p className="text-muted-foreground text-balance">
-                  Consultez les devis acceptés
+                  Consultez les devis
                 </p>
               </div>
 

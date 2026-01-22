@@ -9,7 +9,9 @@ import {
   ShieldIcon,
   CarIcon,
   Trash,
+  Search,
 } from "lucide-react";
+import { Input } from "@/components/ui/input";
 import { useQuery } from "@tanstack/react-query";
 import LoadingPage from "@/components/LoadingPage";
 import ErrorPage from "@/components/ErrorPage";
@@ -35,6 +37,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useRouter } from "next/navigation";
 import { putInTrash } from "@/lib/actions/intervention";
 import InformationsDialog from "@/components/InformationsDialog";
+import { formatPhoneNumber } from "@/lib/utils";
 
 type FetchAllInterventions = {
   id: string;
@@ -53,6 +56,7 @@ type FetchAllInterventions = {
       firstName: string | null;
       companyName: string | null;
       typeClient: TypeClient;
+      phone: string;
     };
   };
 }[];
@@ -78,6 +82,31 @@ export default function InterventionsPage() {
   } = useInterventions();
 
   const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredInterventions =
+    interventions?.filter((intervention) => {
+      const client = intervention.vehicule.client;
+      const vehicule = intervention.vehicule;
+
+      const searchLower = searchQuery.toLowerCase();
+
+      const clientName =
+        client.typeClient === "individual"
+          ? `${client.firstName || ""} ${client.name || ""}`.toLowerCase()
+          : (client.companyName || "").toLowerCase();
+
+      const vehiculeName = `${vehicule.brand} ${vehicule.model}`.toLowerCase();
+      const licensePlate = vehicule.licensePlate.toLowerCase();
+      const phone = client.phone.toLowerCase();
+
+      return (
+        clientName.includes(searchLower) ||
+        vehiculeName.includes(searchLower) ||
+        licensePlate.includes(searchLower) ||
+        phone.includes(searchLower)
+      );
+    }) || [];
 
   const truncateText = (text: string, maxLength = 55) => {
     if (text.length <= maxLength) return text;
@@ -130,15 +159,31 @@ export default function InterventionsPage() {
                   Gérez et suivez toutes vos interventions clients
                 </p>
               </div>
+
+              <div className="mb-6">
+                <div className="relative w-1/3">
+                  <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
+                  <Input
+                    type="text"
+                    placeholder="Rechercher par client, entreprise, véhicule, plaque ou numéro..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+              </div>
+
               <div className="flex flex-wrap gap-5">
-                {interventions.length < 1 ? (
+                {filteredInterventions.length < 1 ? (
                   <div className="flex w-full justify-center">
                     <p className={`${GeistMono.className} text-2xl font-bold`}>
-                      Il n&apos;y a aucune intervention à gérer !
+                      {searchQuery
+                        ? "Aucune intervention ne correspond à votre recherche !"
+                        : "Il n'y a aucune intervention à gérer !"}
                     </p>
                   </div>
                 ) : (
-                  interventions.map((intervention) => {
+                  filteredInterventions.map((intervention) => {
                     const isIndividual =
                       intervention.vehicule.client.typeClient === "individual";
                     return (
@@ -201,9 +246,11 @@ export default function InterventionsPage() {
                           <div className="flex h-full w-full flex-col justify-between gap-2">
                             <div className="space-y-2">
                               <h3 className="text-foreground text-lg font-semibold">
-                                {getClientDisplayName(
+                                {`${getClientDisplayName(
                                   intervention.vehicule.client,
-                                )}
+                                )} - ${formatPhoneNumber(
+                                  intervention.vehicule.client.phone,
+                                )}`}
                               </h3>
 
                               <div className="text-muted-foreground flex items-center gap-2 text-sm">

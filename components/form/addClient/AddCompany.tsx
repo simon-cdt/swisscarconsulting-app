@@ -236,7 +236,7 @@ export default function AddCompany({
         className="w-full bg-amber-500 hover:bg-amber-600"
         disabled={isSubmitting}
       >
-        {isSubmitting ? <Spinner /> : "Créer un client particulier"}
+        {isSubmitting ? <Spinner /> : "Créer un client entreprise"}
       </Button>
     </form>
   );

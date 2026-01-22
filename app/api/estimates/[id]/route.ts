@@ -53,6 +53,16 @@ export async function GET(
               model: true,
               year: true,
               licensePlate: true,
+              chassisNumber: true,
+              registrationNumber: true,
+              lastExpertise: true,
+              certificateImage: true,
+              insurance: {
+                select: {
+                  id: true,
+                  name: true,
+                },
+              },
               client: {
                 select: {
                   id: true,
@@ -63,6 +73,7 @@ export async function GET(
                   address: true,
                   postalCode: true,
                   city: true,
+                  phone: true,
                 },
               },
             },

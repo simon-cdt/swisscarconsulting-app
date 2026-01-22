@@ -26,6 +26,7 @@ import {
   Wallet,
   ToolCase,
   Trash,
+  Wrench,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { Button } from "./ui/button";
@@ -78,6 +79,16 @@ const data = {
       ],
     },
     {
+      title: "Mécanique",
+      items: [
+        {
+          title: "En cours",
+          url: "/mechanical",
+          icon: Wrench,
+        },
+      ],
+    },
+    {
       title: "Factures",
       items: [
         {
@@ -118,7 +129,7 @@ const data = {
       items: [
         {
           title: "Utilisateurs",
-          url: "/dashboard/admin",
+          url: "/admin",
           icon: Users2,
         },
       ],
@@ -186,6 +197,8 @@ export function AppSidebar({
                       count = estimateAccepted;
                     } else if (item.url === "/estimates/todo") {
                       count = estimateTodo;
+                    } else if (item.url === "/mechanical") {
+                      count = estimateAccepted;
                     }
 
                     return (

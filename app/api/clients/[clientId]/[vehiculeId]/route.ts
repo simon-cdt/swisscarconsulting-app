@@ -34,6 +34,16 @@ export async function GET(
           name: true,
         },
       },
+      interventions: {
+        select: {
+          id: true,
+          date: true,
+          description: true,
+        },
+        orderBy: {
+          date: "desc",
+        },
+      },
     },
   });
   const client = await db.client.findUnique({

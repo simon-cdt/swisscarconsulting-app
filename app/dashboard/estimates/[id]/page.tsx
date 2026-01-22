@@ -36,6 +36,7 @@ import UpdateUpcomingItem from "@/components/form/estimates/UpdateUpcomingItem";
 import { updateEstimateItems, validateEstimate } from "@/lib/actions/estimate";
 import AddMedias from "@/components/form/AddMedias";
 import InformationsDialog from "@/components/InformationsDialog";
+import { formatPhoneNumber } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,6 +48,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { UpdateVehicule } from "@/components/form/UpdateForm/UpdateVehicule";
+import { FILE_SERVER_URL } from "@/lib/config";
 
 type FetchEstimate = {
   id: string;
@@ -67,6 +70,14 @@ type FetchEstimate = {
       model: string;
       year: number;
       licensePlate: string;
+      chassisNumber: string | null;
+      registrationNumber: string | null;
+      lastExpertise: string | null;
+      certificateImage: string | null;
+      insurance: {
+        id: string;
+        name: string;
+      } | null;
       client: {
         id: string;
         firstName: string | null;
@@ -278,12 +289,55 @@ export default function QuoteGeneratorPage() {
                   {/* Zone de constat */}
                   <Card className="w-full border-2">
                     <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <FileText className="text-primary h-5 w-5" />
-                        {"Constat"}
+                      <CardTitle className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          <FileText className="text-primary h-5 w-5" />
+                          {"Résumé de l'intervention"}
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <UpdateVehicule
+                            vehicule={estimate.intervention.vehicule}
+                            refetch={refetch}
+                            label="Modifier le véhicule"
+                          />
+                          {estimate.intervention.vehicule.certificateImage ? (
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button variant={"outline"}>
+                                  Voir la carte grise
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-150">
+                                <DialogTitle />
+                                {/* eslint-disable-next-line */}
+                                <img
+                                  src={`${FILE_SERVER_URL}/uploads/${estimate.intervention.vehicule.certificateImage}`}
+                                  alt="Carte grise du véhicule"
+                                  className="w-full"
+                                />
+                              </DialogContent>
+                            </Dialog>
+                          ) : (
+                            <div className="hover:cursor-not-allowed">
+                              <Button
+                                className="border-input bg-background border text-black/70"
+                                disabled
+                              >
+                                Carte grise non enregistrée
+                              </Button>
+                            </div>
+                          )}
+                        </div>
                       </CardTitle>
                       <CardDescription>
-                        {"Description du constat"}
+                        {estimate.intervention.vehicule.client.typeClient ===
+                        "individual"
+                          ? `${estimate.intervention.vehicule.client.firstName} ${estimate.intervention.vehicule.client.name}`
+                          : estimate.intervention.vehicule.client.companyName}
+                        {" - "}
+                        {formatPhoneNumber(
+                          estimate.intervention.vehicule.client.phone,
+                        )}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -567,7 +621,7 @@ export default function QuoteGeneratorPage() {
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button
-                      className="absolute top-5 right-5 bg-emerald-600 hover:bg-emerald-700"
+                      className={`absolute top-5 right-5 ${estimate.status === "ACCEPTED" || estimate.status === "PENDING" ? "cursor-not-allowed bg-gray-400" : "bg-emerald-600 hover:bg-emerald-700"}`}
                       disabled={
                         estimate.status === "ACCEPTED" ||
                         estimate.status === "PENDING"

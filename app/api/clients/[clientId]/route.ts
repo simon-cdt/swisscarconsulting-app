@@ -41,6 +41,22 @@ export async function GET(
       address: true,
       city: true,
       postalCode: true,
+      vehicules: {
+        select: {
+          brand: true,
+          model: true,
+          interventions: {
+            where: {
+              deleted: false,
+            },
+            select: {
+              id: true,
+              date: true,
+              description: true,
+            },
+          },
+        },
+      },
     },
   });
 

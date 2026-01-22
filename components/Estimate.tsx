@@ -9,6 +9,7 @@ import Link from "next/link";
 import { EstimateStatus, TypeClient } from "@/generated/prisma/enums";
 import { GeistMono } from "geist/font/mono";
 import InformationsDialog from "./InformationsDialog";
+import { formatPhoneNumber } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -53,6 +54,7 @@ export default function Estimate({
           firstName: string | null;
           companyName: string | null;
           typeClient: TypeClient;
+          phone: string;
         };
       };
     };
@@ -81,7 +83,7 @@ export default function Estimate({
   return (
     <Card
       key={estimate.id}
-      className={`${isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 w-100 p-6 transition-colors`}
+      className={`${isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 w-115 p-6 transition-colors`}
     >
       <div className="flex w-full flex-col gap-1">
         <div className="flex w-full flex-row items-center justify-between">
@@ -138,9 +140,16 @@ export default function Estimate({
           {/* Informations principales */}
           <div className="flex h-full flex-col justify-between gap-2">
             <div className="space-y-2">
-              <h3 className="text-foreground text-lg font-semibold">
-                {getClientDisplayName(estimate.intervention.vehicule.client)}
-              </h3>
+              <div className="flex flex-col">
+                <h3 className="text-foreground w-full text-lg font-semibold">
+                  {`${getClientDisplayName(estimate.intervention.vehicule.client)}`}
+                </h3>
+                <h3 className="text-foreground w-full text-lg font-semibold">
+                  {formatPhoneNumber(
+                    estimate.intervention.vehicule.client.phone,
+                  )}
+                </h3>
+              </div>
 
               <div className="text-muted-foreground flex items-center gap-2 text-sm">
                 <CarIcon className="size-4" />
@@ -188,6 +197,14 @@ export default function Estimate({
               </>
             ) : type === "PENDING" ? (
               <>
+                <Link
+                  href={`/dashboard/estimates/${estimate.id}`}
+                  className="w-full"
+                >
+                  <Button className="w-full" variant={"link"}>
+                    Voir le devis
+                  </Button>
+                </Link>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button className="bg-red-600 hover:bg-red-700">
@@ -263,7 +280,17 @@ export default function Estimate({
               </>
             ) : (
               type === "ACCEPTED" && (
-                <InformationsDialog estimate={estimate} refetch={refetch} />
+                <>
+                  <Link
+                    href={`/dashboard/estimates/${estimate.id}`}
+                    className="w-full"
+                  >
+                    <Button className="w-full" variant={"link"}>
+                      Voir le devis
+                    </Button>
+                  </Link>
+                  <InformationsDialog estimate={estimate} refetch={refetch} />
+                </>
               )
             )}
           </div>

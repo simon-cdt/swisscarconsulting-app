@@ -16,10 +16,12 @@ import toast from "react-hot-toast";
 export default function UploadFiles({
   errorsForm,
   setValue,
+  color,
 }: {
   errorsForm: string | undefined;
   // eslint-disable-next-line
   setValue: any;
+  color?: boolean;
 }) {
   const maxSizeMB = 50;
   const maxSize = maxSizeMB * 1024 * 1024;
@@ -104,7 +106,7 @@ export default function UploadFiles({
                 size="sm"
                 onClick={openFileDialog}
                 disabled={files.length >= maxFiles}
-                className="flex gap-2"
+                className={`flex gap-2`}
               >
                 <UploadIcon
                   className="-ms-0.5 size-3.5 opacity-60"
@@ -120,7 +122,7 @@ export default function UploadFiles({
                 return (
                   <div
                     key={file.id}
-                    className="bg-accent relative aspect-square w-[200px] rounded-md"
+                    className="bg-accent relative aspect-square w-50 rounded-md"
                   >
                     {isVideo ? (
                       <video
@@ -170,14 +172,14 @@ export default function UploadFiles({
             <Button
               type="button"
               variant="outline"
-              className="mt-4 flex gap-3"
+              className={`mt-4 flex gap-3 ${color ? "bg-rose-500 text-white" : ""}`}
               onClick={openFileDialog}
             >
               <UploadIcon
                 className="-ms-1 size-4 opacity-60"
                 aria-hidden="true"
               />
-              Sélectionner des fichiers
+              <p>Sélectionner des fichiers</p>
             </Button>
           </div>
         )}
