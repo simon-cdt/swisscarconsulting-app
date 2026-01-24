@@ -75,8 +75,6 @@ export function UpdateClientCompany({
   });
 
   const handleSubmitForm = async (data: FormSchema) => {
-    console.log(data);
-
     const response = await updateClientCompany({
       clientId: client.id,
       data: {

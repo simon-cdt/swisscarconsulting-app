@@ -5,7 +5,7 @@ import { authOptions } from "../auth";
 import { db } from "../db";
 import { EstimateStatus, ItemType } from "@/generated/prisma/enums";
 
-export const addEstimate = async ({
+export const addEstimateIndividual = async ({
   data,
 }: {
   data: {
@@ -58,6 +58,7 @@ export const addEstimate = async ({
     const estimate = await db.estimate.create({
       data: {
         id: estimateId,
+        type: "INDIVIDUAL",
         interventionId: data.interventionId,
       },
       select: {
@@ -69,6 +70,225 @@ export const addEstimate = async ({
       success: true,
       message: "Le devis a bien été créé.",
       estimateId: estimate.id,
+    };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Une erreur est survenue" };
+  }
+};
+
+export const addEstimateInsurance = async ({
+  data,
+}: {
+  data: {
+    interventionId: string;
+    claimNumber?: string;
+  };
+}): Promise<
+  | { success: false; message: string }
+  | {
+      success: true;
+      message: "Le devis a bien été créé.";
+      estimateId: string;
+    }
+> => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+      return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+
+    // Générer l'ID du devis au format annee-mois-incrementation
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const yearPrefix = `${year}-`;
+
+    // Trouver le dernier devis de l'année pour obtenir l'incrément
+    const lastEstimate = await db.estimate.findFirst({
+      where: {
+        id: {
+          startsWith: yearPrefix,
+        },
+      },
+      orderBy: {
+        id: "desc",
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    let increment = 1;
+    if (lastEstimate) {
+      const parts = lastEstimate.id.split("-");
+      const lastIncrement = parseInt(parts[parts.length - 1]);
+      increment = lastIncrement + 1;
+    }
+
+    const estimateId = `${year}-${month}-${increment}`;
+
+    const estimate = await db.estimate.create({
+      data: {
+        id: estimateId,
+        type: "INSURANCE",
+        interventionId: data.interventionId,
+        claimNumber: data.claimNumber || null,
+      },
+      select: {
+        id: true,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Le devis a bien été créé.",
+      estimateId: estimate.id,
+    };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Une erreur est survenue" };
+  }
+};
+
+export const convertInsuranceToIndividual = async ({
+  estimateId,
+}: {
+  estimateId: string;
+}): Promise<
+  | { success: false; message: string }
+  | { success: true; message: "Le devis a bien été converti en individuel." }
+> => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+      return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+
+    const estimate = await db.estimate.findUnique({
+      where: { id: estimateId },
+      select: { id: true, type: true },
+    });
+
+    if (!estimate) {
+      return { success: false, message: "Devis introuvable" };
+    }
+
+    if (estimate.type !== "INSURANCE") {
+      return {
+        success: false,
+        message: "Ce devis n'est pas un devis assurance.",
+      };
+    }
+
+    await db.estimate.update({
+      where: { id: estimateId },
+      data: {
+        type: "INDIVIDUAL",
+        claimNumber: null,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Le devis a bien été converti en individuel.",
+    };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Une erreur est survenue" };
+  }
+};
+
+export const convertIndividualToInsurance = async ({
+  estimateId,
+}: {
+  estimateId: string;
+}): Promise<
+  | { success: false; message: string }
+  | { success: true; message: "Le devis a bien été converti en assurance." }
+> => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+      return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+
+    const estimate = await db.estimate.findUnique({
+      where: { id: estimateId },
+      select: { id: true, type: true },
+    });
+
+    if (!estimate) {
+      return { success: false, message: "Devis introuvable" };
+    }
+
+    if (estimate.type !== "INDIVIDUAL") {
+      return {
+        success: false,
+        message: "Ce devis n'est pas un devis individuel.",
+      };
+    }
+
+    await db.estimate.update({
+      where: { id: estimateId },
+      data: {
+        type: "INSURANCE",
+      },
+    });
+
+    return {
+      success: true,
+      message: "Le devis a bien été converti en assurance.",
+    };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Une erreur est survenue" };
+  }
+};
+
+export const updateClaimNumber = async ({
+  estimateId,
+  claimNumber,
+}: {
+  estimateId: string;
+  claimNumber: string | null;
+}): Promise<
+  | { success: false; message: string }
+  | { success: true; message: "Le numéro de sinistre a bien été modifié." }
+> => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+      return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+
+    const estimate = await db.estimate.findUnique({
+      where: { id: estimateId },
+      select: { id: true, type: true },
+    });
+
+    if (!estimate) {
+      return { success: false, message: "Devis introuvable" };
+    }
+
+    if (estimate.type !== "INSURANCE") {
+      return {
+        success: false,
+        message:
+          "Le numéro de sinistre ne peut être modifié que pour un devis assurance.",
+      };
+    }
+
+    await db.estimate.update({
+      where: { id: estimateId },
+      data: {
+        claimNumber: claimNumber,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Le numéro de sinistre a bien été modifié.",
     };
   } catch (error) {
     console.error(error);
@@ -243,7 +463,7 @@ export const validateEstimate = async ({
     }
     const estimate = await db.estimate.findUnique({
       where: { id: estimateId },
-      select: { id: true },
+      select: { id: true, type: true },
     });
     if (!estimate) {
       return { success: false, message: "Devis introuvable" };
@@ -252,7 +472,7 @@ export const validateEstimate = async ({
     await db.estimate.update({
       where: { id: estimateId },
       data: {
-        status: "PENDING",
+        status: estimate.type === "INDIVIDUAL" ? "PENDING" : "SENT_TO_GARAGE",
       },
     });
 
@@ -328,6 +548,43 @@ export const acceptEstimate = async ({
       },
     });
     return { success: true, message: "Le devis a bien été accepté." };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Une erreur est survenue" };
+  }
+};
+
+export const sendEstimateToGarage = async ({
+  estimateId,
+}: {
+  estimateId: string;
+}): Promise<
+  | { success: false; message: string }
+  | { success: true; message: "Le devis a bien été envoyé au garage." }
+> => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+      return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+
+    const estimate = await db.estimate.findUnique({
+      where: { id: estimateId },
+      select: { id: true },
+    });
+
+    if (!estimate) {
+      return { success: false, message: "Devis introuvable" };
+    }
+
+    await db.estimate.update({
+      where: { id: estimateId },
+      data: {
+        status: "SENT_TO_GARAGE",
+      },
+    });
+
+    return { success: true, message: "Le devis a bien été envoyé au garage." };
   } catch (error) {
     console.error(error);
     return { success: false, message: "Une erreur est survenue" };

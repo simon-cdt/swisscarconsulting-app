@@ -6,7 +6,6 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Button } from "./ui/button";
 import Link from "next/link";
-import { EstimateStatus, TypeClient } from "@/generated/prisma/enums";
 import { GeistMono } from "geist/font/mono";
 import InformationsDialog from "./InformationsDialog";
 import { formatPhoneNumber } from "@/lib/utils";
@@ -26,42 +25,19 @@ import {
   acceptEstimate,
   putInTrash,
   refuseEstimate,
+  sendEstimateToGarage,
 } from "@/lib/actions/estimate";
 import { useRouter } from "next/navigation";
+import { Estimate as EstimateType } from "@/types/types";
 
 export default function Estimate({
   estimate,
   isIndividual,
   refetch,
-  type,
 }: {
-  estimate: {
-    id: string;
-    intervention: {
-      id: string;
-      date: Date;
-      description: string;
-      medias: string | null;
-      user: {
-        username: string;
-      };
-      vehicule: {
-        brand: string;
-        model: string;
-        licensePlate: string;
-        client: {
-          name: string | null;
-          firstName: string | null;
-          companyName: string | null;
-          typeClient: TypeClient;
-          phone: string;
-        };
-      };
-    };
-  };
+  estimate: EstimateType;
   isIndividual: boolean;
   refetch: () => void;
-  type: EstimateStatus;
 }) {
   const router = useRouter();
 
@@ -97,7 +73,7 @@ export default function Estimate({
               </span>
             </div>
           </div>
-          {type !== "ACCEPTED" && (
+          {estimate.status !== "ACCEPTED" && (
             <AlertDialog>
               <AlertDialogTrigger className="trans h-9 w-9 rounded-md p-1 hover:bg-red-200">
                 <Trash className="size-4" />
@@ -175,11 +151,21 @@ export default function Estimate({
                   </span>
                 </span>
               </div>
+              {estimate.type === "INSURANCE" && (
+                <span className="text-sm">
+                  Numéro de sinistre :{" "}
+                  <span
+                    className={`${estimate.claimNumber ? "text-foreground" : "text-red-500"} font-mono font-medium`}
+                  >
+                    {estimate.claimNumber || "NON RENSEIGNÉ"}
+                  </span>
+                </span>
+              )}
             </div>
           </div>
 
           <div className="flex h-full flex-col justify-center gap-2">
-            {type === "TODO" || type === "DRAFT" ? (
+            {estimate.status === "TODO" || estimate.status === "DRAFT" ? (
               <>
                 <InformationsDialog estimate={estimate} refetch={refetch} />
                 <Link
@@ -189,13 +175,13 @@ export default function Estimate({
                   <Button
                     className={`${estimate.intervention.vehicule.client.typeClient === "individual" ? "individual-btn" : "company-btn"} w-full`}
                   >
-                    {type === "TODO"
+                    {estimate.status === "TODO"
                       ? "Faire le devis"
-                      : type === "DRAFT" && "Modifier le devis"}
+                      : estimate.status === "DRAFT" && "Modifier le devis"}
                   </Button>
                 </Link>
               </>
-            ) : type === "PENDING" ? (
+            ) : estimate.status === "PENDING" ? (
               <>
                 <Link
                   href={`/dashboard/estimates/${estimate.id}`}
@@ -278,8 +264,55 @@ export default function Estimate({
                   </AlertDialogContent>
                 </AlertDialog>
               </>
+            ) : estimate.status === "ACCEPTED" ? (
+              <>
+                <Link
+                  href={`/dashboard/estimates/${estimate.id}`}
+                  className="w-full"
+                >
+                  <Button className="w-full" variant={"link"}>
+                    Voir le devis
+                  </Button>
+                </Link>
+                <InformationsDialog estimate={estimate} refetch={refetch} />
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button className="bg-gray-600 hover:bg-gray-700">
+                      Voiture au garage
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Le devis passera en &quot;Envoyé au garage&quot;.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-gray-600 hover:bg-gray-700"
+                        onClick={async () => {
+                          const response = await sendEstimateToGarage({
+                            estimateId: estimate.id,
+                          });
+
+                          if (response.success) {
+                            toast.success(response.message);
+                            router.push(`/dashboard/mechanical`);
+                          } else {
+                            toast.error(response.message);
+                          }
+                        }}
+                      >
+                        Confirmer
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
             ) : (
-              type === "ACCEPTED" && (
+              estimate.status === "SENT_TO_GARAGE" && (
                 <>
                   <Link
                     href={`/dashboard/estimates/${estimate.id}`}

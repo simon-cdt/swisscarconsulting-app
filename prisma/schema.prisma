@@ -95,6 +95,8 @@ model Estimate {
   interventionId String
   status         EstimateStatus @default(TODO)
   items          EstimateItem[]
+  type           TypeEstimate
+  claimNumber    String?
 
   deleted Boolean @default(false)
 
@@ -124,12 +126,6 @@ model EstimateItem {
   estimate Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
 }
 
-enum ItemType {
-  PART
-  LABOR
-  UPCOMING
-}
-
 model Insurance {
   id    String @id @default(cuid())
   name  String
@@ -139,11 +135,23 @@ model Insurance {
   vehicules Vehicule[]
 }
 
+enum ItemType {
+  PART
+  LABOR
+  UPCOMING
+}
+
+enum TypeEstimate {
+  INDIVIDUAL
+  INSURANCE
+}
+
 enum EstimateStatus {
   TODO
   PENDING
   DRAFT
   ACCEPTED
+  SENT_TO_GARAGE
 }
 
 enum TypeClient {

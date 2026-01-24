@@ -1,57 +1,27 @@
-"use client";
-
-import { useQuery } from "@tanstack/react-query";
-import LoadingPage from "@/components/LoadingPage";
-import ErrorPage from "@/components/ErrorPage";
-import { TypeClient } from "@/generated/prisma/enums";
-import { GeistMono } from "geist/font/mono";
-import Estimate from "@/components/Estimate";
-import { Input } from "@/components/ui/input";
+import { FetchAllEstimates } from "@/types/types";
+import React, { useState } from "react";
+import LoadingPage from "./LoadingPage";
+import ErrorPage from "./ErrorPage";
 import { Search } from "lucide-react";
-import { useState } from "react";
+import { Input } from "./ui/input";
+import { GeistMono } from "geist/font/mono";
+import Estimate from "./Estimate";
 
-type FetchAllEstimatesAccepted = {
-  id: string;
-  intervention: {
-    id: string;
-    date: Date;
-    description: string;
-    medias: string | null;
-    user: {
-      username: string;
-    };
-    vehicule: {
-      brand: string;
-      model: string;
-      licensePlate: string;
-      client: {
-        name: string | null;
-        firstName: string | null;
-        companyName: string | null;
-        typeClient: TypeClient;
-        phone: string;
-      };
-    };
-  };
-}[];
-
-function useEstimatesAccepted() {
-  return useQuery({
-    queryKey: ["estimates_accepted"],
-    queryFn: async (): Promise<FetchAllEstimatesAccepted> => {
-      const response = await fetch(`/api/estimates/accepted`);
-      return await response.json();
-    },
-  });
-}
-
-export default function EstimateAccepted() {
-  const {
-    data: estimates,
-    isLoading,
-    isError,
-    refetch,
-  } = useEstimatesAccepted();
+export default function EstimatesList({
+  estimates,
+  isLoading,
+  isError,
+  refetch,
+  label,
+  description,
+}: {
+  estimates: FetchAllEstimates | undefined;
+  isLoading: boolean;
+  isError: boolean;
+  refetch: () => void;
+  label: string;
+  description: string;
+}) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const filteredEstimates =
@@ -74,10 +44,10 @@ export default function EstimateAccepted() {
         clientName.includes(searchLower) ||
         vehiculeName.includes(searchLower) ||
         licensePlate.includes(searchLower) ||
-        phone.includes(searchLower)
+        phone.includes(searchLower) ||
+        estimate.claimNumber?.includes(searchLower)
       );
     }) || [];
-
   return (
     <>
       {isLoading ? (
@@ -90,10 +60,10 @@ export default function EstimateAccepted() {
             <div className="container mx-auto px-4 py-8">
               <div className="mb-8">
                 <h1 className="text-foreground mb-2 text-4xl font-bold text-balance">
-                  Devis acceptés
+                  {label}
                 </h1>
                 <p className="text-muted-foreground text-balance">
-                  Consultez les devis acceptés
+                  {description}
                 </p>
               </div>
 
@@ -116,7 +86,7 @@ export default function EstimateAccepted() {
                     <p className={`${GeistMono.className} text-2xl font-bold`}>
                       {searchQuery
                         ? "Aucun devis ne correspond à votre recherche !"
-                        : "Il n'y a aucun devis acceptés !"}
+                        : "Il n'y a aucun devis à faire !"}
                     </p>
                   </div>
                 ) : (
@@ -130,7 +100,6 @@ export default function EstimateAccepted() {
                         isIndividual={isIndividual}
                         key={estimate.id}
                         refetch={refetch}
-                        type="ACCEPTED"
                       />
                     );
                   })

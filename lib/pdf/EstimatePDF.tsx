@@ -1,3 +1,4 @@
+import { TypeEstimate } from "@/generated/prisma/enums";
 import {
   Document,
   Page,
@@ -250,6 +251,8 @@ type EstimateItem = {
 
 type EstimateData = {
   id: string;
+  type: TypeEstimate;
+  claimNumber: string | null;
   logoBase64: string;
   items: EstimateItem[];
   intervention: {
@@ -368,6 +371,12 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
         <View style={styles.header}>
           <Image style={styles.logo} src={data.logoBase64} />
           <View style={styles.headerRight}>
+            {data.type === "INSURANCE" && data.claimNumber && (
+              <Text>
+                Numéro de sinistre :{" "}
+                <Text style={styles.bold}>{data.claimNumber}</Text>
+              </Text>
+            )}
             <Text>
               Numéro client : <Text style={styles.bold}>{client.id}</Text>
             </Text>
@@ -414,7 +423,7 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
             {data.intervention.vehicule.model} (
             {data.intervention.vehicule.year})
           </Text>
-          <Text> / </Text>
+          <Text>&nbsp;/&nbsp;</Text>
           <Text>
             <Text style={styles.bold}>Plaque: </Text>
             {data.intervention.vehicule.licensePlate}

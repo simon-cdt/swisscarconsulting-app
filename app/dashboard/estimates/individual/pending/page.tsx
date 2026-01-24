@@ -1,26 +1,26 @@
 "use client";
 
 import { useQuery } from "@tanstack/react-query";
-import { FetchAllEstimates } from "@/types/types";
 import EstimatesList from "@/components/EstimatesList";
+import { FetchAllEstimates } from "@/types/types";
 
-function useEstimatesSentGarage() {
+function useEstimatesIndividualPending() {
   return useQuery({
-    queryKey: ["estimates_sent-garage"],
+    queryKey: ["estimates_individual_pending"],
     queryFn: async (): Promise<FetchAllEstimates> => {
-      const response = await fetch(`/api/estimates/sent-garage`);
+      const response = await fetch(`/api/estimates/individual/pending`);
       return await response.json();
     },
   });
 }
 
-export default function EstimateSentGarage() {
+export default function EstimateIndividualPending() {
   const {
     data: estimates,
     isLoading,
     isError,
     refetch,
-  } = useEstimatesSentGarage();
+  } = useEstimatesIndividualPending();
 
   return (
     <EstimatesList
@@ -28,8 +28,8 @@ export default function EstimateSentGarage() {
       isLoading={isLoading}
       isError={isError}
       refetch={refetch}
-      label="Devis au garage"
-      description="Consultez les devis qui sont actuellement au garage"
+      label="Devis en attente d'acceptation du client"
+      description="Consultez les devis en attente"
     />
   );
 }

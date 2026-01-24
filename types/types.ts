@@ -1,4 +1,9 @@
-import { ItemType } from "@/generated/prisma/enums";
+import {
+  EstimateStatus,
+  ItemType,
+  TypeClient,
+  TypeEstimate,
+} from "@/generated/prisma/enums";
 
 export const Roles = [
   {
@@ -29,3 +34,33 @@ export type ItemEstimate = {
   discount: number | null;
   position: number;
 }[];
+
+export type FetchAllEstimates = Estimate[];
+
+export type Estimate = {
+  id: string;
+  claimNumber: string | null;
+  type: TypeEstimate;
+  status: EstimateStatus;
+  intervention: {
+    id: string;
+    date: Date;
+    description: string;
+    medias: string | null;
+    user: {
+      username: string;
+    };
+    vehicule: {
+      brand: string;
+      model: string;
+      licensePlate: string;
+      client: {
+        name: string | null;
+        firstName: string | null;
+        companyName: string | null;
+        typeClient: TypeClient;
+        phone: string;
+      };
+    };
+  };
+};

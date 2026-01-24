@@ -18,11 +18,20 @@ export const ItemType = {
 export type ItemType = (typeof ItemType)[keyof typeof ItemType]
 
 
+export const TypeEstimate = {
+  INDIVIDUAL: 'INDIVIDUAL',
+  INSURANCE: 'INSURANCE'
+} as const
+
+export type TypeEstimate = (typeof TypeEstimate)[keyof typeof TypeEstimate]
+
+
 export const EstimateStatus = {
   TODO: 'TODO',
   PENDING: 'PENDING',
   DRAFT: 'DRAFT',
-  ACCEPTED: 'ACCEPTED'
+  ACCEPTED: 'ACCEPTED',
+  SENT_TO_GARAGE: 'SENT_TO_GARAGE'
 } as const
 
 export type EstimateStatus = (typeof EstimateStatus)[keyof typeof EstimateStatus]

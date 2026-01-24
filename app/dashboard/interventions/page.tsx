@@ -30,7 +30,10 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { addEstimate } from "@/lib/actions/estimate";
+import {
+  addEstimateIndividual,
+  addEstimateInsurance,
+} from "@/lib/actions/estimate";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
@@ -124,13 +127,30 @@ export default function InterventionsPage() {
     return `${client.firstName || ""} ${client.name || ""}`.trim();
   };
 
-  const createEstimate = async ({
+  const createEstimateIndividuel = async ({
     interventionId,
   }: {
     interventionId: string;
   }) => {
     setLoading(true);
-    const response = await addEstimate({ data: { interventionId } });
+    const response = await addEstimateIndividual({ data: { interventionId } });
+    if (response.success) {
+      toast.success(response.message);
+      setLoading(false);
+      router.push(`/dashboard/estimates/${response.estimateId}`);
+    } else {
+      toast.error(response.message);
+      setLoading(false);
+    }
+  };
+
+  const createEstimateInsurance = async ({
+    interventionId,
+  }: {
+    interventionId: string;
+  }) => {
+    setLoading(true);
+    const response = await addEstimateInsurance({ data: { interventionId } });
     if (response.success) {
       toast.success(response.message);
       setLoading(false);
@@ -304,8 +324,8 @@ export default function InterventionsPage() {
                                     </AlertDialogTitle>
                                     <AlertDialogDescription>
                                       Vous allez faire de cette intervention un
-                                      devis. Vous pourrez revenir en arrière si
-                                      besoin plus tard.
+                                      devis individuel. Vous pourrez revenir en
+                                      arrière si besoin plus tard.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
                                   <AlertDialogFooter>
@@ -315,26 +335,66 @@ export default function InterventionsPage() {
                                     <AlertDialogAction
                                       className="bg-chart-2 hover:bg-chart-2/90 gap-2"
                                       onClick={() =>
-                                        createEstimate({
+                                        createEstimateIndividuel({
                                           interventionId: intervention.id,
                                         })
                                       }
                                       disabled={isLoading}
                                     >
-                                      {loading ? <Spinner /> : "Créer un devis"}
+                                      {loading ? (
+                                        <Spinner />
+                                      ) : (
+                                        "Créer un devis individuel"
+                                      )}
                                     </AlertDialogAction>
                                   </AlertDialogFooter>
                                 </AlertDialogContent>
                               </AlertDialog>
 
-                              <Button
-                                size="sm"
-                                variant="default"
-                                className="bg-chart-4 hover:bg-chart-4/90 w-full gap-2"
-                              >
-                                <ShieldIcon className="size-4" />
-                                Assurance
-                              </Button>
+                              <AlertDialog>
+                                <AlertDialogTrigger asChild>
+                                  <Button
+                                    size="sm"
+                                    variant="default"
+                                    className="bg-chart-4 hover:bg-chart-4/90 w-full gap-2"
+                                  >
+                                    <ShieldIcon className="size-4" />
+                                    Assurance
+                                  </Button>
+                                </AlertDialogTrigger>
+                                <AlertDialogContent>
+                                  <AlertDialogHeader>
+                                    <AlertDialogTitle>
+                                      Êtes-vous sûr ?
+                                    </AlertDialogTitle>
+                                    <AlertDialogDescription>
+                                      Vous allez faire de cette intervention un
+                                      devis d&apos;assurance. Vous pourrez
+                                      revenir en arrière si besoin plus tard.
+                                    </AlertDialogDescription>
+                                  </AlertDialogHeader>
+                                  <AlertDialogFooter>
+                                    <AlertDialogCancel>
+                                      Annuler
+                                    </AlertDialogCancel>
+                                    <AlertDialogAction
+                                      className="bg-chart-4 hover:bg-chart-4/90 gap-2"
+                                      onClick={() =>
+                                        createEstimateInsurance({
+                                          interventionId: intervention.id,
+                                        })
+                                      }
+                                      disabled={isLoading}
+                                    >
+                                      {loading ? (
+                                        <Spinner />
+                                      ) : (
+                                        "Créer un devis assurance"
+                                      )}
+                                    </AlertDialogAction>
+                                  </AlertDialogFooter>
+                                </AlertDialogContent>
+                              </AlertDialog>
                             </div>
                           </div>
                         </div>

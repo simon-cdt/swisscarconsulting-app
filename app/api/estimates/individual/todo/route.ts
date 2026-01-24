@@ -17,11 +17,14 @@ export async function GET() {
 
   const estimates = await db.estimate.findMany({
     where: {
-      status: "PENDING",
+      status: "TODO",
       deleted: false,
+      type: "INDIVIDUAL",
     },
     select: {
       id: true,
+      status: true,
+      type: true,
       intervention: {
         select: {
           date: true,

@@ -54,26 +54,46 @@ const data = {
       ],
     },
     {
-      title: "Devis",
+      title: "Devis individuel",
       items: [
         {
           title: "À faire",
-          url: "/estimates/todo",
+          url: "/estimates/individual/todo",
           icon: ClipboardList,
         },
         {
           title: "Brouillons",
-          url: "/estimates/drafts",
+          url: "/estimates/individual/drafts",
           icon: FileEdit,
         },
         {
           title: "En attente",
-          url: "/estimates/pending",
+          url: "/estimates/individual/pending",
           icon: Hourglass,
         },
         {
           title: "Acceptés",
-          url: "/estimates/accepted",
+          url: "/estimates/individual/accepted",
+          icon: FileCheck,
+        },
+      ],
+    },
+    {
+      title: "Devis assurance",
+      items: [
+        {
+          title: "À faire",
+          url: "/estimates/insurance/todo",
+          icon: ClipboardList,
+        },
+        {
+          title: "Brouillons",
+          url: "/estimates/insurance/drafts",
+          icon: FileEdit,
+        },
+        {
+          title: "Acceptés",
+          url: "/estimates/insurance/accepted",
           icon: FileCheck,
         },
       ],
@@ -149,16 +169,24 @@ const data = {
 
 export function AppSidebar({
   intervention,
-  estimatePending,
-  estimateDraft,
-  estimateAccepted,
-  estimateTodo,
+  estimateIndividualPending,
+  estimateIndividualDraft,
+  estimateIndividualAccepted,
+  estimateIndividualTodo,
+  estimateInsuranceTodo,
+  estimateInsuranceAccepted,
+  estimateInsuranceDraft,
+  estimateSentGarage,
 }: {
   intervention?: number;
-  estimatePending?: number;
-  estimateDraft?: number;
-  estimateAccepted?: number;
-  estimateTodo?: number;
+  estimateIndividualPending?: number;
+  estimateIndividualDraft?: number;
+  estimateIndividualAccepted?: number;
+  estimateIndividualTodo?: number;
+  estimateInsuranceTodo?: number;
+  estimateInsuranceAccepted?: number;
+  estimateInsuranceDraft?: number;
+  estimateSentGarage?: number;
 }) {
   const { data: session } = useSession();
   const pathname = usePathname();
@@ -189,16 +217,22 @@ export function AppSidebar({
                     let count: number | undefined;
                     if (item.url === "/interventions") {
                       count = intervention;
-                    } else if (item.url === "/estimates/pending") {
-                      count = estimatePending;
-                    } else if (item.url === "/estimates/drafts") {
-                      count = estimateDraft;
-                    } else if (item.url === "/estimates/accepted") {
-                      count = estimateAccepted;
-                    } else if (item.url === "/estimates/todo") {
-                      count = estimateTodo;
+                    } else if (item.url === "/estimates/individual/pending") {
+                      count = estimateIndividualPending;
+                    } else if (item.url === "/estimates/individual/drafts") {
+                      count = estimateIndividualDraft;
+                    } else if (item.url === "/estimates/individual/accepted") {
+                      count = estimateIndividualAccepted;
+                    } else if (item.url === "/estimates/individual/todo") {
+                      count = estimateIndividualTodo;
+                    } else if (item.url === "/estimates/insurance/todo") {
+                      count = estimateInsuranceTodo;
+                    } else if (item.url === "/estimates/insurance/drafts") {
+                      count = estimateInsuranceDraft;
+                    } else if (item.url === "/estimates/insurance/accepted") {
+                      count = estimateInsuranceAccepted;
                     } else if (item.url === "/mechanical") {
-                      count = estimateAccepted;
+                      count = estimateSentGarage;
                     }
 
                     return (

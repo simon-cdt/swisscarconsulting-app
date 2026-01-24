@@ -4,23 +4,23 @@ import { useQuery } from "@tanstack/react-query";
 import { FetchAllEstimates } from "@/types/types";
 import EstimatesList from "@/components/EstimatesList";
 
-function useEstimatesSentGarage() {
+function useEstimatesInsuranceAccepted() {
   return useQuery({
-    queryKey: ["estimates_sent-garage"],
+    queryKey: ["estimates_insurance_accepted"],
     queryFn: async (): Promise<FetchAllEstimates> => {
-      const response = await fetch(`/api/estimates/sent-garage`);
+      const response = await fetch(`/api/estimates/insurance/accepted`);
       return await response.json();
     },
   });
 }
 
-export default function EstimateSentGarage() {
+export default function EstimateInsuranceAccepted() {
   const {
     data: estimates,
     isLoading,
     isError,
     refetch,
-  } = useEstimatesSentGarage();
+  } = useEstimatesInsuranceAccepted();
 
   return (
     <EstimatesList
@@ -28,8 +28,8 @@ export default function EstimateSentGarage() {
       isLoading={isLoading}
       isError={isError}
       refetch={refetch}
-      label="Devis au garage"
-      description="Consultez les devis qui sont actuellement au garage"
+      label="Devis terminés"
+      description="Consultez les devis d'assurance terminés"
     />
   );
 }

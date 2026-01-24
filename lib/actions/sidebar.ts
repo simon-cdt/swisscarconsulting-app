@@ -18,32 +18,64 @@ export const GetSidebarCount = async () => {
           deleted: false,
         },
       });
-      const estimatePending = await db.estimate.count({
+      const estimateIndividualPending = await db.estimate.count({
         where: {
           status: "PENDING",
+          type: "INDIVIDUAL",
         },
       });
-      const estimateDraft = await db.estimate.count({
+      const estimateIndividualDraft = await db.estimate.count({
         where: {
           status: "DRAFT",
+          type: "INDIVIDUAL",
         },
       });
-      const estimateAccepted = await db.estimate.count({
+      const estimateIndividualAccepted = await db.estimate.count({
         where: {
           status: "ACCEPTED",
+          type: "INDIVIDUAL",
         },
       });
-      const estimateTodo = await db.estimate.count({
+      const estimateIndividualTodo = await db.estimate.count({
         where: {
           status: "TODO",
+          type: "INDIVIDUAL",
+        },
+      });
+
+      const estimateInsuranceTodo = await db.estimate.count({
+        where: {
+          status: "TODO",
+          type: "INSURANCE",
+        },
+      });
+      const estimateInsuranceAccepted = await db.estimate.count({
+        where: {
+          status: "ACCEPTED",
+          type: "INSURANCE",
+        },
+      });
+      const estimateInsuranceDraft = await db.estimate.count({
+        where: {
+          status: "DRAFT",
+          type: "INSURANCE",
+        },
+      });
+      const estimateSentGarage = await db.estimate.count({
+        where: {
+          status: "SENT_TO_GARAGE",
         },
       });
       return {
         intervention,
-        estimatePending,
-        estimateDraft,
-        estimateAccepted,
-        estimateTodo,
+        estimateIndividualPending,
+        estimateIndividualDraft,
+        estimateIndividualAccepted,
+        estimateIndividualTodo,
+        estimateInsuranceTodo,
+        estimateInsuranceAccepted,
+        estimateInsuranceDraft,
+        estimateSentGarage,
       };
     }
   } catch (error) {

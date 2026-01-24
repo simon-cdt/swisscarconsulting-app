@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     return new NextResponse(new Uint8Array(buffer), {
       headers: {
         "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename="devis-${data.intervention.vehicule.licensePlate}-${Date.now()}.pdf"`,
+        "Content-Disposition": `attachment; filename="devis-${data.id}-${Date.now()}.pdf"`,
       },
     });
   } catch (error) {

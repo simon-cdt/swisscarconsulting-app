@@ -19,9 +19,13 @@ export async function GET() {
     where: {
       status: "TODO",
       deleted: false,
+      type: "INSURANCE",
     },
     select: {
       id: true,
+      status: true,
+      type: true,
+      claimNumber: true,
       intervention: {
         select: {
           date: true,

@@ -9,10 +9,14 @@ export default async function SideBar() {
   return (
     <AppSidebar
       intervention={count?.intervention}
-      estimatePending={count?.estimatePending}
-      estimateAccepted={count?.estimateAccepted}
-      estimateDraft={count?.estimateDraft}
-      estimateTodo={count?.estimateTodo}
+      estimateIndividualPending={count?.estimateIndividualPending}
+      estimateIndividualAccepted={count?.estimateIndividualAccepted}
+      estimateIndividualDraft={count?.estimateIndividualDraft}
+      estimateIndividualTodo={count?.estimateIndividualTodo}
+      estimateInsuranceAccepted={count?.estimateInsuranceAccepted}
+      estimateInsuranceDraft={count?.estimateInsuranceDraft}
+      estimateInsuranceTodo={count?.estimateInsuranceTodo}
+      estimateSentGarage={count?.estimateSentGarage}
     />
   );
 }

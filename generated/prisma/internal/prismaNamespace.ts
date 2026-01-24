@@ -80,12 +80,12 @@ export type PrismaVersion = {
 }
 
 /**
- * Prisma Client JS version: 7.2.0
- * Query Engine version: 0c8ef2ce45c83248ab3df073180d5eda9e8be7a3
+ * Prisma Client JS version: 7.3.0
+ * Query Engine version: 9d6ad21cbbceab97458517b147a6a09ff43aa735
  */
 export const prismaVersion: PrismaVersion = {
-  client: "7.2.0",
-  engine: "0c8ef2ce45c83248ab3df073180d5eda9e8be7a3"
+  client: "7.3.0",
+  engine: "9d6ad21cbbceab97458517b147a6a09ff43aa735"
 }
 
 /**
@@ -982,6 +982,8 @@ export const EstimateScalarFieldEnum = {
   id: 'id',
   interventionId: 'interventionId',
   status: 'status',
+  type: 'type',
+  claimNumber: 'claimNumber',
   deleted: 'deleted',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1084,7 +1086,8 @@ export type InterventionOrderByRelevanceFieldEnum = (typeof InterventionOrderByR
 
 export const EstimateOrderByRelevanceFieldEnum = {
   id: 'id',
-  interventionId: 'interventionId'
+  interventionId: 'interventionId',
+  claimNumber: 'claimNumber'
 } as const
 
 export type EstimateOrderByRelevanceFieldEnum = (typeof EstimateOrderByRelevanceFieldEnum)[keyof typeof EstimateOrderByRelevanceFieldEnum]
@@ -1162,6 +1165,13 @@ export type EnumTypeClientFieldRefInput<$PrismaModel> = FieldRefInputType<$Prism
  * Reference to a field of type 'EstimateStatus'
  */
 export type EnumEstimateStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EstimateStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'TypeEstimate'
+ */
+export type EnumTypeEstimateFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'TypeEstimate'>
     
 
 

@@ -243,6 +243,13 @@ export type EnumEstimateStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumEstimateStatusFilter<$PrismaModel> | $Enums.EstimateStatus
 }
 
+export type EnumTypeEstimateFilter<$PrismaModel = never> = {
+  equals?: $Enums.TypeEstimate | Prisma.EnumTypeEstimateFieldRefInput<$PrismaModel>
+  in?: $Enums.TypeEstimate[]
+  notIn?: $Enums.TypeEstimate[]
+  not?: Prisma.NestedEnumTypeEstimateFilter<$PrismaModel> | $Enums.TypeEstimate
+}
+
 export type EnumEstimateStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.EstimateStatus | Prisma.EnumEstimateStatusFieldRefInput<$PrismaModel>
   in?: $Enums.EstimateStatus[]
@@ -251,6 +258,16 @@ export type EnumEstimateStatusWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumEstimateStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumEstimateStatusFilter<$PrismaModel>
+}
+
+export type EnumTypeEstimateWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TypeEstimate | Prisma.EnumTypeEstimateFieldRefInput<$PrismaModel>
+  in?: $Enums.TypeEstimate[]
+  notIn?: $Enums.TypeEstimate[]
+  not?: Prisma.NestedEnumTypeEstimateWithAggregatesFilter<$PrismaModel> | $Enums.TypeEstimate
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTypeEstimateFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTypeEstimateFilter<$PrismaModel>
 }
 
 export type EnumItemTypeFilter<$PrismaModel = never> = {
@@ -570,6 +587,13 @@ export type NestedEnumEstimateStatusFilter<$PrismaModel = never> = {
   not?: Prisma.NestedEnumEstimateStatusFilter<$PrismaModel> | $Enums.EstimateStatus
 }
 
+export type NestedEnumTypeEstimateFilter<$PrismaModel = never> = {
+  equals?: $Enums.TypeEstimate | Prisma.EnumTypeEstimateFieldRefInput<$PrismaModel>
+  in?: $Enums.TypeEstimate[]
+  notIn?: $Enums.TypeEstimate[]
+  not?: Prisma.NestedEnumTypeEstimateFilter<$PrismaModel> | $Enums.TypeEstimate
+}
+
 export type NestedEnumEstimateStatusWithAggregatesFilter<$PrismaModel = never> = {
   equals?: $Enums.EstimateStatus | Prisma.EnumEstimateStatusFieldRefInput<$PrismaModel>
   in?: $Enums.EstimateStatus[]
@@ -578,6 +602,16 @@ export type NestedEnumEstimateStatusWithAggregatesFilter<$PrismaModel = never> =
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumEstimateStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumEstimateStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumTypeEstimateWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.TypeEstimate | Prisma.EnumTypeEstimateFieldRefInput<$PrismaModel>
+  in?: $Enums.TypeEstimate[]
+  notIn?: $Enums.TypeEstimate[]
+  not?: Prisma.NestedEnumTypeEstimateWithAggregatesFilter<$PrismaModel> | $Enums.TypeEstimate
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumTypeEstimateFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumTypeEstimateFilter<$PrismaModel>
 }
 
 export type NestedEnumItemTypeFilter<$PrismaModel = never> = {

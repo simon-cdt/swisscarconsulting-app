@@ -19,7 +19,11 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { EstimateStatus, TypeClient } from "@/generated/prisma/enums";
+import {
+  EstimateStatus,
+  TypeClient,
+  TypeEstimate,
+} from "@/generated/prisma/enums";
 import { useQuery } from "@tanstack/react-query";
 import { useParams, useRouter } from "next/navigation";
 import LoadingPage from "@/components/LoadingPage";
@@ -33,7 +37,12 @@ import UpdatePartItem from "@/components/form/estimates/UpdatePartItem";
 import UpdateMOItem from "@/components/form/estimates/UpdateMOItem";
 import AddUpcomingItem from "@/components/form/estimates/AddUpcomingItem";
 import UpdateUpcomingItem from "@/components/form/estimates/UpdateUpcomingItem";
-import { updateEstimateItems, validateEstimate } from "@/lib/actions/estimate";
+import {
+  convertIndividualToInsurance,
+  convertInsuranceToIndividual,
+  updateEstimateItems,
+  validateEstimate,
+} from "@/lib/actions/estimate";
 import AddMedias from "@/components/form/AddMedias";
 import InformationsDialog from "@/components/InformationsDialog";
 import { formatPhoneNumber } from "@/lib/utils";
@@ -50,11 +59,14 @@ import {
 } from "@/components/ui/alert-dialog";
 import { UpdateVehicule } from "@/components/form/UpdateForm/UpdateVehicule";
 import { FILE_SERVER_URL } from "@/lib/config";
+import UpdateClaimNumber from "@/components/form/UpdateForm/UpdateClaimNumber";
 
 type FetchEstimate = {
   id: string;
   status: EstimateStatus;
+  type: TypeEstimate;
   items: ItemEstimate;
+  claimNumber: string | null;
   intervention: {
     id: string;
     date: Date;
@@ -114,6 +126,8 @@ export default function QuoteGeneratorPage() {
     isError,
     refetch,
   } = useEstimate({ id: params.id });
+
+  const [updateDisable, setUpdateDisable] = useState(true);
 
   const [selectedItems, setSelectedItems] = useState<ItemEstimate>([]);
   const loadingItems = useRef(false);
@@ -190,11 +204,17 @@ export default function QuoteGeneratorPage() {
     const generatePreview = async () => {
       if (!estimate) return;
 
-      console.log(selectedItems);
+      setUpdateDisable(
+        estimate.status === "ACCEPTED" ||
+          estimate.status === "PENDING" ||
+          estimate.status === "SENT_TO_GARAGE",
+      );
 
       try {
         const pdfData = {
           id: estimate.id,
+          type: estimate.type,
+          claimNumber: estimate.claimNumber,
           items: selectedItems.map((item) => ({
             id: item.id,
             type: item.type,
@@ -283,6 +303,90 @@ export default function QuoteGeneratorPage() {
                 </p>
               </div>
 
+              <Card>
+                <CardContent>
+                  <div className="flex flex-col gap-3">
+                    <p className="font-semibold">Informations devis</p>
+                    {estimate.type === "INSURANCE" && (
+                      <div className="flex w-full items-center justify-between">
+                        <p className="text-sm">
+                          Numéro de sinistre :{" "}
+                          <span
+                            className={`${estimate.claimNumber ? "text-black" : "text-red-500"} font-semibold`}
+                          >
+                            {estimate.claimNumber || "NON RENSEIGNÉ"}
+                          </span>
+                        </p>
+                        <div>
+                          <UpdateClaimNumber
+                            estimateId={estimate.id}
+                            claimNumber={estimate.claimNumber}
+                            refetch={refetch}
+                            updateDisable={updateDisable}
+                          />
+                        </div>
+                      </div>
+                    )}
+                    <div className="flex items-center justify-between">
+                      <p className="text-sm">
+                        Type de devis :{" "}
+                        <span className="font-semibold">
+                          {estimate.type === "INSURANCE"
+                            ? "Assurance"
+                            : "Individuel"}
+                        </span>
+                      </p>
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <Button
+                            size={"sm"}
+                            variant={"secondary"}
+                            disabled={updateDisable}
+                          >
+                            Modifier le type de devis
+                          </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Êtes-vous absolument sûr ?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              {estimate.type === "INDIVIDUAL"
+                                ? "Le devis deviendra un devis d'assurance."
+                                : "Le devis deviendra un devis de particulier et le numéro de sinistre sera supprimé."}
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                            <AlertDialogAction
+                              onClick={async () => {
+                                const response =
+                                  estimate.type === "INDIVIDUAL"
+                                    ? await convertIndividualToInsurance({
+                                        estimateId: estimate.id,
+                                      })
+                                    : await convertInsuranceToIndividual({
+                                        estimateId: estimate.id,
+                                      });
+
+                                if (response.success) {
+                                  toast.success(response.message);
+                                  refetch();
+                                } else {
+                                  toast.error(response.message);
+                                }
+                              }}
+                            >
+                              Confirmer
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
               <div className="flex flex-col gap-6">
                 {/* Colonne gauche - Constat et Médias */}
                 <div className="flex w-full justify-between gap-6">
@@ -322,8 +426,9 @@ export default function QuoteGeneratorPage() {
                               <Button
                                 className="border-input bg-background border text-black/70"
                                 disabled
+                                size={"sm"}
                               >
-                                Carte grise non enregistrée
+                                Carte grise non disponible
                               </Button>
                             </div>
                           )}
@@ -388,10 +493,7 @@ export default function QuoteGeneratorPage() {
                             <Button
                               size="sm"
                               variant={"outline"}
-                              disabled={
-                                estimate.status === "ACCEPTED" ||
-                                estimate.status === "PENDING"
-                              }
+                              disabled={updateDisable}
                             >
                               <Plus className="mr-2 h-4 w-4" />
                               Ajouter
@@ -622,16 +724,15 @@ export default function QuoteGeneratorPage() {
                   <AlertDialogTrigger asChild>
                     <Button
                       className={`absolute top-5 right-5 ${estimate.status === "ACCEPTED" || estimate.status === "PENDING" ? "cursor-not-allowed bg-gray-400" : "bg-emerald-600 hover:bg-emerald-700"}`}
-                      disabled={
-                        estimate.status === "ACCEPTED" ||
-                        estimate.status === "PENDING"
-                      }
+                      disabled={updateDisable}
                     >
                       {estimate.status === "PENDING"
                         ? "Devis en attente"
                         : estimate.status === "ACCEPTED"
                           ? "Devis accepté"
-                          : "Valider le PDF"}
+                          : estimate.status === "SENT_TO_GARAGE"
+                            ? "Voiture au garage"
+                            : "Valider le PDF"}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>
@@ -655,7 +756,9 @@ export default function QuoteGeneratorPage() {
 
                           if (response.success) {
                             toast.success(response.message);
-                            router.push("/dashboard/estimates/pending");
+                            router.push(
+                              `/dashboard/estimates/${estimate.type === "INDIVIDUAL" ? "individual" : "insurance"}/pending`,
+                            );
                           } else {
                             toast.error(response.message);
                           }

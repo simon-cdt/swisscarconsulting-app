@@ -19,6 +19,8 @@ export async function GET(
     select: {
       id: true,
       status: true,
+      type: true,
+      claimNumber: true,
       items: {
         select: {
           id: true,
