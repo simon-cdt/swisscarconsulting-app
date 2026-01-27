@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { SharedFormData } from "./CustomTabs";
 import { useEffect } from "react";
+import { formatAddress, toCamelCase, capitalize } from "@/lib/utils";
 
 type AddCompanyProps = {
   sharedData: SharedFormData;
@@ -162,6 +163,10 @@ export default function AddCompany({
           register={register}
           error={errors.companyName}
           nonempty
+          onChange={(e) => {
+            const formatted = capitalize(e.target.value);
+            setValue("companyName", formatted);
+          }}
         />
         <div className="grid grid-cols-2 gap-4">
           <FormField
@@ -191,6 +196,10 @@ export default function AddCompany({
             register={register}
             error={errors.contactFirstName}
             nonempty
+            onChange={(e) => {
+              const formatted = toCamelCase(e.target.value);
+              setValue("contactFirstName", formatted);
+            }}
           />
           <FormField
             label="Nom du contact"
@@ -199,6 +208,10 @@ export default function AddCompany({
             register={register}
             error={errors.contactName}
             nonempty
+            onChange={(e) => {
+              const formatted = toCamelCase(e.target.value);
+              setValue("contactName", formatted);
+            }}
           />
         </div>
       </div>
@@ -210,6 +223,10 @@ export default function AddCompany({
           register={register}
           error={errors.address}
           placeholder="Rue des Marronniers 12"
+          onChange={(e) => {
+            const formatted = formatAddress(e.target.value);
+            setValue("address", formatted);
+          }}
         />
         <div className="grid grid-cols-2 gap-4">
           <FormField

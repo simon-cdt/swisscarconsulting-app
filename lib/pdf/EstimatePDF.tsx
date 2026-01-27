@@ -224,10 +224,9 @@ const styles = StyleSheet.create({
   laborDescription: {
     fontSize: 9,
   },
-  laborDesignationRed: {
+  laborDesignation: {
     fontSize: 9,
     fontWeight: 700,
-    color: "#DC2626",
     textTransform: "uppercase",
   },
   discount: {
@@ -526,8 +525,8 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
                         style={[styles.tableCellLeft, styles.description49]}
                       >
                         {item.description === "" || !item.description ? (
-                          <Text style={styles.laborDesignationRed}>
-                            {parseHtmlToText(item.designation)}
+                          <Text style={styles.laborDescription}>
+                            {"Main d'œuvre"}
                           </Text>
                         ) : (
                           <Text style={styles.laborDescription}>

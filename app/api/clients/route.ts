@@ -24,7 +24,16 @@ export async function GET() {
       typeClient: true,
 
       vehicules: {
-        select: { id: true },
+        select: {
+          id: true,
+          interventions: {
+            select: {
+              estimates: {
+                select: { id: true },
+              },
+            },
+          },
+        },
       },
     },
     orderBy: {
@@ -37,6 +46,14 @@ export async function GET() {
       client.typeClient === "individual"
         ? [client.firstName, client.name].join(" ")
         : [client.contactFirstName, client.contactName].join(" ");
+
+    // Extraire tous les IDs des devis du client
+    const estimateIds = client.vehicules.flatMap((vehicule) =>
+      vehicule.interventions.flatMap((intervention) =>
+        intervention.estimates.map((estimate) => estimate.id),
+      ),
+    );
+
     return {
       id: client.id,
       name: name,
@@ -45,6 +62,7 @@ export async function GET() {
       email: client.email,
       typeClient: client.typeClient,
       nbVehicule: client.vehicules.length,
+      estimateIds: estimateIds,
     };
   });
 

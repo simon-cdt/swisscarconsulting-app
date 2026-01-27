@@ -166,7 +166,6 @@ export default function UpdateMOItem({
       const response = await updateEstimateItems({
         items: updatedItems.map((item) => ({
           ...item,
-          type: "LABOR",
         })),
         estimateId: estimateId,
       });

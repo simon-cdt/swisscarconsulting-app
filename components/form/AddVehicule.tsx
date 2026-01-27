@@ -29,6 +29,7 @@ import {
   formatLicensePlate,
   formatExpertiseDate,
   formatRegistrationNumber,
+  capitalize,
 } from "@/lib/utils";
 
 type FetchInsurances = {
@@ -73,7 +74,18 @@ export function AddVehicule({
         ),
       licensePlate: z
         .string()
-        .nonempty("La plaque d'immatriculation est requise."),
+        .nonempty("La plaque d'immatriculation est requise.")
+        .refine(
+          (value) => {
+            // Vérifier qu'il y a au moins 2 lettres au début
+            const regex = /^[A-Z]{2,}/;
+            return regex.test(value.replace(/[\s-]/g, ""));
+          },
+          {
+            message:
+              "La plaque doit commencer par au moins 2 lettres (ex: GE, VD).",
+          },
+        ),
       insuranceId: z.string().optional(),
       chassisNumber: z.string().optional(),
       registrationNumber: z
@@ -229,6 +241,10 @@ export function AddVehicule({
               type="text"
               error={errors.brand}
               nonempty
+              onChange={(e) => {
+                const formatted = capitalize(e.target.value);
+                setValue("brand", formatted);
+              }}
             />
             <FormField
               label="Modèle"
@@ -237,6 +253,10 @@ export function AddVehicule({
               type="text"
               error={errors.model}
               nonempty
+              onChange={(e) => {
+                const formatted = capitalize(e.target.value);
+                setValue("model", formatted);
+              }}
             />
             <FormField
               label="Année"

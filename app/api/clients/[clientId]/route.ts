@@ -24,6 +24,11 @@ export async function GET(
       model: true,
       year: true,
       licensePlate: true,
+      certificateImage: true,
+      chassisNumber: true,
+      registrationNumber: true,
+      lastExpertise: true,
+      insuranceId: true,
     },
   });
   const client = await db.client.findUnique({

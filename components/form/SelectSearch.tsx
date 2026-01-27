@@ -66,6 +66,8 @@ export default function SelectSearch({
             id={id}
             role="combobox"
             variant="outline"
+            tabIndex={0}
+            type="button"
           >
             <span
               className={cn("truncate", !selected && "text-muted-foreground")}

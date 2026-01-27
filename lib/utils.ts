@@ -93,3 +93,23 @@ export const formatPhoneNumber = (phone: string) => {
 
   return phone;
 };
+
+export const toCamelCase = (str: string): string => {
+  return str
+    .toLowerCase()
+    .split(/[\s-]+/)
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+};
+
+export const capitalize = (str: string): string => {
+  if (!str) return str;
+  return str.charAt(0).toUpperCase() + str.slice(1);
+};
+
+export const formatAddress = (str: string): string => {
+  const formatted = str
+    .replace(/(\d)([a-zA-Z\u00c0-\u00ff])/g, "$1 $2")
+    .replace(/([a-zA-Z\u00c0-\u00ff])(\d)/g, "$1 $2");
+  return capitalize(formatted);
+};

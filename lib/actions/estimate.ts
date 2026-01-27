@@ -39,7 +39,7 @@ export const addEstimateIndividual = async ({
         },
       },
       orderBy: {
-        id: "desc",
+        createdAt: "desc",
       },
       select: {
         id: true,
@@ -112,7 +112,7 @@ export const addEstimateInsurance = async ({
         },
       },
       orderBy: {
-        id: "desc",
+        createdAt: "desc",
       },
       select: {
         id: true,

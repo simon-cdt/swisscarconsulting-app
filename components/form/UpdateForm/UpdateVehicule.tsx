@@ -83,7 +83,18 @@ export function UpdateVehicule({
         ),
       licensePlate: z
         .string()
-        .nonempty("La plaque d'immatriculation est requise."),
+        .nonempty("La plaque d'immatriculation est requise.")
+        .refine(
+          (value) => {
+            // Vérifier qu'il y a au moins 2 lettres au début
+            const regex = /^[A-Z]{2,}/;
+            return regex.test(value.replace(/[\s-]/g, ""));
+          },
+          {
+            message:
+              "La plaque doit commencer par au moins 2 lettres (ex: GE, VD).",
+          },
+        ),
       insuranceId: z.string().optional(),
       chassisNumber: z.string().optional(),
       registrationNumber: z

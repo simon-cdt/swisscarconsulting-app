@@ -21,12 +21,13 @@ import { formatPhoneNumber } from "@/lib/utils";
 
 type FetchAllClients = {
   id: number;
+  typeClient: TypeClient;
+  email: string;
+  phone: string;
   name: string;
   companyName: string | null;
-  phone: string;
-  email: string;
-  typeClient: TypeClient;
   nbVehicule: number;
+  estimateIds: string[];
 }[];
 
 function useClients() {
@@ -45,14 +46,26 @@ export default function ClientHandlePage() {
   const [search, setSearch] = useState("");
   const searchClients =
     clients &&
-    clients.filter(
-      (customer) =>
-        customer.id.toString().toLowerCase().includes(search.toLowerCase()) ||
-        customer.name.toLowerCase().includes(search.toLowerCase()) ||
-        customer.phone.toLowerCase().includes(search.toLowerCase()) ||
-        customer.companyName?.toLowerCase().includes(search.toLowerCase()) ||
-        customer.email?.toLowerCase().includes(search.toLowerCase()),
-    );
+    clients
+      .filter(
+        (customer) =>
+          customer.id.toString().toLowerCase().includes(search.toLowerCase()) ||
+          customer.name?.toLowerCase().includes(search.toLowerCase()) ||
+          customer.phone.toLowerCase().includes(search.toLowerCase()) ||
+          customer.companyName?.toLowerCase().includes(search.toLowerCase()) ||
+          customer.estimateIds.some((estimateId) =>
+            estimateId.toLowerCase().includes(search.toLowerCase()),
+          ),
+      )
+      .sort((a, b) => {
+        // Si l'ID correspond exactement, mettre en premier
+        const aExactMatch = a.id.toString() === search;
+        const bExactMatch = b.id.toString() === search;
+
+        if (aExactMatch && !bExactMatch) return -1;
+        if (!aExactMatch && bExactMatch) return 1;
+        return 0;
+      });
   return (
     <main className="flex h-[calc(100vh-64px)] w-screen items-center justify-center gap-10">
       <Card className="h-[45%] w-2/5">

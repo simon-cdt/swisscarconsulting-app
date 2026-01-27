@@ -12,6 +12,7 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { SharedFormData } from "./CustomTabs";
 import { useEffect } from "react";
+import { formatAddress, toCamelCase } from "@/lib/utils";
 
 type AddClientProps = {
   sharedData: SharedFormData;
@@ -160,6 +161,10 @@ export default function AddClient({
           register={register}
           error={errors.firstName}
           nonempty
+          onChange={(e) => {
+            const formatted = toCamelCase(e.target.value);
+            setValue("firstName", formatted);
+          }}
         />
         <FormField
           label="Nom"
@@ -168,6 +173,10 @@ export default function AddClient({
           register={register}
           error={errors.name}
           nonempty
+          onChange={(e) => {
+            const formatted = toCamelCase(e.target.value);
+            setValue("name", formatted);
+          }}
         />
         <FormField
           label="E-mail"
@@ -198,6 +207,10 @@ export default function AddClient({
           register={register}
           error={errors.address}
           placeholder="Rue des Marronniers 12"
+          onChange={(e) => {
+            const formatted = formatAddress(e.target.value);
+            setValue("address", formatted);
+          }}
         />
         <div className="grid grid-cols-2 gap-4">
           <FormField

@@ -16,6 +16,8 @@ import LoadingPage from "@/components/LoadingPage";
 import UpdateClient from "@/components/form/UpdateForm/UpdateClient";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatPhoneNumber } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
+import { AlertCircle } from "lucide-react";
 
 type FetchAllVehiculesOfClient = {
   vehicules: {
@@ -24,6 +26,11 @@ type FetchAllVehiculesOfClient = {
     model: string;
     year: number;
     licensePlate: string;
+    insuranceId: string | null;
+    chassisNumber: string | null;
+    registrationNumber: string | null;
+    lastExpertise: Date | null;
+    certificateImage: string | null;
   }[];
   client: {
     id: number;
@@ -71,6 +78,23 @@ export default function ClientVehiculePage() {
   });
 
   const [searchQuery, setSearchQuery] = useState("");
+
+  // Calculate missing information count for a vehicle
+  const getMissingInfoCount = (vehicule: {
+    insuranceId: string | null;
+    chassisNumber: string | null;
+    registrationNumber: string | null;
+    lastExpertise: Date | null;
+    certificateImage: string | null;
+  }) => {
+    let count = 0;
+    if (!vehicule.insuranceId) count++;
+    if (!vehicule.chassisNumber) count++;
+    if (!vehicule.registrationNumber) count++;
+    if (!vehicule.lastExpertise) count++;
+    if (!vehicule.certificateImage) count++;
+    return count;
+  };
 
   // Flatten all interventions from all vehicles
   const allInterventions = useMemo(() => {
@@ -225,43 +249,59 @@ export default function ClientVehiculePage() {
                   {/* Vehicle Grid */}
                   {filteredVehicles && filteredVehicles.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
-                      {filteredVehicles.map((vehicule) => (
-                        <Card
-                          key={vehicule.id}
-                          className={`group trans flex cursor-pointer flex-row items-center px-5 py-4 hover:shadow-lg ${data && data.client.typeClient === "individual" ? "individual-card" : "company-card"}`}
-                          onClick={() => {
-                            router.push(`/client-handle/${id}/${vehicule.id}`);
-                          }}
-                        >
-                          <div className="flex items-center gap-4">
-                            <div
-                              className={`${data && data.client.typeClient === "individual" ? "bg-sky-200/50" : "bg-amber-200/50"} trans flex h-16 w-16 shrink-0 items-center justify-center rounded-lg`}
-                            >
-                              <Car className="text-primary h-8 w-8" />
-                            </div>
-                            <div className="min-w-0 flex-1">
-                              <h3 className="text-foreground mb-1 text-xl font-bold">
-                                {vehicule.brand} {vehicule.model}
-                              </h3>
-                              <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
-                                <div className="text-muted-foreground">
-                                  <span
-                                    className={`${GeistMono.className} text-foreground font-mono`}
-                                  >
-                                    {vehicule.licensePlate}
-                                  </span>
+                      {filteredVehicles.map((vehicule) => {
+                        const missingCount = getMissingInfoCount(vehicule);
+                        return (
+                          <Card
+                            key={vehicule.id}
+                            className={`group trans flex cursor-pointer flex-row items-center px-5 py-4 hover:shadow-lg ${data && data.client.typeClient === "individual" ? "individual-card" : "company-card"}`}
+                            onClick={() => {
+                              router.push(
+                                `/client-handle/${id}/${vehicule.id}`,
+                              );
+                            }}
+                          >
+                            <div className="flex w-full items-center gap-4">
+                              <div
+                                className={`${data && data.client.typeClient === "individual" ? "bg-sky-200/50" : "bg-amber-200/50"} trans flex h-16 w-16 shrink-0 items-center justify-center rounded-lg`}
+                              >
+                                <Car className="text-primary h-8 w-8" />
+                              </div>
+                              <div className="min-w-0 flex-1">
+                                <div className="mb-1 flex items-center gap-2">
+                                  <h3 className="text-foreground text-xl font-bold">
+                                    {vehicule.brand} {vehicule.model}
+                                  </h3>
+                                  {missingCount > 0 && (
+                                    <Badge
+                                      variant="destructive"
+                                      className="gap-1"
+                                    >
+                                      <AlertCircle className="size-3" />
+                                      {`${missingCount} incomplets`}
+                                    </Badge>
+                                  )}
                                 </div>
-                                <div className="text-muted-foreground">
-                                  Année:{" "}
-                                  <span className="text-foreground">
-                                    {vehicule.year}
-                                  </span>
+                                <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-sm">
+                                  <div className="text-muted-foreground">
+                                    <span
+                                      className={`${GeistMono.className} text-foreground font-mono`}
+                                    >
+                                      {vehicule.licensePlate}
+                                    </span>
+                                  </div>
+                                  <div className="text-muted-foreground">
+                                    Année:{" "}
+                                    <span className="text-foreground">
+                                      {vehicule.year}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
-                          </div>
-                        </Card>
-                      ))}
+                          </Card>
+                        );
+                      })}
                     </div>
                   ) : (
                     <div className="py-16 text-center">
