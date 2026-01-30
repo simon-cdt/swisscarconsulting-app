@@ -106,7 +106,6 @@ export default function AddClient({
     watchedAddress,
     watchedPostalCode,
     watchedCity,
-    setSharedData,
   ]);
 
   // Mettre à jour les valeurs du formulaire quand sharedData change (depuis l'autre formulaire)
@@ -220,6 +219,10 @@ export default function AddClient({
             register={register}
             error={errors.city}
             placeholder="Genève"
+            onChange={(e) => {
+              const formatted = toCamelCase(e.target.value);
+              setValue("city", formatted);
+            }}
           />
           <FormField
             label="Code postal"

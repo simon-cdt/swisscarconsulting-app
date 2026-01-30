@@ -29,7 +29,10 @@ export async function GET() {
           interventions: {
             select: {
               estimates: {
-                select: { id: true },
+                select: {
+                  id: true,
+                  claimNumber: true,
+                },
               },
             },
           },
@@ -54,6 +57,15 @@ export async function GET() {
       ),
     );
 
+    // Extraire tous les numéros de sinistre des devis du client
+    const claimNumbers = client.vehicules.flatMap((vehicule) =>
+      vehicule.interventions.flatMap((intervention) =>
+        intervention.estimates
+          .map((estimate) => estimate.claimNumber)
+          .filter((cn): cn is string => cn !== null),
+      ),
+    );
+
     return {
       id: client.id,
       name: name,
@@ -63,6 +75,7 @@ export async function GET() {
       typeClient: client.typeClient,
       nbVehicule: client.vehicules.length,
       estimateIds: estimateIds,
+      claimNumbers: claimNumbers,
     };
   });
 

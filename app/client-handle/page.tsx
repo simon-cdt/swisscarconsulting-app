@@ -28,6 +28,7 @@ type FetchAllClients = {
   companyName: string | null;
   nbVehicule: number;
   estimateIds: string[];
+  claimNumbers: string[];
 }[];
 
 function useClients() {
@@ -55,6 +56,9 @@ export default function ClientHandlePage() {
           customer.companyName?.toLowerCase().includes(search.toLowerCase()) ||
           customer.estimateIds.some((estimateId) =>
             estimateId.toLowerCase().includes(search.toLowerCase()),
+          ) ||
+          customer.claimNumbers.some((claimNumber) =>
+            claimNumber.toLowerCase().includes(search.toLowerCase()),
           ),
       )
       .sort((a, b) => {

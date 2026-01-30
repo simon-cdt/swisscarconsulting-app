@@ -59,6 +59,7 @@ export async function GET(
               registrationNumber: true,
               lastExpertise: true,
               certificateImage: true,
+              receptionType: true,
               insurance: {
                 select: {
                   id: true,

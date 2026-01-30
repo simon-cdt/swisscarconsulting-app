@@ -27,6 +27,7 @@ export async function GET(
       chassisNumber: true,
       registrationNumber: true,
       lastExpertise: true,
+      receptionType: true,
       certificateImage: true,
       insurance: {
         select: {

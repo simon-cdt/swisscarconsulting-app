@@ -50,6 +50,7 @@ export async function GET(
         select: {
           brand: true,
           model: true,
+          licensePlate: true,
           interventions: {
             where: {
               deleted: false,

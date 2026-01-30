@@ -48,6 +48,7 @@ type FetchAllVehiculesOfClient = {
     vehicules: {
       brand: string;
       model: string;
+      licensePlate: string;
       interventions: {
         id: string;
         date: Date;
@@ -78,6 +79,7 @@ export default function ClientVehiculePage() {
   });
 
   const [searchQuery, setSearchQuery] = useState("");
+  const [historySearchQuery, setHistorySearchQuery] = useState("");
 
   // Calculate missing information count for a vehicle
   const getMissingInfoCount = (vehicule: {
@@ -109,6 +111,22 @@ export default function ClientVehiculePage() {
       )
       .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
   }, [data]);
+
+  // Filter interventions based on search query
+  const filteredInterventions = useMemo(() => {
+    if (!historySearchQuery) return allInterventions;
+
+    const query = historySearchQuery.toLowerCase();
+    return allInterventions.filter((intervention) => {
+      const dateStr = new Date(intervention.date).toLocaleDateString("fr-FR");
+      return (
+        dateStr.toLowerCase().includes(query) ||
+        intervention.vehicule.licensePlate.toLowerCase().includes(query) ||
+        intervention.vehicule.brand.toLowerCase().includes(query) ||
+        intervention.vehicule.model.toLowerCase().includes(query)
+      );
+    });
+  }, [allInterventions, historySearchQuery]);
 
   // Filter vehicles based on search query
   const filteredVehicles =
@@ -156,7 +174,7 @@ export default function ClientVehiculePage() {
                   className={`${data.client.typeClient === "individual" ? "individual-card" : "company-card"} w-full p-6`}
                 >
                   <div className="flex flex-col gap-3">
-                    <div className="flex w-full justify-between">
+                    <div className="flex w-full items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div
                           className={`${data.client.typeClient === "individual" ? "bg-sky-100" : "bg-amber-100"} flex h-10 w-10 items-center justify-center rounded-lg`}
@@ -170,6 +188,14 @@ export default function ClientVehiculePage() {
                         >
                           Informations client
                         </h2>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-sm">
+                          Numéro client
+                        </p>
+                        <p className="text-foreground text-sm font-medium">
+                          {data.client.id}
+                        </p>
                       </div>
                       <UpdateClient
                         typeClient={data.client.typeClient}
@@ -337,35 +363,50 @@ export default function ClientVehiculePage() {
                     </h2>
                   </div>
 
-                  <ScrollArea className="h-[calc(100vh-250px)]">
-                    {allInterventions.length > 0 ? (
+                  {/* History Search Input */}
+                  <div className="relative">
+                    <Search className="text-muted-foreground absolute top-1/2 left-3 size-4 -translate-y-1/2" />
+                    <Input
+                      type="text"
+                      placeholder="Filtrer par date, plaque, marque..."
+                      value={historySearchQuery}
+                      onChange={(e) => setHistorySearchQuery(e.target.value)}
+                      className="pl-9"
+                    />
+                  </div>
+
+                  <ScrollArea className="h-[calc(100vh-350px)]">
+                    {filteredInterventions.length > 0 ? (
                       <div className="space-y-3 pr-4">
-                        {allInterventions.map((intervention) => (
+                        {filteredInterventions.map((intervention) => (
                           <Card
                             key={intervention.id}
                             className="border-purple-100 bg-purple-50/50"
                           >
                             <CardContent>
-                              <p className="pb-2 text-sm font-semibold text-purple-900">
-                                {new Date(intervention.date).toLocaleDateString(
-                                  "fr-FR",
-                                  {
+                              <div className="flex items-center justify-between">
+                                <p className="text-sm font-semibold text-purple-900">
+                                  {new Date(
+                                    intervention.date,
+                                  ).toLocaleDateString("fr-FR", {
                                     day: "numeric",
                                     month: "long",
                                     year: "numeric",
-                                  },
-                                )}
-                              </p>
+                                  })}
+                                </p>
+                                <div className="flex items-center gap-1 text-xs text-purple-600">
+                                  <Car className="size-3" />
+                                  <span className="font-medium">
+                                    {intervention.vehicule.brand}{" "}
+                                    {intervention.vehicule.model}
+                                    {" - "}
+                                    {intervention.vehicule.licensePlate}
+                                  </span>
+                                </div>
+                              </div>
                               <p className="text-sm text-gray-700">
                                 {intervention.description}
                               </p>
-                              <div className="flex items-center gap-1 text-xs text-purple-600">
-                                <Car className="size-3" />
-                                <span className="font-medium">
-                                  {intervention.vehicule.brand}{" "}
-                                  {intervention.vehicule.model}
-                                </span>
-                              </div>
                             </CardContent>
                           </Card>
                         ))}
@@ -376,10 +417,14 @@ export default function ClientVehiculePage() {
                           <History className="h-8 w-8 text-purple-400" />
                         </div>
                         <p className="text-sm font-medium text-gray-600">
-                          Aucune intervention
+                          {historySearchQuery
+                            ? "Aucune intervention trouvée"
+                            : "Aucune intervention"}
                         </p>
                         <p className="mt-1 text-xs text-gray-400">
-                          L&apos;historique apparaîtra ici
+                          {historySearchQuery
+                            ? "Essayez avec d'autres mots-clés"
+                            : "L'historique apparaîtra ici"}
                         </p>
                       </div>
                     )}

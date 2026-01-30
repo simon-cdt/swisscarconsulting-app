@@ -24,7 +24,11 @@ import UploadImage from "../UploadImage";
 import { FILE_SERVER_URL } from "@/lib/config";
 import SelectSearch from "../SelectSearch";
 import { useQuery } from "@tanstack/react-query";
-import { formatLicensePlate, formatRegistrationNumber } from "@/lib/utils";
+import {
+  formatExpertiseDate,
+  formatLicensePlate,
+  formatRegistrationNumber,
+} from "@/lib/utils";
 import { format } from "date-fns";
 
 type FetchInsurances = {
@@ -56,6 +60,7 @@ export function UpdateVehicule({
     chassisNumber: string | null;
     registrationNumber: string | null;
     lastExpertise: string | null;
+    receptionType: string | null;
     certificateImage: string | null;
     insurance: {
       id: string;
@@ -134,6 +139,7 @@ export function UpdateVehicule({
           },
         )
         .optional(),
+      receptionType: z.string().optional(),
       certificateImage: z.instanceof(File).optional(),
     })
     .refine(
@@ -217,6 +223,7 @@ export function UpdateVehicule({
           chassisNumber: data.chassisNumber,
           lastExpertise: expertiseDate,
           registrationNumber: data.registrationNumber,
+          receptionType: data.receptionType,
         },
       });
       if (response.success) {
@@ -342,7 +349,21 @@ export function UpdateVehicule({
                   ? format(vehicule.lastExpertise, "dd/MM/yyyy")
                   : ""
               }
+              onChange={(e) => {
+                const formatted = formatExpertiseDate(e.target.value);
+                setValue("lastExpertise", formatted);
+              }}
             />
+            <div className="col-span-2">
+              <FormField
+                label="Type de réception"
+                name="receptionType"
+                register={register}
+                type="text"
+                error={errors.receptionType}
+                defaultValue={vehicule.receptionType || undefined}
+              />
+            </div>
             <div className="col-span-2">
               <UploadImage
                 setValue={setValue}

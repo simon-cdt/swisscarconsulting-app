@@ -86,6 +86,7 @@ type FetchEstimate = {
       registrationNumber: string | null;
       lastExpertise: string | null;
       certificateImage: string | null;
+      receptionType: string | null;
       insurance: {
         id: string;
         name: string;
@@ -332,7 +333,7 @@ export default function QuoteGeneratorPage() {
                         Type de devis :{" "}
                         <span className="font-semibold">
                           {estimate.type === "INSURANCE"
-                            ? "Assurance"
+                            ? `Assurance${estimate.intervention.vehicule.insurance ? ` - ${estimate.intervention.vehicule.insurance.name}` : " - NON RENSEIGNÉE"}`
                             : "Individuel"}
                         </span>
                       </p>

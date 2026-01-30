@@ -44,23 +44,38 @@ export default function UpdateMOItem({
 }) {
   const [open, setOpen] = useState(false);
 
-  const zodFormSchema = z.object({
-    description: z.string().optional(),
-    unitPrice: z
-      .number("Un nombre est attendu")
-      .positive("Le prix doit être positif"),
-    discount: z
-      .number()
-      .min(1, "Le rabais doit être au minimum 1%")
-      .max(100, "Le rabais doit être au maximum 100%")
-      .optional(),
-    quantity: z
-      .number("Un nombre est attendu")
-      .int("La quantité doit être un entier")
-      .positive("La quantité doit être positive"),
-    position: z.number().min(1, "La position doit être positive."),
-  });
+  const zodFormSchema = z
+    .object({
+      description: z.string().optional(),
+      unitPrice: z
+        .number("Un nombre est attendu")
+        .positive("Le prix doit être positif"),
+      discount: z
+        .number()
+        .min(1, "Le rabais doit être au minimum 1%")
+        .max(100, "Le rabais doit être au maximum 100%")
+        .optional(),
+      hours: z
+        .number("Un nombre est attendu")
+        .int("Les heures doivent être un entier")
+        .min(0, "Les heures doivent être >= 0"),
+      minutes: z
+        .number("Un nombre est attendu")
+        .int("Les minutes doivent être un entier")
+        .min(0, "Les minutes doivent être >= 0")
+        .max(59, "Les minutes doivent être <= 59"),
+      position: z.number().min(1, "La position doit être positive."),
+    })
+    .refine((data) => data.hours > 0 || data.minutes > 0, {
+      message: "La durée doit être supérieure à 0",
+      path: ["hours"],
+    });
   type FormSchema = z.infer<typeof zodFormSchema>;
+
+  // Convertir la quantity (en minutes) en heures et minutes
+  const totalMinutes = item.quantity;
+  const defaultHours = Math.floor(totalMinutes / 60);
+  const defaultMinutes = totalMinutes % 60;
 
   const {
     register,
@@ -73,7 +88,8 @@ export default function UpdateMOItem({
     defaultValues: {
       description: item.description || undefined,
       unitPrice: item.unitPrice,
-      quantity: item.quantity,
+      hours: defaultHours,
+      minutes: defaultMinutes,
       discount: item.discount || undefined,
       position: item.position,
     },
@@ -81,7 +97,8 @@ export default function UpdateMOItem({
 
   // eslint-disable-next-line
   const unitPrice = watch("unitPrice");
-  const quantity = watch("quantity");
+  const hours = watch("hours");
+  const minutes = watch("minutes");
   const discount = watch("discount");
 
   // Initialiser la valeur de position quand le dialog s'ouvre
@@ -137,13 +154,16 @@ export default function UpdateMOItem({
         });
       }
 
+      // Calculer la durée totale en minutes
+      const totalMinutes = data.hours * 60 + data.minutes;
+
       // Mettre à jour l'item modifié
       updatedItems[itemIndex] = {
         ...updatedItems[itemIndex],
         designation: "Main d'œuvre",
         description: data.description || null,
         unitPrice: data.unitPrice,
-        quantity: data.quantity,
+        quantity: totalMinutes,
         discount: data.discount ?? null,
         position: newPosition,
       };
@@ -220,7 +240,7 @@ export default function UpdateMOItem({
               />
             </div>
             <FormField
-              label="Prix unique"
+              label="Prix unique (par heure)"
               name="unitPrice"
               register={register}
               type="number"
@@ -229,16 +249,28 @@ export default function UpdateMOItem({
               nonempty
               defaultValue={item.unitPrice.toString()}
             />
-            <FormField
-              label="Nombre d'heure(s)"
-              name="quantity"
-              register={register}
-              type="number"
-              step="1"
-              error={errors.quantity}
-              nonempty
-              defaultValue={item.quantity.toString()}
-            />
+            <div className="col-span-2 grid grid-cols-2 gap-4">
+              <FormField
+                label="Heures"
+                name="hours"
+                register={register}
+                type="number"
+                step="1"
+                error={errors.hours}
+                nonempty
+                defaultValue={defaultHours.toString()}
+              />
+              <FormField
+                label="Minutes"
+                name="minutes"
+                register={register}
+                type="number"
+                step="1"
+                error={errors.minutes}
+                nonempty
+                defaultValue={defaultMinutes.toString()}
+              />
+            </div>
             <FormField
               label="Rabais (%)"
               name="discount"
@@ -268,21 +300,53 @@ export default function UpdateMOItem({
               nonempty
             />
           </div>
-          {unitPrice && discount && quantity && discount > 1 && (
-            <div className="mt-4 rounded-lg border border-green-600 bg-green-50 p-4">
+          {unitPrice && (hours > 0 || minutes > 0) && (
+            <div className="mt-4 rounded-lg border border-blue-600 bg-blue-50 p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm text-gray-700">Durée totale:</span>
+                <span className="text-lg font-bold text-blue-600">
+                  {hours}h {minutes}min
+                </span>
+              </div>
               <div className="flex items-center justify-between">
                 <span className="text-sm text-gray-700">
-                  Prix final après rabais:
+                  Prix avant rabais:
                 </span>
-                <span className="text-lg font-bold text-green-600">
-                  {((unitPrice * quantity * (100 - discount)) / 100).toFixed(2)}{" "}
-                  CHF
+                <span className="text-base font-semibold text-gray-700">
+                  {(unitPrice * ((hours * 60 + minutes) / 60)).toFixed(2)} CHF
                 </span>
               </div>
-              <div className="mt-1 text-xs text-gray-500">
-                {(unitPrice * quantity).toFixed(2)} CHF - {discount}% ={" "}
-                {(unitPrice - (unitPrice * discount) / 100).toFixed(2)} CHF
-              </div>
+              {discount && discount > 0 && (
+                <>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm text-gray-700">
+                      Rabais ({discount}%):
+                    </span>
+                    <span className="text-base font-semibold text-red-600">
+                      -
+                      {(
+                        unitPrice *
+                        ((hours * 60 + minutes) / 60) *
+                        (discount / 100)
+                      ).toFixed(2)}{" "}
+                      CHF
+                    </span>
+                  </div>
+                  <div className="mt-2 flex items-center justify-between border-t border-green-600 pt-2">
+                    <span className="text-sm font-semibold text-gray-700">
+                      Prix final:
+                    </span>
+                    <span className="text-xl font-bold text-green-600">
+                      {(
+                        unitPrice *
+                        ((hours * 60 + minutes) / 60) *
+                        (1 - discount / 100)
+                      ).toFixed(2)}{" "}
+                      CHF
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
           )}
           <DialogFooter>

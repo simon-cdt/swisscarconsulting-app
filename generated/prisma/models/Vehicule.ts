@@ -48,6 +48,7 @@ export type VehiculeMinAggregateOutputType = {
   registrationNumber: string | null
   lastExpertise: Date | null
   certificateImage: string | null
+  receptionType: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -64,6 +65,7 @@ export type VehiculeMaxAggregateOutputType = {
   registrationNumber: string | null
   lastExpertise: Date | null
   certificateImage: string | null
+  receptionType: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -80,6 +82,7 @@ export type VehiculeCountAggregateOutputType = {
   registrationNumber: number
   lastExpertise: number
   certificateImage: number
+  receptionType: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -108,6 +111,7 @@ export type VehiculeMinAggregateInputType = {
   registrationNumber?: true
   lastExpertise?: true
   certificateImage?: true
+  receptionType?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -124,6 +128,7 @@ export type VehiculeMaxAggregateInputType = {
   registrationNumber?: true
   lastExpertise?: true
   certificateImage?: true
+  receptionType?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -140,6 +145,7 @@ export type VehiculeCountAggregateInputType = {
   registrationNumber?: true
   lastExpertise?: true
   certificateImage?: true
+  receptionType?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -243,6 +249,7 @@ export type VehiculeGroupByOutputType = {
   registrationNumber: string | null
   lastExpertise: Date | null
   certificateImage: string | null
+  receptionType: string | null
   createdAt: Date
   updatedAt: Date | null
   _count: VehiculeCountAggregateOutputType | null
@@ -282,6 +289,7 @@ export type VehiculeWhereInput = {
   registrationNumber?: Prisma.StringNullableFilter<"Vehicule"> | string | null
   lastExpertise?: Prisma.DateTimeNullableFilter<"Vehicule"> | Date | string | null
   certificateImage?: Prisma.StringNullableFilter<"Vehicule"> | string | null
+  receptionType?: Prisma.StringNullableFilter<"Vehicule"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Vehicule"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Vehicule"> | Date | string | null
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
@@ -301,6 +309,7 @@ export type VehiculeOrderByWithRelationInput = {
   registrationNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   lastExpertise?: Prisma.SortOrderInput | Prisma.SortOrder
   certificateImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  receptionType?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   client?: Prisma.ClientOrderByWithRelationInput
@@ -324,6 +333,7 @@ export type VehiculeWhereUniqueInput = Prisma.AtLeast<{
   registrationNumber?: Prisma.StringNullableFilter<"Vehicule"> | string | null
   lastExpertise?: Prisma.DateTimeNullableFilter<"Vehicule"> | Date | string | null
   certificateImage?: Prisma.StringNullableFilter<"Vehicule"> | string | null
+  receptionType?: Prisma.StringNullableFilter<"Vehicule"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Vehicule"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Vehicule"> | Date | string | null
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
@@ -343,6 +353,7 @@ export type VehiculeOrderByWithAggregationInput = {
   registrationNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   lastExpertise?: Prisma.SortOrderInput | Prisma.SortOrder
   certificateImage?: Prisma.SortOrderInput | Prisma.SortOrder
+  receptionType?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.VehiculeCountOrderByAggregateInput
@@ -367,6 +378,7 @@ export type VehiculeScalarWhereWithAggregatesInput = {
   registrationNumber?: Prisma.StringNullableWithAggregatesFilter<"Vehicule"> | string | null
   lastExpertise?: Prisma.DateTimeNullableWithAggregatesFilter<"Vehicule"> | Date | string | null
   certificateImage?: Prisma.StringNullableWithAggregatesFilter<"Vehicule"> | string | null
+  receptionType?: Prisma.StringNullableWithAggregatesFilter<"Vehicule"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Vehicule"> | Date | string
   updatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Vehicule"> | Date | string | null
 }
@@ -381,6 +393,7 @@ export type VehiculeCreateInput = {
   registrationNumber?: string | null
   lastExpertise?: Date | string | null
   certificateImage?: string | null
+  receptionType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
   client: Prisma.ClientCreateNestedOneWithoutVehiculesInput
@@ -400,6 +413,7 @@ export type VehiculeUncheckedCreateInput = {
   registrationNumber?: string | null
   lastExpertise?: Date | string | null
   certificateImage?: string | null
+  receptionType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
   interventions?: Prisma.InterventionUncheckedCreateNestedManyWithoutVehiculeInput
@@ -415,6 +429,7 @@ export type VehiculeUpdateInput = {
   registrationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastExpertise?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   certificateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receptionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUpdateOneRequiredWithoutVehiculesNestedInput
@@ -434,6 +449,7 @@ export type VehiculeUncheckedUpdateInput = {
   registrationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastExpertise?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   certificateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receptionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   interventions?: Prisma.InterventionUncheckedUpdateManyWithoutVehiculeNestedInput
@@ -451,6 +467,7 @@ export type VehiculeCreateManyInput = {
   registrationNumber?: string | null
   lastExpertise?: Date | string | null
   certificateImage?: string | null
+  receptionType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -465,6 +482,7 @@ export type VehiculeUpdateManyMutationInput = {
   registrationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastExpertise?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   certificateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receptionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -481,6 +499,7 @@ export type VehiculeUncheckedUpdateManyInput = {
   registrationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastExpertise?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   certificateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receptionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -513,6 +532,7 @@ export type VehiculeCountOrderByAggregateInput = {
   registrationNumber?: Prisma.SortOrder
   lastExpertise?: Prisma.SortOrder
   certificateImage?: Prisma.SortOrder
+  receptionType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -534,6 +554,7 @@ export type VehiculeMaxOrderByAggregateInput = {
   registrationNumber?: Prisma.SortOrder
   lastExpertise?: Prisma.SortOrder
   certificateImage?: Prisma.SortOrder
+  receptionType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -550,6 +571,7 @@ export type VehiculeMinOrderByAggregateInput = {
   registrationNumber?: Prisma.SortOrder
   lastExpertise?: Prisma.SortOrder
   certificateImage?: Prisma.SortOrder
+  receptionType?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -672,6 +694,7 @@ export type VehiculeCreateWithoutClientInput = {
   registrationNumber?: string | null
   lastExpertise?: Date | string | null
   certificateImage?: string | null
+  receptionType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
   interventions?: Prisma.InterventionCreateNestedManyWithoutVehiculeInput
@@ -689,6 +712,7 @@ export type VehiculeUncheckedCreateWithoutClientInput = {
   registrationNumber?: string | null
   lastExpertise?: Date | string | null
   certificateImage?: string | null
+  receptionType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
   interventions?: Prisma.InterventionUncheckedCreateNestedManyWithoutVehiculeInput
@@ -735,6 +759,7 @@ export type VehiculeScalarWhereInput = {
   registrationNumber?: Prisma.StringNullableFilter<"Vehicule"> | string | null
   lastExpertise?: Prisma.DateTimeNullableFilter<"Vehicule"> | Date | string | null
   certificateImage?: Prisma.StringNullableFilter<"Vehicule"> | string | null
+  receptionType?: Prisma.StringNullableFilter<"Vehicule"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Vehicule"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Vehicule"> | Date | string | null
 }
@@ -749,6 +774,7 @@ export type VehiculeCreateWithoutInterventionsInput = {
   registrationNumber?: string | null
   lastExpertise?: Date | string | null
   certificateImage?: string | null
+  receptionType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
   client: Prisma.ClientCreateNestedOneWithoutVehiculesInput
@@ -767,6 +793,7 @@ export type VehiculeUncheckedCreateWithoutInterventionsInput = {
   registrationNumber?: string | null
   lastExpertise?: Date | string | null
   certificateImage?: string | null
+  receptionType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -797,6 +824,7 @@ export type VehiculeUpdateWithoutInterventionsInput = {
   registrationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastExpertise?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   certificateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receptionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUpdateOneRequiredWithoutVehiculesNestedInput
@@ -815,6 +843,7 @@ export type VehiculeUncheckedUpdateWithoutInterventionsInput = {
   registrationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastExpertise?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   certificateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receptionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -829,6 +858,7 @@ export type VehiculeCreateWithoutInsuranceInput = {
   registrationNumber?: string | null
   lastExpertise?: Date | string | null
   certificateImage?: string | null
+  receptionType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
   client: Prisma.ClientCreateNestedOneWithoutVehiculesInput
@@ -846,6 +876,7 @@ export type VehiculeUncheckedCreateWithoutInsuranceInput = {
   registrationNumber?: string | null
   lastExpertise?: Date | string | null
   certificateImage?: string | null
+  receptionType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
   interventions?: Prisma.InterventionUncheckedCreateNestedManyWithoutVehiculeInput
@@ -888,6 +919,7 @@ export type VehiculeCreateManyClientInput = {
   registrationNumber?: string | null
   lastExpertise?: Date | string | null
   certificateImage?: string | null
+  receptionType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -902,6 +934,7 @@ export type VehiculeUpdateWithoutClientInput = {
   registrationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastExpertise?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   certificateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receptionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   interventions?: Prisma.InterventionUpdateManyWithoutVehiculeNestedInput
@@ -919,6 +952,7 @@ export type VehiculeUncheckedUpdateWithoutClientInput = {
   registrationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastExpertise?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   certificateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receptionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   interventions?: Prisma.InterventionUncheckedUpdateManyWithoutVehiculeNestedInput
@@ -935,6 +969,7 @@ export type VehiculeUncheckedUpdateManyWithoutClientInput = {
   registrationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastExpertise?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   certificateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receptionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -950,6 +985,7 @@ export type VehiculeCreateManyInsuranceInput = {
   registrationNumber?: string | null
   lastExpertise?: Date | string | null
   certificateImage?: string | null
+  receptionType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -964,6 +1000,7 @@ export type VehiculeUpdateWithoutInsuranceInput = {
   registrationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastExpertise?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   certificateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receptionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUpdateOneRequiredWithoutVehiculesNestedInput
@@ -981,6 +1018,7 @@ export type VehiculeUncheckedUpdateWithoutInsuranceInput = {
   registrationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastExpertise?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   certificateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receptionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   interventions?: Prisma.InterventionUncheckedUpdateManyWithoutVehiculeNestedInput
@@ -997,6 +1035,7 @@ export type VehiculeUncheckedUpdateManyWithoutInsuranceInput = {
   registrationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   lastExpertise?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   certificateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receptionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -1044,6 +1083,7 @@ export type VehiculeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   registrationNumber?: boolean
   lastExpertise?: boolean
   certificateImage?: boolean
+  receptionType?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
@@ -1066,11 +1106,12 @@ export type VehiculeSelectScalar = {
   registrationNumber?: boolean
   lastExpertise?: boolean
   certificateImage?: boolean
+  receptionType?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type VehiculeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "clientId" | "brand" | "model" | "year" | "licensePlate" | "insuranceId" | "chassisNumber" | "registrationNumber" | "lastExpertise" | "certificateImage" | "createdAt" | "updatedAt", ExtArgs["result"]["vehicule"]>
+export type VehiculeOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "clientId" | "brand" | "model" | "year" | "licensePlate" | "insuranceId" | "chassisNumber" | "registrationNumber" | "lastExpertise" | "certificateImage" | "receptionType" | "createdAt" | "updatedAt", ExtArgs["result"]["vehicule"]>
 export type VehiculeInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   interventions?: boolean | Prisma.Vehicule$interventionsArgs<ExtArgs>
@@ -1097,6 +1138,7 @@ export type $VehiculePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     registrationNumber: string | null
     lastExpertise: Date | null
     certificateImage: string | null
+    receptionType: string | null
     createdAt: Date
     updatedAt: Date | null
   }, ExtArgs["result"]["vehicule"]>
@@ -1482,6 +1524,7 @@ export interface VehiculeFieldRefs {
   readonly registrationNumber: Prisma.FieldRef<"Vehicule", 'String'>
   readonly lastExpertise: Prisma.FieldRef<"Vehicule", 'DateTime'>
   readonly certificateImage: Prisma.FieldRef<"Vehicule", 'String'>
+  readonly receptionType: Prisma.FieldRef<"Vehicule", 'String'>
   readonly createdAt: Prisma.FieldRef<"Vehicule", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Vehicule", 'DateTime'>
 }

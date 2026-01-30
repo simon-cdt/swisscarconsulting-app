@@ -17,6 +17,7 @@ export const addClientVehicule = async ({
     chassisNumber: string | undefined;
     registrationNumber: string | undefined;
     lastExpertise: Date | undefined;
+    receptionType: string | undefined;
     certificateImage: string | null;
   };
 }): Promise<
@@ -60,6 +61,7 @@ export const addClientVehicule = async ({
           ? data.registrationNumber.toUpperCase()
           : null,
         lastExpertise: data.lastExpertise ? data.lastExpertise : null,
+        receptionType: data.receptionType ? data.receptionType : null,
         certificateImage: data.certificateImage,
         client: {
           connect: {
@@ -104,6 +106,7 @@ export const updateVehicule = async ({
     chassisNumber: string | undefined;
     registrationNumber: string | undefined;
     lastExpertise: Date | undefined;
+    receptionType: string | undefined;
     certificateImage: string | null;
   };
 }): Promise<
@@ -131,6 +134,7 @@ export const updateVehicule = async ({
           ? data.registrationNumber
           : null,
         lastExpertise: data.lastExpertise ? data.lastExpertise : null,
+        receptionType: data.receptionType ? data.receptionType : null,
         insurance: data.insuranceId
           ? {
               connect: {

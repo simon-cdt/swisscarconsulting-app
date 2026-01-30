@@ -176,7 +176,11 @@ export function UpdateClientCompany({
           register={register}
         />
         <div className="col-span-2 flex w-full justify-end gap-4">
-          <Button variant="outline" type="button">
+          <Button
+            variant="outline"
+            type="button"
+            onClick={() => setIsOpen(false)}
+          >
             Annuler
           </Button>
           <Button

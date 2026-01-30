@@ -265,4 +265,40 @@ export const PARTS_CATALOG: PartTemplate[] = [
     unitPrice: 180.0,
     quantity: 1,
   },
+  // Forfaits
+  {
+    id: "36",
+    designation: "Forfait frein",
+    description: "Remplacement Disque et plaquettes de frein AV et AR",
+    unitPrice: 450.0,
+    quantity: 1,
+  },
+  {
+    id: "37",
+    designation: "Forfait frein",
+    description: "Remplacement Plaquettes de frein AV et AR",
+    unitPrice: 250.0,
+    quantity: 1,
+  },
+  {
+    id: "38",
+    designation: "Forfait pneus",
+    description: "Remplacement, montage, équilibrage AV et AR",
+    unitPrice: 200.0,
+    quantity: 1,
+  },
+  {
+    id: "39",
+    designation: "Forfait service",
+    description: "Vidange, flitre à huile, contrôle des niveaux",
+    unitPrice: 150.0,
+    quantity: 1,
+  },
+  {
+    id: "40",
+    designation: "Forfait climatisation",
+    description: "Contrôle, mise à niveau",
+    unitPrice: 100.0,
+    quantity: 1,
+  },
 ];

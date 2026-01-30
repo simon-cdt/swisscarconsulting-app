@@ -121,6 +121,7 @@ export const VehiculeScalarFieldEnum = {
   registrationNumber: 'registrationNumber',
   lastExpertise: 'lastExpertise',
   certificateImage: 'certificateImage',
+  receptionType: 'receptionType',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -232,7 +233,8 @@ export const VehiculeOrderByRelevanceFieldEnum = {
   insuranceId: 'insuranceId',
   chassisNumber: 'chassisNumber',
   registrationNumber: 'registrationNumber',
-  certificateImage: 'certificateImage'
+  certificateImage: 'certificateImage',
+  receptionType: 'receptionType'
 } as const
 
 export type VehiculeOrderByRelevanceFieldEnum = (typeof VehiculeOrderByRelevanceFieldEnum)[keyof typeof VehiculeOrderByRelevanceFieldEnum]

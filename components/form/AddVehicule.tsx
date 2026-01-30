@@ -124,6 +124,7 @@ export function AddVehicule({
           },
         )
         .optional(),
+      receptionType: z.string().optional(),
       certificateImage: z.instanceof(File).optional(),
     })
     .refine(
@@ -200,6 +201,7 @@ export function AddVehicule({
         chassisNumber: data.chassisNumber,
         registrationNumber: data.registrationNumber,
         lastExpertise: expertiseDate,
+        receptionType: data.receptionType,
         certificateImage: uploadedUrl[0],
       };
 
@@ -242,7 +244,7 @@ export function AddVehicule({
               error={errors.brand}
               nonempty
               onChange={(e) => {
-                const formatted = capitalize(e.target.value);
+                const formatted = e.target.value.toUpperCase();
                 setValue("brand", formatted);
               }}
             />
@@ -332,6 +334,15 @@ export function AddVehicule({
                 setValue("lastExpertise", formatted);
               }}
             />
+            <div className="col-span-2">
+              <FormField
+                label="Type de réception"
+                name="receptionType"
+                register={register}
+                type="text"
+                error={errors.receptionType}
+              />
+            </div>
             <div className="col-span-2">
               <UploadImage
                 setValue={setValue}

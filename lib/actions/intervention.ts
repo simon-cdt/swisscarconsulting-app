@@ -6,23 +6,51 @@ import { db } from "../db";
 
 export const addIntervention = async ({
   data,
+  forceCreate,
 }: {
   data: {
     vehiculeId: string;
     description?: string;
     medias?: string;
   };
+  forceCreate?: boolean;
 }): Promise<
   | { success: false; message: string }
-  | {
-      success: true;
-      message: "L'intervention a bien été ajoutée.";
-    }
+  | { success: true; message: "L'intervention a bien été ajoutée." }
+  | { success: false; needsConfirmation: true; message: string }
 > => {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
       return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+
+    // Vérifier s'il existe déjà une intervention pour ce véhicule aujourd'hui
+    if (!forceCreate) {
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const tomorrow = new Date(today);
+      tomorrow.setDate(tomorrow.getDate() + 1);
+
+      const existingIntervention = await db.intervention.findFirst({
+        where: {
+          vehiculeId: data.vehiculeId,
+          date: {
+            gte: today,
+            lt: tomorrow,
+          },
+          deleted: false,
+        },
+      });
+
+      if (existingIntervention) {
+        return {
+          success: false,
+          needsConfirmation: true,
+          message:
+            "Une intervention existe déjà pour ce véhicule aujourd'hui. Voulez-vous continuer ?",
+        };
+      }
     }
 
     await db.intervention.create({

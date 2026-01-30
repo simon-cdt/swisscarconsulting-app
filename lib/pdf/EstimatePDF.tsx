@@ -341,7 +341,16 @@ const parseHtmlToText = (html: string): React.ReactNode => {
 export const EstimatePDF = ({ data }: { data: EstimateData }) => {
   const calculateTotal = () => {
     return data.items.reduce((sum, item) => {
-      const itemTotal = item.unitPrice * (item.quantity ?? 0);
+      let itemTotal: number;
+
+      // Pour les items LABOR, quantity est en minutes, donc convertir en heures
+      if (item.type === "LABOR") {
+        const hoursDecimal = (item.quantity ?? 0) / 60;
+        itemTotal = item.unitPrice * hoursDecimal;
+      } else {
+        itemTotal = item.unitPrice * (item.quantity ?? 0);
+      }
+
       const discountAmount = item.discount
         ? (itemTotal * item.discount) / 100
         : 0;
@@ -496,9 +505,7 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
                 <Text style={[styles.tableCell, styles.rate16]}>
                   Tarif / heure
                 </Text>
-                <Text style={[styles.tableCell, styles.hours20]}>
-                  Nombre d&apos;heure(s)
-                </Text>
+                <Text style={[styles.tableCell, styles.hours20]}>Durée</Text>
                 <Text style={[styles.tableCellLast, styles.total15]}>
                   Total HT
                 </Text>
@@ -506,11 +513,19 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
               {labor
                 .sort((a, b) => a.position - b.position)
                 .map((item, index) => {
-                  const itemTotal = item.unitPrice * (item.quantity ?? 0);
+                  // Convertir les minutes en heures pour le calcul
+                  const totalMinutes = item.quantity ?? 0;
+                  const hoursDecimal = totalMinutes / 60;
+                  const itemTotal = item.unitPrice * hoursDecimal;
                   const discountAmount = item.discount
                     ? (itemTotal * item.discount) / 100
                     : 0;
                   const total = itemTotal - discountAmount;
+
+                  // Convertir les minutes en format heures et minutes pour l'affichage
+                  const hours = Math.floor(totalMinutes / 60);
+                  const minutes = totalMinutes % 60;
+                  const durationText = `${hours}h${minutes > 0 ? ` ${minutes}min` : ""}`;
 
                   return (
                     <View
@@ -541,7 +556,7 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
                         )}
                       </View>
                       <Text style={[styles.tableCellRight, styles.hours20]}>
-                        {item.quantity ?? 0}
+                        {durationText}
                       </Text>
                       <Text style={[styles.tableCellRight, styles.total15]}>
                         {total.toFixed(2)} CHF
