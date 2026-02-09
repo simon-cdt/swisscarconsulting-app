@@ -57,6 +57,7 @@ export const ModelName = {
   Intervention: 'Intervention',
   Estimate: 'Estimate',
   EstimateItem: 'EstimateItem',
+  Invoice: 'Invoice',
   Insurance: 'Insurance'
 } as const
 
@@ -151,6 +152,7 @@ export const EstimateScalarFieldEnum = {
   type: 'type',
   claimNumber: 'claimNumber',
   deleted: 'deleted',
+  refusalReason: 'refusalReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -173,6 +175,38 @@ export const EstimateItemScalarFieldEnum = {
 } as const
 
 export type EstimateItemScalarFieldEnum = (typeof EstimateItemScalarFieldEnum)[keyof typeof EstimateItemScalarFieldEnum]
+
+
+export const InvoiceScalarFieldEnum = {
+  id: 'id',
+  estimateId: 'estimateId',
+  typeEstimate: 'typeEstimate',
+  claimNumber: 'claimNumber',
+  interventionId: 'interventionId',
+  interventionDate: 'interventionDate',
+  description: 'description',
+  medias: 'medias',
+  vehiculeId: 'vehiculeId',
+  brand: 'brand',
+  model: 'model',
+  year: 'year',
+  licensePlate: 'licensePlate',
+  clientId: 'clientId',
+  typeClient: 'typeClient',
+  name: 'name',
+  firstName: 'firstName',
+  email: 'email',
+  phone: 'phone',
+  companyName: 'companyName',
+  address: 'address',
+  postalCode: 'postalCode',
+  city: 'city',
+  estimateItems: 'estimateItems',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
 
 
 export const InsuranceScalarFieldEnum = {
@@ -254,7 +288,8 @@ export type InterventionOrderByRelevanceFieldEnum = (typeof InterventionOrderByR
 export const EstimateOrderByRelevanceFieldEnum = {
   id: 'id',
   interventionId: 'interventionId',
-  claimNumber: 'claimNumber'
+  claimNumber: 'claimNumber',
+  refusalReason: 'refusalReason'
 } as const
 
 export type EstimateOrderByRelevanceFieldEnum = (typeof EstimateOrderByRelevanceFieldEnum)[keyof typeof EstimateOrderByRelevanceFieldEnum]
@@ -268,6 +303,30 @@ export const EstimateItemOrderByRelevanceFieldEnum = {
 } as const
 
 export type EstimateItemOrderByRelevanceFieldEnum = (typeof EstimateItemOrderByRelevanceFieldEnum)[keyof typeof EstimateItemOrderByRelevanceFieldEnum]
+
+
+export const InvoiceOrderByRelevanceFieldEnum = {
+  id: 'id',
+  estimateId: 'estimateId',
+  claimNumber: 'claimNumber',
+  interventionId: 'interventionId',
+  description: 'description',
+  medias: 'medias',
+  vehiculeId: 'vehiculeId',
+  brand: 'brand',
+  model: 'model',
+  licensePlate: 'licensePlate',
+  name: 'name',
+  firstName: 'firstName',
+  email: 'email',
+  phone: 'phone',
+  companyName: 'companyName',
+  address: 'address',
+  city: 'city',
+  estimateItems: 'estimateItems'
+} as const
+
+export type InvoiceOrderByRelevanceFieldEnum = (typeof InvoiceOrderByRelevanceFieldEnum)[keyof typeof InvoiceOrderByRelevanceFieldEnum]
 
 
 export const InsuranceOrderByRelevanceFieldEnum = {

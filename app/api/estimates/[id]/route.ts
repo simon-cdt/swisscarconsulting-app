@@ -21,6 +21,7 @@ export async function GET(
       status: true,
       type: true,
       claimNumber: true,
+      refusalReason: true,
       items: {
         select: {
           id: true,

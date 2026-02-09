@@ -94,12 +94,14 @@ model Intervention {
 model Estimate {
   id             String         @id @default(cuid())
   interventionId String
-  status         EstimateStatus @default(TODO)
+  status         EstimateStatus @default(TOFINISH)
   items          EstimateItem[]
   type           TypeEstimate
   claimNumber    String?
 
   deleted Boolean @default(false)
+
+  refusalReason String?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
@@ -127,6 +129,41 @@ model EstimateItem {
   estimate Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
 }
 
+model Invoice {
+  id String @id @default(cuid())
+
+  estimateId   String
+  typeEstimate TypeEstimate
+  claimNumber  String?
+
+  interventionId   String
+  interventionDate DateTime
+  description      String?
+  medias           String?
+
+  vehiculeId   String
+  brand        String
+  model        String
+  year         Int
+  licensePlate String
+
+  clientId    Int
+  typeClient  TypeClient
+  name        String
+  firstName   String
+  email       String
+  phone       String
+  companyName String?
+  address     String?
+  postalCode  Int?
+  city        String?
+
+  estimateItems String
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @updatedAt
+}
+
 model Insurance {
   id    String @id @default(cuid())
   name  String
@@ -148,11 +185,11 @@ enum TypeEstimate {
 }
 
 enum EstimateStatus {
-  TODO
+  TOFINISH
   PENDING
-  DRAFT
   ACCEPTED
   SENT_TO_GARAGE
+  FINISHED
 }
 
 enum TypeClient {

@@ -390,6 +390,7 @@ export const ModelName = {
   Intervention: 'Intervention',
   Estimate: 'Estimate',
   EstimateItem: 'EstimateItem',
+  Invoice: 'Invoice',
   Insurance: 'Insurance'
 } as const
 
@@ -406,7 +407,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "client" | "vehicule" | "intervention" | "estimate" | "estimateItem" | "insurance"
+    modelProps: "user" | "client" | "vehicule" | "intervention" | "estimate" | "estimateItem" | "invoice" | "insurance"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -806,6 +807,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Invoice: {
+      payload: Prisma.$InvoicePayload<ExtArgs>
+      fields: Prisma.InvoiceFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InvoiceFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoicePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InvoiceFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoicePayload>
+        }
+        findFirst: {
+          args: Prisma.InvoiceFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoicePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InvoiceFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoicePayload>
+        }
+        findMany: {
+          args: Prisma.InvoiceFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoicePayload>[]
+        }
+        create: {
+          args: Prisma.InvoiceCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoicePayload>
+        }
+        createMany: {
+          args: Prisma.InvoiceCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.InvoiceDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoicePayload>
+        }
+        update: {
+          args: Prisma.InvoiceUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoicePayload>
+        }
+        deleteMany: {
+          args: Prisma.InvoiceDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InvoiceUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.InvoiceUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvoicePayload>
+        }
+        aggregate: {
+          args: Prisma.InvoiceAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInvoice>
+        }
+        groupBy: {
+          args: Prisma.InvoiceGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvoiceGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InvoiceCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvoiceCountAggregateOutputType> | number
+        }
+      }
+    }
     Insurance: {
       payload: Prisma.$InsurancePayload<ExtArgs>
       fields: Prisma.InsuranceFieldRefs
@@ -986,6 +1053,7 @@ export const EstimateScalarFieldEnum = {
   type: 'type',
   claimNumber: 'claimNumber',
   deleted: 'deleted',
+  refusalReason: 'refusalReason',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1008,6 +1076,38 @@ export const EstimateItemScalarFieldEnum = {
 } as const
 
 export type EstimateItemScalarFieldEnum = (typeof EstimateItemScalarFieldEnum)[keyof typeof EstimateItemScalarFieldEnum]
+
+
+export const InvoiceScalarFieldEnum = {
+  id: 'id',
+  estimateId: 'estimateId',
+  typeEstimate: 'typeEstimate',
+  claimNumber: 'claimNumber',
+  interventionId: 'interventionId',
+  interventionDate: 'interventionDate',
+  description: 'description',
+  medias: 'medias',
+  vehiculeId: 'vehiculeId',
+  brand: 'brand',
+  model: 'model',
+  year: 'year',
+  licensePlate: 'licensePlate',
+  clientId: 'clientId',
+  typeClient: 'typeClient',
+  name: 'name',
+  firstName: 'firstName',
+  email: 'email',
+  phone: 'phone',
+  companyName: 'companyName',
+  address: 'address',
+  postalCode: 'postalCode',
+  city: 'city',
+  estimateItems: 'estimateItems',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvoiceScalarFieldEnum = (typeof InvoiceScalarFieldEnum)[keyof typeof InvoiceScalarFieldEnum]
 
 
 export const InsuranceScalarFieldEnum = {
@@ -1089,7 +1189,8 @@ export type InterventionOrderByRelevanceFieldEnum = (typeof InterventionOrderByR
 export const EstimateOrderByRelevanceFieldEnum = {
   id: 'id',
   interventionId: 'interventionId',
-  claimNumber: 'claimNumber'
+  claimNumber: 'claimNumber',
+  refusalReason: 'refusalReason'
 } as const
 
 export type EstimateOrderByRelevanceFieldEnum = (typeof EstimateOrderByRelevanceFieldEnum)[keyof typeof EstimateOrderByRelevanceFieldEnum]
@@ -1103,6 +1204,30 @@ export const EstimateItemOrderByRelevanceFieldEnum = {
 } as const
 
 export type EstimateItemOrderByRelevanceFieldEnum = (typeof EstimateItemOrderByRelevanceFieldEnum)[keyof typeof EstimateItemOrderByRelevanceFieldEnum]
+
+
+export const InvoiceOrderByRelevanceFieldEnum = {
+  id: 'id',
+  estimateId: 'estimateId',
+  claimNumber: 'claimNumber',
+  interventionId: 'interventionId',
+  description: 'description',
+  medias: 'medias',
+  vehiculeId: 'vehiculeId',
+  brand: 'brand',
+  model: 'model',
+  licensePlate: 'licensePlate',
+  name: 'name',
+  firstName: 'firstName',
+  email: 'email',
+  phone: 'phone',
+  companyName: 'companyName',
+  address: 'address',
+  city: 'city',
+  estimateItems: 'estimateItems'
+} as const
+
+export type InvoiceOrderByRelevanceFieldEnum = (typeof InvoiceOrderByRelevanceFieldEnum)[keyof typeof InvoiceOrderByRelevanceFieldEnum]
 
 
 export const InsuranceOrderByRelevanceFieldEnum = {
@@ -1291,6 +1416,7 @@ export type GlobalOmitConfig = {
   intervention?: Prisma.InterventionOmit
   estimate?: Prisma.EstimateOmit
   estimateItem?: Prisma.EstimateItemOmit
+  invoice?: Prisma.InvoiceOmit
   insurance?: Prisma.InsuranceOmit
 }
 

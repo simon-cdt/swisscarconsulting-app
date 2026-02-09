@@ -29,6 +29,21 @@ import {
 } from "@/lib/actions/estimate";
 import { useRouter } from "next/navigation";
 import { Estimate as EstimateType } from "@/types/types";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { FormField } from "./form/FormField";
+import z from "zod";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Spinner } from "./ui/spinner";
 
 export default function Estimate({
   estimate,
@@ -56,6 +71,34 @@ export default function Estimate({
     }
     return `${client.firstName || ""} ${client.name || ""}`.trim();
   };
+
+  const zodFormSchema = z.object({
+    reason: z.string().nonempty("La raison de refus est requise."),
+  });
+  type FormSchema = z.infer<typeof zodFormSchema>;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormSchema>({
+    resolver: zodResolver(zodFormSchema),
+  });
+
+  const handleSubmitForm = async (data: FormSchema) => {
+    const response = await refuseEstimate({
+      estimateId: estimate.id,
+      reason: data.reason,
+    });
+
+    if (response.success) {
+      toast.success(response.message);
+      router.push(`/dashboard/estimates/${estimate.id}`);
+    } else {
+      toast.error(response.message);
+    }
+  };
+
   return (
     <Card
       key={estimate.id}
@@ -73,7 +116,7 @@ export default function Estimate({
               </span>
             </div>
           </div>
-          {estimate.status !== "ACCEPTED" && (
+          {estimate.status === "TOFINISH" && (
             <AlertDialog>
               <AlertDialogTrigger className="trans h-9 w-9 rounded-md p-1 hover:bg-red-200">
                 <Trash className="size-4" />
@@ -165,7 +208,7 @@ export default function Estimate({
           </div>
 
           <div className="flex h-full flex-col justify-center gap-2">
-            {estimate.status === "TODO" || estimate.status === "DRAFT" ? (
+            {estimate.status === "TOFINISH" ? (
               <>
                 <InformationsDialog estimate={estimate} refetch={refetch} />
                 <Link
@@ -175,9 +218,7 @@ export default function Estimate({
                   <Button
                     className={`${estimate.intervention.vehicule.client.typeClient === "individual" ? "individual-btn" : "company-btn"} w-full`}
                   >
-                    {estimate.status === "TODO"
-                      ? "Faire le devis"
-                      : estimate.status === "DRAFT" && "Modifier le devis"}
+                    {"Modifier le devis"}
                   </Button>
                 </Link>
               </>
@@ -191,42 +232,48 @@ export default function Estimate({
                     Voir le devis
                   </Button>
                 </Link>
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button className="bg-red-600 hover:bg-red-700">
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <Button className="w-full bg-red-600 hover:bg-red-700">
                       Refuser le devis
                     </Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
-                      <AlertDialogDescription>
-                        Le devis repassera en type &quot;Brouillon&quot; ou vous
-                        devrez à nouveau le valider.
-                      </AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Annuler</AlertDialogCancel>
-                      <AlertDialogAction
-                        className="bg-red-600 hover:bg-red-700"
-                        onClick={async () => {
-                          const response = await refuseEstimate({
-                            estimateId: estimate.id,
-                          });
-
-                          if (response.success) {
-                            toast.success(response.message);
-                            router.push(`/dashboard/estimates/${estimate.id}`);
-                          } else {
-                            toast.error(response.message);
-                          }
-                        }}
-                      >
-                        Refuser
-                      </AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-lg">
+                    <form
+                      className="flex flex-col gap-3"
+                      onSubmit={handleSubmit(handleSubmitForm)}
+                    >
+                      <DialogHeader>
+                        <DialogTitle>Refuser le devis</DialogTitle>
+                        <DialogDescription>
+                          Le client a refusé le devis, veuillez rentrer la
+                          raison pour laquelle il a été refusé.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <FormField
+                        label="Raison du refus"
+                        name="reason"
+                        type="text"
+                        register={register}
+                        nonempty
+                        textarea
+                        error={errors.reason}
+                      />
+                      <DialogFooter>
+                        <DialogClose asChild>
+                          <Button variant="outline">Annuler</Button>
+                        </DialogClose>
+                        <Button
+                          type="submit"
+                          disabled={isSubmitting}
+                          className="bg-red-600 hover:bg-red-700"
+                        >
+                          {isSubmitting ? <Spinner /> : "Refuser le devis"}
+                        </Button>
+                      </DialogFooter>
+                    </form>
+                  </DialogContent>
+                </Dialog>
                 <AlertDialog>
                   <AlertDialogTrigger asChild>
                     <Button className="bg-emerald-600 hover:bg-emerald-700">
@@ -238,7 +285,7 @@ export default function Estimate({
                       <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
                       <AlertDialogDescription>
                         Cela voudrait dire que le client a accepté le devis. Le
-                        devis sera accepté et passera en facture.
+                        devis sera accepté et passera en accpeté.
                       </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
@@ -323,6 +370,44 @@ export default function Estimate({
                     </Button>
                   </Link>
                   <InformationsDialog estimate={estimate} refetch={refetch} />
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button className="bg-pink-700 hover:bg-pink-800">
+                        Envoyer en facture
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Le devis deviendra une facture et un e-mail sera
+                          envoyé dans la boite mail du client. Cela signifie que
+                          les modifications ont été faite et que le cas du
+                          client sera terminé.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-pink-700 hover:bg-pink-800"
+                          onClick={async () => {
+                            const response = await sendEstimateToGarage({
+                              estimateId: estimate.id,
+                            });
+
+                            if (response.success) {
+                              toast.success(response.message);
+                              router.push(`/dashboard/mechanical`);
+                            } else {
+                              toast.error(response.message);
+                            }
+                          }}
+                        >
+                          Confirmer
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
                 </>
               )
             )}

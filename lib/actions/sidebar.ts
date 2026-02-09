@@ -24,9 +24,9 @@ export const GetSidebarCount = async () => {
           type: "INDIVIDUAL",
         },
       });
-      const estimateIndividualDraft = await db.estimate.count({
+      const estimateIndividualToFinish = await db.estimate.count({
         where: {
-          status: "DRAFT",
+          status: "TOFINISH",
           type: "INDIVIDUAL",
         },
       });
@@ -36,16 +36,10 @@ export const GetSidebarCount = async () => {
           type: "INDIVIDUAL",
         },
       });
-      const estimateIndividualTodo = await db.estimate.count({
-        where: {
-          status: "TODO",
-          type: "INDIVIDUAL",
-        },
-      });
 
-      const estimateInsuranceTodo = await db.estimate.count({
+      const estimateInsuranceToFinish = await db.estimate.count({
         where: {
-          status: "TODO",
+          status: "TOFINISH",
           type: "INSURANCE",
         },
       });
@@ -55,12 +49,7 @@ export const GetSidebarCount = async () => {
           type: "INSURANCE",
         },
       });
-      const estimateInsuranceDraft = await db.estimate.count({
-        where: {
-          status: "DRAFT",
-          type: "INSURANCE",
-        },
-      });
+
       const estimateSentGarage = await db.estimate.count({
         where: {
           status: "SENT_TO_GARAGE",
@@ -69,12 +58,10 @@ export const GetSidebarCount = async () => {
       return {
         intervention,
         estimateIndividualPending,
-        estimateIndividualDraft,
+        estimateIndividualToFinish,
         estimateIndividualAccepted,
-        estimateIndividualTodo,
-        estimateInsuranceTodo,
+        estimateInsuranceToFinish,
         estimateInsuranceAccepted,
-        estimateInsuranceDraft,
         estimateSentGarage,
       };
     }

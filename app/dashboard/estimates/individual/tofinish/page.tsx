@@ -4,23 +4,23 @@ import { useQuery } from "@tanstack/react-query";
 import { FetchAllEstimates } from "@/types/types";
 import EstimatesList from "@/components/EstimatesList";
 
-function useEstimatesInsuranceDraft() {
+function useEstimatesIndividualToFinish() {
   return useQuery({
-    queryKey: ["estimates_Insurance_draft"],
+    queryKey: ["estimates_individual_tofinish"],
     queryFn: async (): Promise<FetchAllEstimates> => {
-      const response = await fetch(`/api/estimates/insurance/draft`);
+      const response = await fetch(`/api/estimates/individual/tofinish`);
       return await response.json();
     },
   });
 }
 
-export default function EstimateInsuranceDraft() {
+export default function EstimateIndividualToFinish() {
   const {
     data: estimates,
     isLoading,
     isError,
     refetch,
-  } = useEstimatesInsuranceDraft();
+  } = useEstimatesIndividualToFinish();
 
   return (
     <EstimatesList
@@ -28,8 +28,8 @@ export default function EstimateInsuranceDraft() {
       isLoading={isLoading}
       isError={isError}
       refetch={refetch}
-      label="Devis en brouillon"
-      description="Consultez les devis d'assurance en brouillon"
+      label="Devis à finir"
+      description="Consultez les devis à finir"
     />
   );
 }

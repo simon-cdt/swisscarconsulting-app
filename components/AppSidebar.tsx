@@ -15,7 +15,6 @@ import {
 import {
   ClipboardList,
   FileCheck,
-  FileEdit,
   FileOutput,
   Hourglass,
   LayoutDashboard,
@@ -27,6 +26,7 @@ import {
   ToolCase,
   Trash,
   Wrench,
+  Calendar,
 } from "lucide-react";
 import { signOut, useSession } from "next-auth/react";
 import { Button } from "./ui/button";
@@ -47,6 +47,11 @@ const data = {
           icon: LayoutDashboard,
         },
         {
+          title: "Calendrier",
+          url: "/calendar",
+          icon: Calendar,
+        },
+        {
           title: "Interventions",
           url: "/interventions",
           icon: ToolCase,
@@ -57,14 +62,9 @@ const data = {
       title: "Devis individuel",
       items: [
         {
-          title: "À faire",
-          url: "/estimates/individual/todo",
+          title: "À finir",
+          url: "/estimates/individual/tofinish",
           icon: ClipboardList,
-        },
-        {
-          title: "Brouillons",
-          url: "/estimates/individual/drafts",
-          icon: FileEdit,
         },
         {
           title: "En attente",
@@ -82,14 +82,9 @@ const data = {
       title: "Devis assurance",
       items: [
         {
-          title: "À faire",
-          url: "/estimates/insurance/todo",
+          title: "À finir",
+          url: "/estimates/insurance/tofinish",
           icon: ClipboardList,
-        },
-        {
-          title: "Brouillons",
-          url: "/estimates/insurance/drafts",
-          icon: FileEdit,
         },
         {
           title: "Acceptés",
@@ -111,11 +106,6 @@ const data = {
     {
       title: "Factures",
       items: [
-        {
-          title: "En attente d'envoi",
-          url: "/factures/todo",
-          icon: Send,
-        },
         {
           title: "Emises",
           url: "/factures/sent",
@@ -170,22 +160,18 @@ const data = {
 export function AppSidebar({
   intervention,
   estimateIndividualPending,
-  estimateIndividualDraft,
+  estimateIndividualToFinish,
   estimateIndividualAccepted,
-  estimateIndividualTodo,
-  estimateInsuranceTodo,
   estimateInsuranceAccepted,
-  estimateInsuranceDraft,
+  estimateInsuranceToFinish,
   estimateSentGarage,
 }: {
   intervention?: number;
   estimateIndividualPending?: number;
-  estimateIndividualDraft?: number;
+  estimateIndividualToFinish?: number;
   estimateIndividualAccepted?: number;
-  estimateIndividualTodo?: number;
-  estimateInsuranceTodo?: number;
   estimateInsuranceAccepted?: number;
-  estimateInsuranceDraft?: number;
+  estimateInsuranceToFinish?: number;
   estimateSentGarage?: number;
 }) {
   const { data: session } = useSession();
@@ -219,16 +205,12 @@ export function AppSidebar({
                       count = intervention;
                     } else if (item.url === "/estimates/individual/pending") {
                       count = estimateIndividualPending;
-                    } else if (item.url === "/estimates/individual/drafts") {
-                      count = estimateIndividualDraft;
+                    } else if (item.url === "/estimates/individual/tofinish") {
+                      count = estimateIndividualToFinish;
                     } else if (item.url === "/estimates/individual/accepted") {
                       count = estimateIndividualAccepted;
-                    } else if (item.url === "/estimates/individual/todo") {
-                      count = estimateIndividualTodo;
-                    } else if (item.url === "/estimates/insurance/todo") {
-                      count = estimateInsuranceTodo;
-                    } else if (item.url === "/estimates/insurance/drafts") {
-                      count = estimateInsuranceDraft;
+                    } else if (item.url === "/estimates/insurance/tofinish") {
+                      count = estimateInsuranceToFinish;
                     } else if (item.url === "/estimates/insurance/accepted") {
                       count = estimateInsuranceAccepted;
                     } else if (item.url === "/mechanical") {

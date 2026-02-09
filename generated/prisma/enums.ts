@@ -27,11 +27,11 @@ export type TypeEstimate = (typeof TypeEstimate)[keyof typeof TypeEstimate]
 
 
 export const EstimateStatus = {
-  TODO: 'TODO',
+  TOFINISH: 'TOFINISH',
   PENDING: 'PENDING',
-  DRAFT: 'DRAFT',
   ACCEPTED: 'ACCEPTED',
-  SENT_TO_GARAGE: 'SENT_TO_GARAGE'
+  SENT_TO_GARAGE: 'SENT_TO_GARAGE',
+  FINISHED: 'FINISHED'
 } as const
 
 export type EstimateStatus = (typeof EstimateStatus)[keyof typeof EstimateStatus]

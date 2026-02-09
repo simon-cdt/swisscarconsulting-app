@@ -70,6 +70,11 @@ export type Estimate = Prisma.EstimateModel
  */
 export type EstimateItem = Prisma.EstimateItemModel
 /**
+ * Model Invoice
+ * 
+ */
+export type Invoice = Prisma.InvoiceModel
+/**
  * Model Insurance
  * 
  */

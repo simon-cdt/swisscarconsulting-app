@@ -67,6 +67,7 @@ type FetchEstimate = {
   type: TypeEstimate;
   items: ItemEstimate;
   claimNumber: string | null;
+  refusalReason: string | null;
   intervention: {
     id: string;
     date: Date;
@@ -185,7 +186,10 @@ export default function QuoteGeneratorPage() {
 
   const calculateTotal = () => {
     return selectedItems.reduce((sum, item) => {
-      const itemTotal = item.unitPrice * (item.quantity ?? 0);
+      const itemTotal =
+        item.type === "LABOR"
+          ? (item.unitPrice * (item.quantity ?? 0)) / 60
+          : item.unitPrice * (item.quantity ?? 0);
       const discountAmount = item.discount
         ? (itemTotal * item.discount) / 100
         : 0;
@@ -304,7 +308,7 @@ export default function QuoteGeneratorPage() {
                 </p>
               </div>
 
-              <Card>
+              <Card className="shadow-none">
                 <CardContent>
                   <div className="flex flex-col gap-3">
                     <p className="font-semibold">Informations devis</p>
@@ -388,11 +392,25 @@ export default function QuoteGeneratorPage() {
                   </div>
                 </CardContent>
               </Card>
+              {estimate.refusalReason && (
+                <Card className="border-red-500/10 bg-red-50 shadow-none">
+                  <CardContent className="flex flex-col gap-4">
+                    <CardTitle className="font-semibold">
+                      Raison du devis refusé
+                    </CardTitle>
+                    <div className="bg-muted/30 max-h-40 overflow-y-auto rounded-md border p-4">
+                      <p className="text-sm leading-relaxed font-semibold whitespace-pre-wrap text-red-500">
+                        {estimate.refusalReason}
+                      </p>
+                    </div>
+                  </CardContent>
+                </Card>
+              )}
               <div className="flex flex-col gap-6">
                 {/* Colonne gauche - Constat et Médias */}
                 <div className="flex w-full justify-between gap-6">
                   {/* Zone de constat */}
-                  <Card className="w-full border-2">
+                  <Card className="w-full shadow-none">
                     <CardHeader>
                       <CardTitle className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -455,7 +473,7 @@ export default function QuoteGeneratorPage() {
                     </CardContent>
                   </Card>
 
-                  <Card className="w-full border-2">
+                  <Card className="w-full shadow-none">
                     <CardHeader>
                       <CardTitle className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
@@ -601,36 +619,29 @@ export default function QuoteGeneratorPage() {
                                       "LABOR" ? (
                                       <>
                                         <div className="text-primary font-semibold">
-                                          {(
-                                            item.unitPrice *
-                                            (item.quantity || 1)
-                                          )
-                                            .toFixed(2)
-                                            .replaceAll(".", ",")}{" "}
-                                          CHF
+                                          {(() => {
+                                            const itemTotal =
+                                              (item.unitPrice *
+                                                (item.quantity || 1)) /
+                                              60;
+                                            const discountAmount = item.discount
+                                              ? (itemTotal * item.discount) /
+                                                100
+                                              : 0;
+                                            const finalPrice =
+                                              itemTotal - discountAmount;
+                                            return (
+                                              finalPrice
+                                                .toFixed(2)
+                                                .replaceAll(".", ",") + " CHF"
+                                            );
+                                          })()}
                                           {item.discount && (
                                             <span className="ml-1 text-xs text-red-600">
                                               (-{item.discount}%)
                                             </span>
                                           )}
                                         </div>
-                                        {item.discount && (
-                                          <div className="text-sm font-semibold text-green-600">
-                                            {(() => {
-                                              const itemTotal =
-                                                item.unitPrice *
-                                                (item.quantity ?? 0);
-                                              const discountAmount =
-                                                (itemTotal * item.discount) /
-                                                100;
-                                              return (
-                                                (itemTotal - discountAmount)
-                                                  .toFixed(2)
-                                                  .replaceAll(".", ",") + " .-"
-                                              );
-                                            })()}
-                                          </div>
-                                        )}
                                       </>
                                     ) : (
                                       <>
@@ -655,6 +666,7 @@ export default function QuoteGeneratorPage() {
                                               unitPrice: item.unitPrice,
                                             }}
                                             estimateId={params.id}
+                                            disable={updateDisable}
                                           />
                                         ) : item.type === "LABOR" ? (
                                           <UpdateMOItem
@@ -666,6 +678,7 @@ export default function QuoteGeneratorPage() {
                                               quantity: item.quantity || 1,
                                             }}
                                             estimateId={params.id}
+                                            disable={updateDisable}
                                           />
                                         ) : (
                                           item.type === "UPCOMING" && (
@@ -678,6 +691,7 @@ export default function QuoteGeneratorPage() {
                                                 ...item,
                                               }}
                                               estimateId={params.id}
+                                              disable={updateDisable}
                                             />
                                           )
                                         )}
@@ -688,6 +702,7 @@ export default function QuoteGeneratorPage() {
                                             handleRemoveItem(item.id)
                                           }
                                           className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-full p-0"
+                                          disabled={updateDisable}
                                         >
                                           <X className="h-4 w-4" />
                                         </Button>

@@ -78,13 +78,14 @@ export default function UploadFiles({
   }, [errors, maxSizeMB]);
 
   return (
-    <div className="flex flex-col gap-2">
+    <div className="flex cursor-pointer flex-col gap-2">
       {/* Drop area */}
       <div
         onDragEnter={handleDragEnter}
         onDragLeave={handleDragLeave}
         onDragOver={handleDragOver}
         onDrop={handleDrop}
+        onClick={openFileDialog}
         data-dragging={isDragging || undefined}
         data-files={files.length > 0 || undefined}
         className="border-input has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 data-[dragging=true]:bg-accent/50 relative flex min-h-52 flex-col items-center overflow-hidden rounded-xl border border-dashed p-4 transition-colors not-data-files:justify-center has-[input:focus]:ring-[3px]"
@@ -104,7 +105,10 @@ export default function UploadFiles({
                 type="button"
                 variant="outline"
                 size="sm"
-                onClick={openFileDialog}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  openFileDialog();
+                }}
                 disabled={files.length >= maxFiles}
                 className={`flex gap-2`}
               >
@@ -140,7 +144,10 @@ export default function UploadFiles({
                     )}
                     <Button
                       type="button"
-                      onClick={() => removeFile(file.id)}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        removeFile(file.id);
+                      }}
                       size="icon"
                       className="border-background focus-visible:border-background absolute -top-2 -right-2 size-6 rounded-full border-2 shadow-none"
                       aria-label="Remove media"
@@ -173,7 +180,10 @@ export default function UploadFiles({
               type="button"
               variant="outline"
               className={`mt-4 flex gap-3 ${color ? "bg-rose-500 text-white" : ""}`}
-              onClick={openFileDialog}
+              onClick={(e) => {
+                e.stopPropagation();
+                openFileDialog();
+              }}
             >
               <UploadIcon
                 className="-ms-1 size-4 opacity-60"

@@ -344,7 +344,7 @@ export const updateEstimateItems = async ({
     await db.estimate.update({
       where: { id: estimateId },
       data: {
-        status: "DRAFT",
+        status: "TOFINISH",
       },
     });
 
@@ -378,7 +378,7 @@ export const putInTrash = async ({
       return { success: false, message: "Devis introuvable" };
     }
 
-    if (estimate.status !== "DRAFT" && estimate.status !== "TODO") {
+    if (estimate.status !== "TOFINISH") {
       return {
         success: false,
         message: "Ce devis ne peut pas être supprimé.",
@@ -473,6 +473,7 @@ export const validateEstimate = async ({
       where: { id: estimateId },
       data: {
         status: estimate.type === "INDIVIDUAL" ? "PENDING" : "SENT_TO_GARAGE",
+        refusalReason: null,
       },
     });
 
@@ -485,8 +486,10 @@ export const validateEstimate = async ({
 
 export const refuseEstimate = async ({
   estimateId,
+  reason,
 }: {
   estimateId: string;
+  reason: string;
 }): Promise<
   | { success: false; message: string }
   | { success: true; message: "Le devis a bien été refusé." }
@@ -508,7 +511,8 @@ export const refuseEstimate = async ({
     await db.estimate.update({
       where: { id: estimateId },
       data: {
-        status: "DRAFT",
+        status: "TOFINISH",
+        refusalReason: reason,
       },
     });
     return { success: true, message: "Le devis a bien été refusé." };

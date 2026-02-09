@@ -28,6 +28,7 @@ export default function UpdateMOItem({
   item,
   setSelectedItems,
   estimateId,
+  disable,
 }: {
   ItemsEstimate: ItemEstimate;
   item: {
@@ -41,6 +42,7 @@ export default function UpdateMOItem({
   };
   setSelectedItems: React.Dispatch<React.SetStateAction<ItemEstimate>>;
   estimateId: string;
+  disable?: boolean;
 }) {
   const [open, setOpen] = useState(false);
 
@@ -211,6 +213,7 @@ export default function UpdateMOItem({
           size="sm"
           className="h-8 w-full p-0 hover:bg-black/10"
           onClick={() => setOpen(true)}
+          disabled={disable}
         >
           <Edit2 className="h-4 w-4" />
         </Button>
