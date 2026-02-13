@@ -202,6 +202,8 @@ export const InvoiceScalarFieldEnum = {
   postalCode: 'postalCode',
   city: 'city',
   estimateItems: 'estimateItems',
+  pdfUrl: 'pdfUrl',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -323,7 +325,8 @@ export const InvoiceOrderByRelevanceFieldEnum = {
   companyName: 'companyName',
   address: 'address',
   city: 'city',
-  estimateItems: 'estimateItems'
+  estimateItems: 'estimateItems',
+  pdfUrl: 'pdfUrl'
 } as const
 
 export type InvoiceOrderByRelevanceFieldEnum = (typeof InvoiceOrderByRelevanceFieldEnum)[keyof typeof InvoiceOrderByRelevanceFieldEnum]

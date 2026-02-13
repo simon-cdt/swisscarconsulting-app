@@ -402,7 +402,7 @@ export default function TrashPage() {
                                               toast.success(response.message);
                                               setLoading(false);
                                               router.push(
-                                                `/dashboard/estimates/${response.estimateStatus === "DRAFT" ? "drafts" : "todo"}`,
+                                                `/dashboard/estimates/tofinish`,
                                               );
                                             } else {
                                               setLoading(false);

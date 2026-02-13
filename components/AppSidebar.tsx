@@ -108,7 +108,7 @@ const data = {
       items: [
         {
           title: "Emises",
-          url: "/factures/sent",
+          url: "/invoices/pending",
           icon: FileOutput,
         },
         {

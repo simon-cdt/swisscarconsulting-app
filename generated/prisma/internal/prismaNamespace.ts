@@ -1103,6 +1103,8 @@ export const InvoiceScalarFieldEnum = {
   postalCode: 'postalCode',
   city: 'city',
   estimateItems: 'estimateItems',
+  pdfUrl: 'pdfUrl',
+  status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1224,7 +1226,8 @@ export const InvoiceOrderByRelevanceFieldEnum = {
   companyName: 'companyName',
   address: 'address',
   city: 'city',
-  estimateItems: 'estimateItems'
+  estimateItems: 'estimateItems',
+  pdfUrl: 'pdfUrl'
 } as const
 
 export type InvoiceOrderByRelevanceFieldEnum = (typeof InvoiceOrderByRelevanceFieldEnum)[keyof typeof InvoiceOrderByRelevanceFieldEnum]
@@ -1313,6 +1316,13 @@ export type EnumItemTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaM
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
+    
+
+
+/**
+ * Reference to a field of type 'InvoiceStatus'
+ */
+export type EnumInvoiceStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvoiceStatus'>
     
 
 /**

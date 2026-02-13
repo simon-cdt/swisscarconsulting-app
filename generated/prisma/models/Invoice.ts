@@ -63,6 +63,8 @@ export type InvoiceMinAggregateOutputType = {
   postalCode: number | null
   city: string | null
   estimateItems: string | null
+  pdfUrl: string | null
+  status: $Enums.InvoiceStatus | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -92,6 +94,8 @@ export type InvoiceMaxAggregateOutputType = {
   postalCode: number | null
   city: string | null
   estimateItems: string | null
+  pdfUrl: string | null
+  status: $Enums.InvoiceStatus | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -121,6 +125,8 @@ export type InvoiceCountAggregateOutputType = {
   postalCode: number
   city: number
   estimateItems: number
+  pdfUrl: number
+  status: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -164,6 +170,8 @@ export type InvoiceMinAggregateInputType = {
   postalCode?: true
   city?: true
   estimateItems?: true
+  pdfUrl?: true
+  status?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -193,6 +201,8 @@ export type InvoiceMaxAggregateInputType = {
   postalCode?: true
   city?: true
   estimateItems?: true
+  pdfUrl?: true
+  status?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -222,6 +232,8 @@ export type InvoiceCountAggregateInputType = {
   postalCode?: true
   city?: true
   estimateItems?: true
+  pdfUrl?: true
+  status?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -338,6 +350,8 @@ export type InvoiceGroupByOutputType = {
   postalCode: number | null
   city: string | null
   estimateItems: string
+  pdfUrl: string | null
+  status: $Enums.InvoiceStatus
   createdAt: Date
   updatedAt: Date | null
   _count: InvoiceCountAggregateOutputType | null
@@ -390,6 +404,8 @@ export type InvoiceWhereInput = {
   postalCode?: Prisma.IntNullableFilter<"Invoice"> | number | null
   city?: Prisma.StringNullableFilter<"Invoice"> | string | null
   estimateItems?: Prisma.StringFilter<"Invoice"> | string
+  pdfUrl?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  status?: Prisma.EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
   createdAt?: Prisma.DateTimeFilter<"Invoice"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Invoice"> | Date | string | null
 }
@@ -419,6 +435,8 @@ export type InvoiceOrderByWithRelationInput = {
   postalCode?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
   estimateItems?: Prisma.SortOrder
+  pdfUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _relevance?: Prisma.InvoiceOrderByRelevanceInput
@@ -452,6 +470,8 @@ export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   postalCode?: Prisma.IntNullableFilter<"Invoice"> | number | null
   city?: Prisma.StringNullableFilter<"Invoice"> | string | null
   estimateItems?: Prisma.StringFilter<"Invoice"> | string
+  pdfUrl?: Prisma.StringNullableFilter<"Invoice"> | string | null
+  status?: Prisma.EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
   createdAt?: Prisma.DateTimeFilter<"Invoice"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Invoice"> | Date | string | null
 }, "id">
@@ -481,6 +501,8 @@ export type InvoiceOrderByWithAggregationInput = {
   postalCode?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
   estimateItems?: Prisma.SortOrder
+  pdfUrl?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.InvoiceCountOrderByAggregateInput
@@ -518,6 +540,8 @@ export type InvoiceScalarWhereWithAggregatesInput = {
   postalCode?: Prisma.IntNullableWithAggregatesFilter<"Invoice"> | number | null
   city?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
   estimateItems?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
+  pdfUrl?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
+  status?: Prisma.EnumInvoiceStatusWithAggregatesFilter<"Invoice"> | $Enums.InvoiceStatus
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Invoice"> | Date | string
   updatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Invoice"> | Date | string | null
 }
@@ -547,6 +571,8 @@ export type InvoiceCreateInput = {
   postalCode?: number | null
   city?: string | null
   estimateItems: string
+  pdfUrl?: string | null
+  status?: $Enums.InvoiceStatus
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -576,6 +602,8 @@ export type InvoiceUncheckedCreateInput = {
   postalCode?: number | null
   city?: string | null
   estimateItems: string
+  pdfUrl?: string | null
+  status?: $Enums.InvoiceStatus
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -605,6 +633,8 @@ export type InvoiceUpdateInput = {
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   estimateItems?: Prisma.StringFieldUpdateOperationsInput | string
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -634,6 +664,8 @@ export type InvoiceUncheckedUpdateInput = {
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   estimateItems?: Prisma.StringFieldUpdateOperationsInput | string
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -663,6 +695,8 @@ export type InvoiceCreateManyInput = {
   postalCode?: number | null
   city?: string | null
   estimateItems: string
+  pdfUrl?: string | null
+  status?: $Enums.InvoiceStatus
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -692,6 +726,8 @@ export type InvoiceUpdateManyMutationInput = {
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   estimateItems?: Prisma.StringFieldUpdateOperationsInput | string
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -721,6 +757,8 @@ export type InvoiceUncheckedUpdateManyInput = {
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   estimateItems?: Prisma.StringFieldUpdateOperationsInput | string
+  pdfUrl?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumInvoiceStatusFieldUpdateOperationsInput | $Enums.InvoiceStatus
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -756,6 +794,8 @@ export type InvoiceCountOrderByAggregateInput = {
   postalCode?: Prisma.SortOrder
   city?: Prisma.SortOrder
   estimateItems?: Prisma.SortOrder
+  pdfUrl?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -791,6 +831,8 @@ export type InvoiceMaxOrderByAggregateInput = {
   postalCode?: Prisma.SortOrder
   city?: Prisma.SortOrder
   estimateItems?: Prisma.SortOrder
+  pdfUrl?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -820,6 +862,8 @@ export type InvoiceMinOrderByAggregateInput = {
   postalCode?: Prisma.SortOrder
   city?: Prisma.SortOrder
   estimateItems?: Prisma.SortOrder
+  pdfUrl?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -828,6 +872,10 @@ export type InvoiceSumOrderByAggregateInput = {
   year?: Prisma.SortOrder
   clientId?: Prisma.SortOrder
   postalCode?: Prisma.SortOrder
+}
+
+export type EnumInvoiceStatusFieldUpdateOperationsInput = {
+  set?: $Enums.InvoiceStatus
 }
 
 
@@ -857,6 +905,8 @@ export type InvoiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   postalCode?: boolean
   city?: boolean
   estimateItems?: boolean
+  pdfUrl?: boolean
+  status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }, ExtArgs["result"]["invoice"]>
@@ -888,11 +938,13 @@ export type InvoiceSelectScalar = {
   postalCode?: boolean
   city?: boolean
   estimateItems?: boolean
+  pdfUrl?: boolean
+  status?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "estimateId" | "typeEstimate" | "claimNumber" | "interventionId" | "interventionDate" | "description" | "medias" | "vehiculeId" | "brand" | "model" | "year" | "licensePlate" | "clientId" | "typeClient" | "name" | "firstName" | "email" | "phone" | "companyName" | "address" | "postalCode" | "city" | "estimateItems" | "createdAt" | "updatedAt", ExtArgs["result"]["invoice"]>
+export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "estimateId" | "typeEstimate" | "claimNumber" | "interventionId" | "interventionDate" | "description" | "medias" | "vehiculeId" | "brand" | "model" | "year" | "licensePlate" | "clientId" | "typeClient" | "name" | "firstName" | "email" | "phone" | "companyName" | "address" | "postalCode" | "city" | "estimateItems" | "pdfUrl" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["invoice"]>
 
 export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Invoice"
@@ -922,6 +974,8 @@ export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     postalCode: number | null
     city: string | null
     estimateItems: string
+    pdfUrl: string | null
+    status: $Enums.InvoiceStatus
     createdAt: Date
     updatedAt: Date | null
   }, ExtArgs["result"]["invoice"]>
@@ -1317,6 +1371,8 @@ export interface InvoiceFieldRefs {
   readonly postalCode: Prisma.FieldRef<"Invoice", 'Int'>
   readonly city: Prisma.FieldRef<"Invoice", 'String'>
   readonly estimateItems: Prisma.FieldRef<"Invoice", 'String'>
+  readonly pdfUrl: Prisma.FieldRef<"Invoice", 'String'>
+  readonly status: Prisma.FieldRef<"Invoice", 'InvoiceStatus'>
   readonly createdAt: Prisma.FieldRef<"Invoice", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Invoice", 'DateTime'>
 }

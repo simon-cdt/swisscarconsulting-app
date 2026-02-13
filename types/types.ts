@@ -64,3 +64,24 @@ export type Estimate = {
     };
   };
 };
+
+export type FetchAllInvoices = Invoice[];
+
+export type Invoice = {
+  id: string;
+  status: string;
+  typeEstimate: TypeEstimate;
+  claimNumber: string | null;
+  interventionDate: Date;
+  description: string | null;
+  medias: string | null;
+  brand: string;
+  model: string;
+  licensePlate: string;
+  name: string;
+  firstName: string;
+  companyName: string | null;
+  typeClient: TypeClient;
+  phone: string;
+  pdfUrl: string;
+};

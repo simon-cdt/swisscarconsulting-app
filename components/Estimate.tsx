@@ -44,6 +44,7 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Spinner } from "./ui/spinner";
+import { createInvoice } from "@/lib/actions/invoice";
 
 export default function Estimate({
   estimate,
@@ -391,7 +392,7 @@ export default function Estimate({
                         <AlertDialogAction
                           className="bg-pink-700 hover:bg-pink-800"
                           onClick={async () => {
-                            const response = await sendEstimateToGarage({
+                            const response = await createInvoice({
                               estimateId: estimate.id,
                             });
 
