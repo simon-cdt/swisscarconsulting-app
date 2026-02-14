@@ -32,6 +32,7 @@ export type ItemEstimate = {
   unitPrice: number;
   quantity: number | null;
   discount: number | null;
+  calculateByTime?: boolean | null;
   position: number;
 }[];
 

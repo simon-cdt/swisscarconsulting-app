@@ -244,7 +244,7 @@ type EstimateItem = {
   description: string | null;
   unitPrice: number;
   quantity: number | null;
-  discount: number | null;
+  calculateByTime?: boolean | null;
   position: number;
 };
 
@@ -343,18 +343,20 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
     return data.items.reduce((sum, item) => {
       let itemTotal: number;
 
-      // Pour les items LABOR, quantity est en minutes, donc convertir en heures
       if (item.type === "LABOR") {
-        const hoursDecimal = (item.quantity ?? 0) / 60;
-        itemTotal = item.unitPrice * hoursDecimal;
+        // Si calculateByTime est true ET qu'il y a une quantity (temps en minutes)
+        if (item.calculateByTime && item.quantity) {
+          const hoursDecimal = item.quantity / 60;
+          itemTotal = item.unitPrice * hoursDecimal;
+        } else {
+          // Sinon, utiliser simplement le unitPrice
+          itemTotal = item.unitPrice;
+        }
       } else {
         itemTotal = item.unitPrice * (item.quantity ?? 0);
       }
 
-      const discountAmount = item.discount
-        ? (itemTotal * item.discount) / 100
-        : 0;
-      return sum + (itemTotal - discountAmount);
+      return sum + itemTotal;
     }, 0);
   };
 
@@ -513,19 +515,32 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
               {labor
                 .sort((a, b) => a.position - b.position)
                 .map((item, index) => {
-                  // Convertir les minutes en heures pour le calcul
-                  const totalMinutes = item.quantity ?? 0;
-                  const hoursDecimal = totalMinutes / 60;
-                  const itemTotal = item.unitPrice * hoursDecimal;
-                  const discountAmount = item.discount
-                    ? (itemTotal * item.discount) / 100
-                    : 0;
-                  const total = itemTotal - discountAmount;
+                  // Calculer le total selon calculateByTime
+                  let itemTotal: number;
+                  let durationText = "-";
 
-                  // Convertir les minutes en format heures et minutes pour l'affichage
-                  const hours = Math.floor(totalMinutes / 60);
-                  const minutes = totalMinutes % 60;
-                  const durationText = `${hours}h${minutes > 0 ? ` ${minutes}min` : ""}`;
+                  if (item.calculateByTime && item.quantity) {
+                    // Calcul avec le temps
+                    const totalMinutes = item.quantity;
+                    const hoursDecimal = totalMinutes / 60;
+                    itemTotal = item.unitPrice * hoursDecimal;
+
+                    // Afficher la durée
+                    const hours = Math.floor(totalMinutes / 60);
+                    const minutes = totalMinutes % 60;
+                    durationText = `${hours}h${minutes > 0 ? ` ${minutes}min` : ""}`;
+                  } else {
+                    // Pas de calcul par temps
+                    itemTotal = item.unitPrice;
+
+                    // Afficher la durée si elle existe
+                    if (item.quantity) {
+                      const totalMinutes = item.quantity;
+                      const hours = Math.floor(totalMinutes / 60);
+                      const minutes = totalMinutes % 60;
+                      durationText = `${hours}h${minutes > 0 ? ` ${minutes}min` : ""}`;
+                    }
+                  }
 
                   return (
                     <View
@@ -551,15 +566,12 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
                       </View>
                       <View style={[styles.tableCellRight, styles.rate16]}>
                         <Text>{item.unitPrice.toFixed(2)} CHF</Text>
-                        {item.discount && (
-                          <Text style={styles.discount}>-{item.discount}%</Text>
-                        )}
                       </View>
                       <Text style={[styles.tableCellRight, styles.hours20]}>
                         {durationText}
                       </Text>
                       <Text style={[styles.tableCellRight, styles.total15]}>
-                        {total.toFixed(2)} CHF
+                        {itemTotal.toFixed(2)} CHF
                       </Text>
                     </View>
                   );

@@ -29,7 +29,6 @@ export async function GET(
           description: true,
           quantity: true,
           unitPrice: true,
-          discount: true,
           type: true,
           position: true,
         },

@@ -308,7 +308,6 @@ export const updateEstimateItems = async ({
     description: string | null;
     unitPrice: number;
     quantity: number | null;
-    discount: number | null;
     position: number;
   }>;
 }): Promise<
@@ -335,7 +334,6 @@ export const updateEstimateItems = async ({
           description: item.description,
           unitPrice: item.unitPrice,
           quantity: item.quantity,
-          discount: item.discount,
           position: item.position,
         },
       });

@@ -22,32 +22,25 @@ export default function AddMOItem({
   setSelectedItems: React.Dispatch<React.SetStateAction<ItemEstimate>>;
   estimateId: string;
 }) {
-  const zodFormSchema = z
-    .object({
-      description: z.string().optional(),
-      unitPrice: z
-        .number("Un nombre est attendu")
-        .positive("Le prix doit être positif"),
-      discount: z
-        .number()
-        .min(1, "Le rabais doit être au minimum 1%")
-        .max(100, "Le rabais doit être au maximum 100%")
-        .optional(),
-      hours: z
-        .number("Un nombre est attendu")
-        .int("Les heures doivent être un entier")
-        .min(0, "Les heures doivent être >= 0"),
-      minutes: z
-        .number("Un nombre est attendu")
-        .int("Les minutes doivent être un entier")
-        .min(0, "Les minutes doivent être >= 0")
-        .max(59, "Les minutes doivent être <= 59"),
-      position: z.number().min(1, "La position doit être positive."),
-    })
-    .refine((data) => data.hours > 0 || data.minutes > 0, {
-      message: "La durée doit être supérieure à 0",
-      path: ["hours"],
-    });
+  const zodFormSchema = z.object({
+    description: z.string().optional(),
+    unitPrice: z
+      .number("Un nombre est attendu")
+      .positive("Le prix doit être positif"),
+    hours: z
+      .number("Un nombre est attendu")
+      .int("Les heures doivent être un entier")
+      .min(0, "Les heures doivent être >= 0")
+      .optional(),
+    minutes: z
+      .number("Un nombre est attendu")
+      .int("Les minutes doivent être un entier")
+      .min(0, "Les minutes doivent être >= 0")
+      .max(59, "Les minutes doivent être <= 59")
+      .optional(),
+    calculateByTime: z.boolean().optional(),
+    position: z.number().min(1, "La position doit être positive."),
+  });
   type FormSchema = z.infer<typeof zodFormSchema>;
 
   const {
@@ -68,12 +61,18 @@ export default function AddMOItem({
   const unitPrice = watch("unitPrice");
   const hours = watch("hours");
   const minutes = watch("minutes");
-  const discount = watch("discount");
+  const calculateByTime = watch("calculateByTime");
 
   const handleSubmitForm = async (data: FormSchema) => {
     try {
-      // Calculer la durée totale en minutes
-      const totalMinutes = data.hours * 60 + data.minutes;
+      // Calculer la durée totale en minutes si heures/minutes sont fournis
+      let totalMinutes: number | null = null;
+
+      if (data.hours !== undefined || data.minutes !== undefined) {
+        const calculated = (data.hours || 0) * 60 + (data.minutes || 0);
+        // Si le total est 0, on considère qu'il n'y a pas de temps
+        totalMinutes = calculated > 0 ? calculated : null;
+      }
 
       // Créer le nouvel item
       const newItem = {
@@ -83,7 +82,8 @@ export default function AddMOItem({
         description: data.description || null,
         unitPrice: data.unitPrice,
         quantity: totalMinutes,
-        discount: data.discount ?? null,
+        discount: null,
+        calculateByTime: data.calculateByTime || null,
         position: data.position,
       };
 
@@ -151,7 +151,7 @@ export default function AddMOItem({
           />
         </div>
         <FormField
-          label="Prix unique (par heure)"
+          label="Prix unique"
           name="unitPrice"
           register={register}
           type="number"
@@ -159,36 +159,6 @@ export default function AddMOItem({
           error={errors.unitPrice}
           nonempty
           defaultValue={100}
-        />
-        <div className="col-span-2 grid grid-cols-2 gap-4">
-          <FormField
-            label="Heures"
-            name="hours"
-            register={register}
-            type="number"
-            step="1"
-            error={errors.hours}
-            nonempty
-            defaultValue={0}
-          />
-          <FormField
-            label="Minutes"
-            name="minutes"
-            register={register}
-            type="number"
-            step="1"
-            error={errors.minutes}
-            nonempty
-            defaultValue={0}
-          />
-        </div>
-        <FormField
-          label="Rabais (%)"
-          name="discount"
-          register={register}
-          type="number"
-          error={errors.discount}
-          step="1"
         />
         <SelectField
           items={Array.from(
@@ -212,52 +182,59 @@ export default function AddMOItem({
           error={errors.position}
           nonempty
         />
+        <FormField
+          label="Heures"
+          name="hours"
+          register={register}
+          type="number"
+          step="1"
+          error={errors.hours}
+        />
+        <FormField
+          label="Minutes"
+          name="minutes"
+          register={register}
+          type="number"
+          step="1"
+          error={errors.minutes}
+        />
+        {((hours !== undefined && hours > 0) ||
+          (minutes !== undefined && minutes > 0)) && (
+          <div className="col-span-2 flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="calculateByTime"
+              {...register("calculateByTime")}
+              className="h-4 w-4 rounded border-gray-300"
+            />
+            <label htmlFor="calculateByTime" className="text-sm">
+              Calculer le prix selon le temps (heures × prix/h)
+            </label>
+          </div>
+        )}
       </div>
-      {unitPrice && (hours > 0 || minutes > 0) && (
+      {unitPrice && (
         <div className="mt-4 rounded-lg border border-blue-600 bg-blue-50 p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-700">Durée totale:</span>
-            <span className="text-lg font-bold text-blue-600">
-              {hours}h {minutes}min
-            </span>
-          </div>
-          <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-700">Prix avant rabais:</span>
-            <span className="text-base font-semibold text-gray-700">
-              {(unitPrice * ((hours * 60 + minutes) / 60)).toFixed(2)} CHF
-            </span>
-          </div>
-          {discount && discount > 0 && (
-            <>
-              <div className="flex items-center justify-between">
-                <span className="text-sm text-gray-700">
-                  Rabais ({discount}%):
-                </span>
-                <span className="text-base font-semibold text-red-600">
-                  -
-                  {(
-                    unitPrice *
-                    ((hours * 60 + minutes) / 60) *
-                    (discount / 100)
-                  ).toFixed(2)}{" "}
-                  CHF
-                </span>
-              </div>
-              <div className="mt-2 flex items-center justify-between border-t border-green-600 pt-2">
-                <span className="text-sm font-semibold text-gray-700">
-                  Prix final:
-                </span>
-                <span className="text-xl font-bold text-green-600">
-                  {(
-                    unitPrice *
-                    ((hours * 60 + minutes) / 60) *
-                    (1 - discount / 100)
-                  ).toFixed(2)}{" "}
-                  CHF
-                </span>
-              </div>
-            </>
+          {(hours !== undefined || minutes !== undefined) && (
+            <div className="flex items-center justify-between">
+              <span className="text-sm text-gray-700">Durée totale:</span>
+              <span className="text-lg font-bold text-blue-600">
+                {hours || 0}h {minutes || 0}min
+              </span>
+            </div>
           )}
+          <div className="flex items-center justify-between">
+            <span className="text-sm text-gray-700">Prix total:</span>
+            <span className="text-xl font-bold text-green-600">
+              {calculateByTime && (hours !== undefined || minutes !== undefined)
+                ? (
+                    unitPrice *
+                    (((hours || 0) * 60 + (minutes || 0)) / 60)
+                  ).toFixed(2)
+                : unitPrice.toFixed(2)}{" "}
+              CHF
+            </span>
+          </div>
         </div>
       )}
       <div className="mt-4 flex w-full justify-end gap-3">

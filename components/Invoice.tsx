@@ -83,17 +83,6 @@ export default function Invoice({
                   </span>
                 </span>
               </div>
-
-              {invoice.typeEstimate === "INSURANCE" && (
-                <span className="text-sm">
-                  Numéro de sinistre :{" "}
-                  <span
-                    className={`${invoice.claimNumber ? "text-foreground" : "text-red-500"} font-mono font-medium`}
-                  >
-                    {invoice.claimNumber || "NON RENSEIGNÉ"}
-                  </span>
-                </span>
-              )}
             </div>
           </div>
 

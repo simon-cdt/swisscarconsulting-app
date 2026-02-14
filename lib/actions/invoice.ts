@@ -39,7 +39,6 @@ export const createInvoice = async ({
             description: true,
             unitPrice: true,
             quantity: true,
-            discount: true,
             position: true,
           },
         },

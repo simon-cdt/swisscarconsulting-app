@@ -29,14 +29,12 @@ export type AggregateEstimateItem = {
 export type EstimateItemAvgAggregateOutputType = {
   unitPrice: number | null
   quantity: number | null
-  discount: number | null
   position: number | null
 }
 
 export type EstimateItemSumAggregateOutputType = {
   unitPrice: number | null
   quantity: number | null
-  discount: number | null
   position: number | null
 }
 
@@ -48,7 +46,7 @@ export type EstimateItemMinAggregateOutputType = {
   description: string | null
   unitPrice: number | null
   quantity: number | null
-  discount: number | null
+  calculateByTime: boolean | null
   position: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -62,7 +60,7 @@ export type EstimateItemMaxAggregateOutputType = {
   description: string | null
   unitPrice: number | null
   quantity: number | null
-  discount: number | null
+  calculateByTime: boolean | null
   position: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -76,7 +74,7 @@ export type EstimateItemCountAggregateOutputType = {
   description: number
   unitPrice: number
   quantity: number
-  discount: number
+  calculateByTime: number
   position: number
   createdAt: number
   updatedAt: number
@@ -87,14 +85,12 @@ export type EstimateItemCountAggregateOutputType = {
 export type EstimateItemAvgAggregateInputType = {
   unitPrice?: true
   quantity?: true
-  discount?: true
   position?: true
 }
 
 export type EstimateItemSumAggregateInputType = {
   unitPrice?: true
   quantity?: true
-  discount?: true
   position?: true
 }
 
@@ -106,7 +102,7 @@ export type EstimateItemMinAggregateInputType = {
   description?: true
   unitPrice?: true
   quantity?: true
-  discount?: true
+  calculateByTime?: true
   position?: true
   createdAt?: true
   updatedAt?: true
@@ -120,7 +116,7 @@ export type EstimateItemMaxAggregateInputType = {
   description?: true
   unitPrice?: true
   quantity?: true
-  discount?: true
+  calculateByTime?: true
   position?: true
   createdAt?: true
   updatedAt?: true
@@ -134,7 +130,7 @@ export type EstimateItemCountAggregateInputType = {
   description?: true
   unitPrice?: true
   quantity?: true
-  discount?: true
+  calculateByTime?: true
   position?: true
   createdAt?: true
   updatedAt?: true
@@ -235,7 +231,7 @@ export type EstimateItemGroupByOutputType = {
   description: string | null
   unitPrice: number
   quantity: number | null
-  discount: number | null
+  calculateByTime: boolean | null
   position: number
   createdAt: Date
   updatedAt: Date | null
@@ -272,7 +268,7 @@ export type EstimateItemWhereInput = {
   description?: Prisma.StringNullableFilter<"EstimateItem"> | string | null
   unitPrice?: Prisma.FloatFilter<"EstimateItem"> | number
   quantity?: Prisma.IntNullableFilter<"EstimateItem"> | number | null
-  discount?: Prisma.FloatNullableFilter<"EstimateItem"> | number | null
+  calculateByTime?: Prisma.BoolNullableFilter<"EstimateItem"> | boolean | null
   position?: Prisma.IntFilter<"EstimateItem"> | number
   createdAt?: Prisma.DateTimeFilter<"EstimateItem"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"EstimateItem"> | Date | string | null
@@ -287,7 +283,7 @@ export type EstimateItemOrderByWithRelationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   quantity?: Prisma.SortOrderInput | Prisma.SortOrder
-  discount?: Prisma.SortOrderInput | Prisma.SortOrder
+  calculateByTime?: Prisma.SortOrderInput | Prisma.SortOrder
   position?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -306,7 +302,7 @@ export type EstimateItemWhereUniqueInput = Prisma.AtLeast<{
   description?: Prisma.StringNullableFilter<"EstimateItem"> | string | null
   unitPrice?: Prisma.FloatFilter<"EstimateItem"> | number
   quantity?: Prisma.IntNullableFilter<"EstimateItem"> | number | null
-  discount?: Prisma.FloatNullableFilter<"EstimateItem"> | number | null
+  calculateByTime?: Prisma.BoolNullableFilter<"EstimateItem"> | boolean | null
   position?: Prisma.IntFilter<"EstimateItem"> | number
   createdAt?: Prisma.DateTimeFilter<"EstimateItem"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"EstimateItem"> | Date | string | null
@@ -321,7 +317,7 @@ export type EstimateItemOrderByWithAggregationInput = {
   description?: Prisma.SortOrderInput | Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   quantity?: Prisma.SortOrderInput | Prisma.SortOrder
-  discount?: Prisma.SortOrderInput | Prisma.SortOrder
+  calculateByTime?: Prisma.SortOrderInput | Prisma.SortOrder
   position?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -343,7 +339,7 @@ export type EstimateItemScalarWhereWithAggregatesInput = {
   description?: Prisma.StringNullableWithAggregatesFilter<"EstimateItem"> | string | null
   unitPrice?: Prisma.FloatWithAggregatesFilter<"EstimateItem"> | number
   quantity?: Prisma.IntNullableWithAggregatesFilter<"EstimateItem"> | number | null
-  discount?: Prisma.FloatNullableWithAggregatesFilter<"EstimateItem"> | number | null
+  calculateByTime?: Prisma.BoolNullableWithAggregatesFilter<"EstimateItem"> | boolean | null
   position?: Prisma.IntWithAggregatesFilter<"EstimateItem"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"EstimateItem"> | Date | string
   updatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"EstimateItem"> | Date | string | null
@@ -356,7 +352,7 @@ export type EstimateItemCreateInput = {
   description?: string | null
   unitPrice: number
   quantity?: number | null
-  discount?: number | null
+  calculateByTime?: boolean | null
   position: number
   createdAt?: Date | string
   updatedAt?: Date | string | null
@@ -371,7 +367,7 @@ export type EstimateItemUncheckedCreateInput = {
   description?: string | null
   unitPrice: number
   quantity?: number | null
-  discount?: number | null
+  calculateByTime?: boolean | null
   position: number
   createdAt?: Date | string
   updatedAt?: Date | string | null
@@ -384,7 +380,7 @@ export type EstimateItemUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  calculateByTime?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   position?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -399,7 +395,7 @@ export type EstimateItemUncheckedUpdateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  calculateByTime?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   position?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -413,7 +409,7 @@ export type EstimateItemCreateManyInput = {
   description?: string | null
   unitPrice: number
   quantity?: number | null
-  discount?: number | null
+  calculateByTime?: boolean | null
   position: number
   createdAt?: Date | string
   updatedAt?: Date | string | null
@@ -426,7 +422,7 @@ export type EstimateItemUpdateManyMutationInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  calculateByTime?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   position?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -440,7 +436,7 @@ export type EstimateItemUncheckedUpdateManyInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  calculateByTime?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   position?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -470,7 +466,7 @@ export type EstimateItemCountOrderByAggregateInput = {
   description?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
-  discount?: Prisma.SortOrder
+  calculateByTime?: Prisma.SortOrder
   position?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -479,7 +475,6 @@ export type EstimateItemCountOrderByAggregateInput = {
 export type EstimateItemAvgOrderByAggregateInput = {
   unitPrice?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
-  discount?: Prisma.SortOrder
   position?: Prisma.SortOrder
 }
 
@@ -491,7 +486,7 @@ export type EstimateItemMaxOrderByAggregateInput = {
   description?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
-  discount?: Prisma.SortOrder
+  calculateByTime?: Prisma.SortOrder
   position?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -505,7 +500,7 @@ export type EstimateItemMinOrderByAggregateInput = {
   description?: Prisma.SortOrder
   unitPrice?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
-  discount?: Prisma.SortOrder
+  calculateByTime?: Prisma.SortOrder
   position?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -514,7 +509,6 @@ export type EstimateItemMinOrderByAggregateInput = {
 export type EstimateItemSumOrderByAggregateInput = {
   unitPrice?: Prisma.SortOrder
   quantity?: Prisma.SortOrder
-  discount?: Prisma.SortOrder
   position?: Prisma.SortOrder
 }
 
@@ -572,12 +566,8 @@ export type FloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
-export type NullableFloatFieldUpdateOperationsInput = {
-  set?: number | null
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
+export type NullableBoolFieldUpdateOperationsInput = {
+  set?: boolean | null
 }
 
 export type EstimateItemCreateWithoutEstimateInput = {
@@ -587,7 +577,7 @@ export type EstimateItemCreateWithoutEstimateInput = {
   description?: string | null
   unitPrice: number
   quantity?: number | null
-  discount?: number | null
+  calculateByTime?: boolean | null
   position: number
   createdAt?: Date | string
   updatedAt?: Date | string | null
@@ -600,7 +590,7 @@ export type EstimateItemUncheckedCreateWithoutEstimateInput = {
   description?: string | null
   unitPrice: number
   quantity?: number | null
-  discount?: number | null
+  calculateByTime?: boolean | null
   position: number
   createdAt?: Date | string
   updatedAt?: Date | string | null
@@ -643,7 +633,7 @@ export type EstimateItemScalarWhereInput = {
   description?: Prisma.StringNullableFilter<"EstimateItem"> | string | null
   unitPrice?: Prisma.FloatFilter<"EstimateItem"> | number
   quantity?: Prisma.IntNullableFilter<"EstimateItem"> | number | null
-  discount?: Prisma.FloatNullableFilter<"EstimateItem"> | number | null
+  calculateByTime?: Prisma.BoolNullableFilter<"EstimateItem"> | boolean | null
   position?: Prisma.IntFilter<"EstimateItem"> | number
   createdAt?: Prisma.DateTimeFilter<"EstimateItem"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"EstimateItem"> | Date | string | null
@@ -656,7 +646,7 @@ export type EstimateItemCreateManyEstimateInput = {
   description?: string | null
   unitPrice: number
   quantity?: number | null
-  discount?: number | null
+  calculateByTime?: boolean | null
   position: number
   createdAt?: Date | string
   updatedAt?: Date | string | null
@@ -669,7 +659,7 @@ export type EstimateItemUpdateWithoutEstimateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  calculateByTime?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   position?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -682,7 +672,7 @@ export type EstimateItemUncheckedUpdateWithoutEstimateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  calculateByTime?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   position?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -695,7 +685,7 @@ export type EstimateItemUncheckedUpdateManyWithoutEstimateInput = {
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   unitPrice?: Prisma.FloatFieldUpdateOperationsInput | number
   quantity?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
-  discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  calculateByTime?: Prisma.NullableBoolFieldUpdateOperationsInput | boolean | null
   position?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -711,7 +701,7 @@ export type EstimateItemSelect<ExtArgs extends runtime.Types.Extensions.Internal
   description?: boolean
   unitPrice?: boolean
   quantity?: boolean
-  discount?: boolean
+  calculateByTime?: boolean
   position?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -728,13 +718,13 @@ export type EstimateItemSelectScalar = {
   description?: boolean
   unitPrice?: boolean
   quantity?: boolean
-  discount?: boolean
+  calculateByTime?: boolean
   position?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EstimateItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "estimateId" | "type" | "designation" | "description" | "unitPrice" | "quantity" | "discount" | "position" | "createdAt" | "updatedAt", ExtArgs["result"]["estimateItem"]>
+export type EstimateItemOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "estimateId" | "type" | "designation" | "description" | "unitPrice" | "quantity" | "calculateByTime" | "position" | "createdAt" | "updatedAt", ExtArgs["result"]["estimateItem"]>
 export type EstimateItemInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   estimate?: boolean | Prisma.EstimateDefaultArgs<ExtArgs>
 }
@@ -752,7 +742,7 @@ export type $EstimateItemPayload<ExtArgs extends runtime.Types.Extensions.Intern
     description: string | null
     unitPrice: number
     quantity: number | null
-    discount: number | null
+    calculateByTime: boolean | null
     position: number
     createdAt: Date
     updatedAt: Date | null
@@ -1133,7 +1123,7 @@ export interface EstimateItemFieldRefs {
   readonly description: Prisma.FieldRef<"EstimateItem", 'String'>
   readonly unitPrice: Prisma.FieldRef<"EstimateItem", 'Float'>
   readonly quantity: Prisma.FieldRef<"EstimateItem", 'Int'>
-  readonly discount: Prisma.FieldRef<"EstimateItem", 'Float'>
+  readonly calculateByTime: Prisma.FieldRef<"EstimateItem", 'Boolean'>
   readonly position: Prisma.FieldRef<"EstimateItem", 'Int'>
   readonly createdAt: Prisma.FieldRef<"EstimateItem", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"EstimateItem", 'DateTime'>

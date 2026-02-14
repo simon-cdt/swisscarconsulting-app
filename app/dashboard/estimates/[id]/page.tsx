@@ -186,14 +186,21 @@ export default function QuoteGeneratorPage() {
 
   const calculateTotal = () => {
     return selectedItems.reduce((sum, item) => {
-      const itemTotal =
-        item.type === "LABOR"
-          ? (item.unitPrice * (item.quantity ?? 0)) / 60
-          : item.unitPrice * (item.quantity ?? 0);
-      const discountAmount = item.discount
-        ? (itemTotal * item.discount) / 100
-        : 0;
-      return sum + (itemTotal - discountAmount);
+      let itemTotal: number;
+
+      if (item.type === "LABOR") {
+        // Si calculateByTime est true ET qu'il y a une quantity (temps en minutes)
+        if (item.calculateByTime && item.quantity) {
+          itemTotal = (item.unitPrice * item.quantity) / 60;
+        } else {
+          // Sinon, utiliser simplement le unitPrice
+          itemTotal = item.unitPrice;
+        }
+      } else {
+        itemTotal = item.unitPrice * (item.quantity ?? 0);
+      }
+
+      return sum + itemTotal;
     }, 0);
   };
 
@@ -227,7 +234,7 @@ export default function QuoteGeneratorPage() {
             description: item.description,
             unitPrice: item.unitPrice,
             quantity: item.quantity,
-            discount: item.discount,
+            calculateByTime: item.calculateByTime,
             position: item.position,
           })),
           intervention: {
@@ -620,27 +627,28 @@ export default function QuoteGeneratorPage() {
                                       <>
                                         <div className="text-primary font-semibold">
                                           {(() => {
-                                            const itemTotal =
-                                              (item.unitPrice *
-                                                (item.quantity || 1)) /
-                                              60;
-                                            const discountAmount = item.discount
-                                              ? (itemTotal * item.discount) /
-                                                100
-                                              : 0;
-                                            const finalPrice =
-                                              itemTotal - discountAmount;
+                                            let itemTotal: number;
+
+                                            // Si calculateByTime est true ET qu'il y a une quantity
+                                            if (
+                                              item.calculateByTime &&
+                                              item.quantity
+                                            ) {
+                                              itemTotal =
+                                                (item.unitPrice *
+                                                  item.quantity) /
+                                                60;
+                                            } else {
+                                              // Sinon, utiliser simplement le unitPrice
+                                              itemTotal = item.unitPrice;
+                                            }
+
                                             return (
-                                              finalPrice
+                                              itemTotal
                                                 .toFixed(2)
                                                 .replaceAll(".", ",") + " CHF"
                                             );
                                           })()}
-                                          {item.discount && (
-                                            <span className="ml-1 text-xs text-red-600">
-                                              (-{item.discount}%)
-                                            </span>
-                                          )}
                                         </div>
                                       </>
                                     ) : (
@@ -675,7 +683,9 @@ export default function QuoteGeneratorPage() {
                                             item={{
                                               ...item,
                                               unitPrice: item.unitPrice,
-                                              quantity: item.quantity || 1,
+                                              quantity: item.quantity,
+                                              calculateByTime:
+                                                item.calculateByTime || null,
                                             }}
                                             estimateId={params.id}
                                             disable={updateDisable}

@@ -115,11 +115,11 @@ model EstimateItem {
 
   type ItemType
 
-  designation String
-  description String?
-  unitPrice   Float
-  quantity    Int?
-  discount    Float?
+  designation     String
+  description     String?
+  unitPrice       Float
+  quantity        Int?
+  calculateByTime Boolean?
 
   position Int
 

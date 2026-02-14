@@ -1069,7 +1069,7 @@ export const EstimateItemScalarFieldEnum = {
   description: 'description',
   unitPrice: 'unitPrice',
   quantity: 'quantity',
-  discount: 'discount',
+  calculateByTime: 'calculateByTime',
   position: 'position',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
