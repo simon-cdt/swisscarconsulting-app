@@ -22,6 +22,8 @@ import toast from "react-hot-toast";
 import { Invoice as InvoiceType } from "@/types/types";
 import Link from "next/link";
 import { FILE_SERVER_URL } from "@/lib/config";
+import { updateInvoiceStatus } from "@/lib/actions/invoice";
+import { useRouter } from "next/navigation";
 
 export default function Invoice({
   invoice,
@@ -32,6 +34,8 @@ export default function Invoice({
   isIndividual: boolean;
   refetch: () => void;
 }) {
+  const router = useRouter();
+
   const getClientDisplayName = (client: {
     name: string;
     firstName: string;
@@ -95,34 +99,44 @@ export default function Invoice({
                 Voir la facture
               </Button>
             </Link>
-            <AlertDialog>
-              <AlertDialogTrigger asChild>
-                <Button className="bg-emerald-600 hover:bg-emerald-700">
-                  Marquer comme payé
-                </Button>
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
-                  <AlertDialogDescription>
-                    La facture sera marquée comme payée et sera archivée.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-emerald-600 hover:bg-emerald-700"
-                    onClick={async () => {
-                      // TODO: Implémenter l'action de marquer comme payé
-                      toast.success("Facture marquée comme payée");
-                      refetch();
-                    }}
-                  >
-                    Confirmer
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
+            {invoice.status === "PENDING" && (
+              <AlertDialog>
+                <AlertDialogTrigger asChild>
+                  <Button className="bg-emerald-600 hover:bg-emerald-700">
+                    Marquer comme payé
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      La facture sera marquée comme payée et sera archivée.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-emerald-600 hover:bg-emerald-700"
+                      onClick={async () => {
+                        const response = await updateInvoiceStatus({
+                          invoiceId: invoice.id,
+                          status: "PAID",
+                        });
+                        if (response.success) {
+                          toast.success(response.message);
+                          router.push("/dashboard/invoices/paid");
+                        } else {
+                          toast.error(response.message);
+                          refetch();
+                        }
+                      }}
+                    >
+                      Confirmer
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
           </div>
         </div>
       </div>

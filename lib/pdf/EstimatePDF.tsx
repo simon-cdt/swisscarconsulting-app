@@ -252,6 +252,7 @@ type EstimateData = {
   id: string;
   type: TypeEstimate;
   claimNumber: string | null;
+  discount: number | null;
   logoBase64: string;
   items: EstimateItem[];
   intervention: {
@@ -339,7 +340,7 @@ const parseHtmlToText = (html: string): React.ReactNode => {
 };
 
 export const EstimatePDF = ({ data }: { data: EstimateData }) => {
-  const calculateTotal = () => {
+  const calculateSubtotal = () => {
     return data.items.reduce((sum, item) => {
       let itemTotal: number;
 
@@ -358,6 +359,12 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
 
       return sum + itemTotal;
     }, 0);
+  };
+
+  const calculateTotal = () => {
+    const subtotal = calculateSubtotal();
+    const discount = data.discount || 0;
+    return subtotal * (1 - discount / 100);
   };
 
   const currentDate = new Date();
@@ -391,7 +398,7 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
               Numéro client : <Text style={styles.bold}>{client.id}</Text>
             </Text>
             <Text>
-              Numéro devis : <Text style={styles.bold}>{data.id}</Text>
+              Numéro facture : <Text style={styles.bold}>{data.id}</Text>
             </Text>
           </View>
         </View>
@@ -633,6 +640,23 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
             <Text>CH00 0000 0000 0000 0000 0</Text>
           </View>
           <View style={styles.totalInfo}>
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>Sous-total HT :</Text>
+              <Text style={styles.totalValue}>
+                {calculateSubtotal().toFixed(2)} CHF
+              </Text>
+            </View>
+            {data.discount && data.discount > 0 && (
+              <View style={styles.totalRow}>
+                <Text style={[styles.totalLabel, styles.discount]}>
+                  Réduction ({data.discount}%) :
+                </Text>
+                <Text style={[styles.totalValue, styles.discount]}>
+                  -{((calculateSubtotal() * data.discount) / 100).toFixed(2)}{" "}
+                  CHF
+                </Text>
+              </View>
+            )}
             <View style={styles.totalRow}>
               <Text style={styles.totalLabel}>Total HT :</Text>
               <Text style={styles.totalValue}>

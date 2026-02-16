@@ -60,6 +60,7 @@ import {
 import { UpdateVehicule } from "@/components/form/UpdateForm/UpdateVehicule";
 import { FILE_SERVER_URL } from "@/lib/config";
 import UpdateClaimNumber from "@/components/form/UpdateForm/UpdateClaimNumber";
+import UpdateDiscount from "@/components/form/UpdateForm/UpdateDiscount";
 
 type FetchEstimate = {
   id: string;
@@ -68,6 +69,7 @@ type FetchEstimate = {
   items: ItemEstimate;
   claimNumber: string | null;
   refusalReason: string | null;
+  discount: number | null;
   intervention: {
     id: string;
     date: Date;
@@ -185,7 +187,7 @@ export default function QuoteGeneratorPage() {
   };
 
   const calculateTotal = () => {
-    return selectedItems.reduce((sum, item) => {
+    const subtotal = selectedItems.reduce((sum, item) => {
       let itemTotal: number;
 
       if (item.type === "LABOR") {
@@ -202,6 +204,10 @@ export default function QuoteGeneratorPage() {
 
       return sum + itemTotal;
     }, 0);
+
+    // Appliquer la réduction si elle existe
+    const discount = estimate?.discount || 0;
+    return subtotal * (1 - discount / 100);
   };
 
   useEffect(() => {
@@ -227,6 +233,7 @@ export default function QuoteGeneratorPage() {
           id: estimate.id,
           type: estimate.type,
           claimNumber: estimate.claimNumber,
+          discount: estimate.discount,
           items: selectedItems.map((item) => ({
             id: item.id,
             type: item.type,
@@ -514,70 +521,83 @@ export default function QuoteGeneratorPage() {
                     <CardHeader>
                       <CardTitle className="flex items-center justify-between">
                         <span>{"Items du devis"}</span>
-                        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
-                          <DialogTrigger asChild>
-                            <Button
-                              size="sm"
-                              variant={"outline"}
-                              disabled={updateDisable}
-                            >
-                              <Plus className="mr-2 h-4 w-4" />
-                              Ajouter
-                            </Button>
-                          </DialogTrigger>
-                          <DialogContent className="min-w-[40vw]">
-                            <DialogHeader>
-                              <DialogTitle>{"Ajouter un item"}</DialogTitle>
-                              <DialogDescription>
-                                Ajoutez un nouvel item au devis avec sa
-                                description et son prix
-                              </DialogDescription>
-                            </DialogHeader>
-                            <Tabs defaultValue="piece" className="w-full">
-                              <TabsList className="w-full">
-                                <TabsTrigger className="w-full" value="piece">
-                                  Pièce
-                                </TabsTrigger>
-                                <TabsTrigger className="w-full" value="MO">
-                                  Main d&apos;oeuvre
-                                </TabsTrigger>
-                                <TabsTrigger
-                                  className="w-full"
-                                  value="upcoming"
-                                >
-                                  À venir
-                                </TabsTrigger>
-                              </TabsList>
-                              <TabsContent value="piece">
-                                <AddPartItem
-                                  ItemsEstimate={selectedItems}
-                                  setOpen={setDialogOpen}
-                                  setSelectedItems={setSelectedItems}
-                                  estimateId={params.id}
-                                />
-                              </TabsContent>
-                              <TabsContent value="MO">
-                                <AddMOItem
-                                  ItemsEstimate={selectedItems}
-                                  setOpen={setDialogOpen}
-                                  setSelectedItems={setSelectedItems}
-                                  estimateId={params.id}
-                                />
-                              </TabsContent>
-                              <TabsContent value="upcoming">
-                                <AddUpcomingItem
-                                  ItemsEstimate={selectedItems}
-                                  setOpen={setDialogOpen}
-                                  setSelectedItems={setSelectedItems}
-                                  estimateId={params.id}
-                                />
-                              </TabsContent>
-                            </Tabs>
-                          </DialogContent>
-                        </Dialog>
+                        <div className="flex items-center gap-2">
+                          <UpdateDiscount
+                            estimateId={estimate.id}
+                            discount={estimate.discount}
+                            refetch={refetch}
+                            updateDisable={updateDisable}
+                          />
+                          <Dialog
+                            open={dialogOpen}
+                            onOpenChange={setDialogOpen}
+                          >
+                            <DialogTrigger asChild>
+                              <Button
+                                size="sm"
+                                variant={"outline"}
+                                disabled={updateDisable}
+                              >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Ajouter
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="min-w-[40vw]">
+                              <DialogHeader>
+                                <DialogTitle>{"Ajouter un item"}</DialogTitle>
+                                <DialogDescription>
+                                  Ajoutez un nouvel item au devis avec sa
+                                  description et son prix
+                                </DialogDescription>
+                              </DialogHeader>
+                              <Tabs defaultValue="piece" className="w-full">
+                                <TabsList className="w-full">
+                                  <TabsTrigger className="w-full" value="piece">
+                                    Pièce
+                                  </TabsTrigger>
+                                  <TabsTrigger className="w-full" value="MO">
+                                    Main d&apos;oeuvre
+                                  </TabsTrigger>
+                                  <TabsTrigger
+                                    className="w-full"
+                                    value="upcoming"
+                                  >
+                                    À venir
+                                  </TabsTrigger>
+                                </TabsList>
+                                <TabsContent value="piece">
+                                  <AddPartItem
+                                    ItemsEstimate={selectedItems}
+                                    setOpen={setDialogOpen}
+                                    setSelectedItems={setSelectedItems}
+                                    estimateId={params.id}
+                                  />
+                                </TabsContent>
+                                <TabsContent value="MO">
+                                  <AddMOItem
+                                    ItemsEstimate={selectedItems}
+                                    setOpen={setDialogOpen}
+                                    setSelectedItems={setSelectedItems}
+                                    estimateId={params.id}
+                                  />
+                                </TabsContent>
+                                <TabsContent value="upcoming">
+                                  <AddUpcomingItem
+                                    ItemsEstimate={selectedItems}
+                                    setOpen={setDialogOpen}
+                                    setSelectedItems={setSelectedItems}
+                                    estimateId={params.id}
+                                  />
+                                </TabsContent>
+                              </Tabs>
+                            </DialogContent>
+                          </Dialog>
+                        </div>
                       </CardTitle>
                       <CardDescription>
-                        {"Liste des prestations du devis"}
+                        {estimate.discount && estimate.discount > 0
+                          ? `Liste des prestations du devis - Réduction de ${estimate.discount}% appliquée`
+                          : "Liste des prestations du devis"}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -730,10 +750,70 @@ export default function QuoteGeneratorPage() {
                         </p>
                       )}
                     </CardContent>
-                    <CardFooter className="flex justify-between">
-                      <div className="flex items-center justify-between">
+                    <CardFooter className="flex flex-col items-start gap-2">
+                      {estimate.discount !== undefined &&
+                        estimate.discount !== null &&
+                        estimate.discount > 0 && (
+                          <div className="text-muted-foreground flex w-full justify-between text-sm">
+                            <span>Sous-total :</span>
+                            <span>
+                              {selectedItems
+                                .reduce((sum, item) => {
+                                  let itemTotal: number;
+                                  if (item.type === "LABOR") {
+                                    if (item.calculateByTime && item.quantity) {
+                                      itemTotal =
+                                        (item.unitPrice * item.quantity) / 60;
+                                    } else {
+                                      itemTotal = item.unitPrice;
+                                    }
+                                  } else {
+                                    itemTotal =
+                                      item.unitPrice * (item.quantity ?? 0);
+                                  }
+                                  return sum + itemTotal;
+                                }, 0)
+                                .toFixed(2)}
+                              &nbsp;CHF
+                            </span>
+                          </div>
+                        )}
+                      {estimate.discount !== undefined &&
+                        estimate.discount !== null &&
+                        estimate.discount > 0 && (
+                          <div className="flex w-full justify-between text-sm text-red-500">
+                            <span>Réduction ({estimate.discount}%) :</span>
+                            <span>
+                              -
+                              {(
+                                selectedItems.reduce((sum, item) => {
+                                  let itemTotal: number;
+                                  if (item.type === "LABOR") {
+                                    if (item.calculateByTime && item.quantity) {
+                                      itemTotal =
+                                        (item.unitPrice * item.quantity) / 60;
+                                    } else {
+                                      itemTotal = item.unitPrice;
+                                    }
+                                  } else {
+                                    itemTotal =
+                                      item.unitPrice * (item.quantity ?? 0);
+                                  }
+                                  return sum + itemTotal;
+                                }, 0) *
+                                (estimate.discount / 100)
+                              ).toFixed(2)}
+                              &nbsp;CHF
+                            </span>
+                          </div>
+                        )}
+                      <div className="flex w-full items-center justify-between">
                         <p>
-                          Total&nbsp;
+                          Total
+                          {estimate.discount && estimate.discount > 0
+                            ? " après réduction"
+                            : ""}
+                          &nbsp;
                           <span className="font-semibold">
                             {calculateTotal().toFixed(2)}&nbsp;CHF
                           </span>

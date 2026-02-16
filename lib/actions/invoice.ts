@@ -9,6 +9,7 @@ import { EstimatePDF } from "../pdf/EstimatePDF";
 import { readFileSync } from "fs";
 import { join } from "path";
 import { FILE_SERVER_URL } from "../config";
+import { InvoiceStatus } from "@/generated/prisma/enums";
 
 export const createInvoice = async ({
   estimateId,
@@ -197,6 +198,54 @@ export const createInvoice = async ({
     return {
       success: false,
       message: "Une erreur est survenue lors de la création de la facture.",
+    };
+  }
+};
+
+export const updateInvoiceStatus = async ({
+  invoiceId,
+  status,
+}: {
+  invoiceId: string;
+  status: InvoiceStatus;
+}): Promise<
+  | { success: false; message: string }
+  | { success: true; message: "Le statut de la facture a bien été mis à jour." }
+> => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user) {
+      return { success: false, message: "Utilisateur non authentifié." };
+    }
+
+    const invoice = await db.invoice.findUnique({
+      where: { id: invoiceId },
+    });
+
+    if (!invoice) {
+      return { success: false, message: "Facture introuvable." };
+    }
+
+    await db.invoice.update({
+      where: { id: invoiceId },
+      data: {
+        status,
+      },
+    });
+
+    return {
+      success: true,
+      message: "Le statut de la facture a bien été mis à jour.",
+    };
+  } catch (error) {
+    console.error(
+      "Erreur lors de la mise à jour du statut de la facture :",
+      error,
+    );
+    return {
+      success: false,
+      message:
+        "Une erreur est survenue lors de la mise à jour du statut de la facture.",
     };
   }
 };

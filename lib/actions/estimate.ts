@@ -296,6 +296,55 @@ export const updateClaimNumber = async ({
   }
 };
 
+export const updateDiscount = async ({
+  estimateId,
+  discount,
+}: {
+  estimateId: string;
+  discount: number;
+}): Promise<
+  | { success: false; message: string }
+  | { success: true; message: "La réduction a bien été modifiée." }
+> => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+      return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+
+    const estimate = await db.estimate.findUnique({
+      where: { id: estimateId },
+      select: { id: true },
+    });
+
+    if (!estimate) {
+      return { success: false, message: "Devis introuvable" };
+    }
+
+    if (discount < 0 || discount > 100) {
+      return {
+        success: false,
+        message: "La réduction doit être entre 0 et 100%.",
+      };
+    }
+
+    await db.estimate.update({
+      where: { id: estimateId },
+      data: {
+        discount: discount,
+      },
+    });
+
+    return {
+      success: true,
+      message: "La réduction a bien été modifiée.",
+    };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Une erreur est survenue" };
+  }
+};
+
 export const updateEstimateItems = async ({
   estimateId,
   items,

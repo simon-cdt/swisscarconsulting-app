@@ -113,12 +113,12 @@ const data = {
         },
         {
           title: "Encaissées",
-          url: "/factures/paid",
+          url: "/invoices/paid",
           icon: Wallet,
         },
       ],
     },
-    {
+    /* {
       title: "Assurances",
       items: [
         {
@@ -132,7 +132,7 @@ const data = {
           icon: Wallet,
         },
       ],
-    },
+    }, */
     {
       title: "Administrateur",
       onlyAdmin: true,
@@ -165,6 +165,8 @@ export function AppSidebar({
   estimateInsuranceAccepted,
   estimateInsuranceToFinish,
   estimateSentGarage,
+  invoicePending,
+  invoicePaid,
 }: {
   intervention?: number;
   estimateIndividualPending?: number;
@@ -173,6 +175,8 @@ export function AppSidebar({
   estimateInsuranceAccepted?: number;
   estimateInsuranceToFinish?: number;
   estimateSentGarage?: number;
+  invoicePending?: number;
+  invoicePaid?: number;
 }) {
   const { data: session } = useSession();
   const pathname = usePathname();
@@ -215,6 +219,10 @@ export function AppSidebar({
                       count = estimateInsuranceAccepted;
                     } else if (item.url === "/mechanical") {
                       count = estimateSentGarage;
+                    } else if (item.url === "/invoices/pending") {
+                      count = invoicePending;
+                    } else if (item.url === "/invoices/paid") {
+                      count = invoicePaid;
                     }
 
                     return (

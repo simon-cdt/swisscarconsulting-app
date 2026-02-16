@@ -86,7 +86,7 @@ export default function EstimatesList({
                     <p className={`${GeistMono.className} text-2xl font-bold`}>
                       {searchQuery
                         ? "Aucun devis ne correspond à votre recherche !"
-                        : "Il n'y a aucun devis à faire !"}
+                        : "Il n'y a aucun devis"}
                     </p>
                   </div>
                 ) : (

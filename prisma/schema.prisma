@@ -102,6 +102,7 @@ model Estimate {
   deleted Boolean @default(false)
 
   refusalReason String?
+  discount      Float?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt

@@ -55,6 +55,19 @@ export const GetSidebarCount = async () => {
           status: "SENT_TO_GARAGE",
         },
       });
+
+      const invoicePending = await db.invoice.count({
+        where: {
+          status: "PENDING_PAYMENT",
+        },
+      });
+
+      const invoicePaid = await db.invoice.count({
+        where: {
+          status: "PAID",
+        },
+      });
+
       return {
         intervention,
         estimateIndividualPending,
@@ -63,6 +76,8 @@ export const GetSidebarCount = async () => {
         estimateInsuranceToFinish,
         estimateInsuranceAccepted,
         estimateSentGarage,
+        invoicePending,
+        invoicePaid,
       };
     }
   } catch (error) {
