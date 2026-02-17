@@ -258,6 +258,7 @@ export type EstimateWhereInput = {
   updatedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
   items?: Prisma.EstimateItemListRelationFilter
   intervention?: Prisma.XOR<Prisma.InterventionScalarRelationFilter, Prisma.InterventionWhereInput>
+  appointments?: Prisma.AppointmentListRelationFilter
 }
 
 export type EstimateOrderByWithRelationInput = {
@@ -273,6 +274,7 @@ export type EstimateOrderByWithRelationInput = {
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   items?: Prisma.EstimateItemOrderByRelationAggregateInput
   intervention?: Prisma.InterventionOrderByWithRelationInput
+  appointments?: Prisma.AppointmentOrderByRelationAggregateInput
   _relevance?: Prisma.EstimateOrderByRelevanceInput
 }
 
@@ -292,6 +294,7 @@ export type EstimateWhereUniqueInput = Prisma.AtLeast<{
   updatedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
   items?: Prisma.EstimateItemListRelationFilter
   intervention?: Prisma.XOR<Prisma.InterventionScalarRelationFilter, Prisma.InterventionWhereInput>
+  appointments?: Prisma.AppointmentListRelationFilter
 }, "id">
 
 export type EstimateOrderByWithAggregationInput = {
@@ -340,6 +343,7 @@ export type EstimateCreateInput = {
   updatedAt?: Date | string | null
   items?: Prisma.EstimateItemCreateNestedManyWithoutEstimateInput
   intervention: Prisma.InterventionCreateNestedOneWithoutEstimatesInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutEstimateInput
 }
 
 export type EstimateUncheckedCreateInput = {
@@ -354,6 +358,7 @@ export type EstimateUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string | null
   items?: Prisma.EstimateItemUncheckedCreateNestedManyWithoutEstimateInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutEstimateInput
 }
 
 export type EstimateUpdateInput = {
@@ -368,6 +373,7 @@ export type EstimateUpdateInput = {
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.EstimateItemUpdateManyWithoutEstimateNestedInput
   intervention?: Prisma.InterventionUpdateOneRequiredWithoutEstimatesNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutEstimateNestedInput
 }
 
 export type EstimateUncheckedUpdateInput = {
@@ -382,6 +388,7 @@ export type EstimateUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.EstimateItemUncheckedUpdateManyWithoutEstimateNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutEstimateNestedInput
 }
 
 export type EstimateCreateManyInput = {
@@ -490,6 +497,11 @@ export type EstimateScalarRelationFilter = {
   isNot?: Prisma.EstimateWhereInput
 }
 
+export type EstimateNullableScalarRelationFilter = {
+  is?: Prisma.EstimateWhereInput | null
+  isNot?: Prisma.EstimateWhereInput | null
+}
+
 export type EstimateCreateNestedManyWithoutInterventionInput = {
   create?: Prisma.XOR<Prisma.EstimateCreateWithoutInterventionInput, Prisma.EstimateUncheckedCreateWithoutInterventionInput> | Prisma.EstimateCreateWithoutInterventionInput[] | Prisma.EstimateUncheckedCreateWithoutInterventionInput[]
   connectOrCreate?: Prisma.EstimateCreateOrConnectWithoutInterventionInput | Prisma.EstimateCreateOrConnectWithoutInterventionInput[]
@@ -562,6 +574,22 @@ export type EstimateUpdateOneRequiredWithoutItemsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EstimateUpdateToOneWithWhereWithoutItemsInput, Prisma.EstimateUpdateWithoutItemsInput>, Prisma.EstimateUncheckedUpdateWithoutItemsInput>
 }
 
+export type EstimateCreateNestedOneWithoutAppointmentsInput = {
+  create?: Prisma.XOR<Prisma.EstimateCreateWithoutAppointmentsInput, Prisma.EstimateUncheckedCreateWithoutAppointmentsInput>
+  connectOrCreate?: Prisma.EstimateCreateOrConnectWithoutAppointmentsInput
+  connect?: Prisma.EstimateWhereUniqueInput
+}
+
+export type EstimateUpdateOneWithoutAppointmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.EstimateCreateWithoutAppointmentsInput, Prisma.EstimateUncheckedCreateWithoutAppointmentsInput>
+  connectOrCreate?: Prisma.EstimateCreateOrConnectWithoutAppointmentsInput
+  upsert?: Prisma.EstimateUpsertWithoutAppointmentsInput
+  disconnect?: Prisma.EstimateWhereInput | boolean
+  delete?: Prisma.EstimateWhereInput | boolean
+  connect?: Prisma.EstimateWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EstimateUpdateToOneWithWhereWithoutAppointmentsInput, Prisma.EstimateUpdateWithoutAppointmentsInput>, Prisma.EstimateUncheckedUpdateWithoutAppointmentsInput>
+}
+
 export type EstimateCreateWithoutInterventionInput = {
   id?: string
   status?: $Enums.EstimateStatus
@@ -573,6 +601,7 @@ export type EstimateCreateWithoutInterventionInput = {
   createdAt?: Date | string
   updatedAt?: Date | string | null
   items?: Prisma.EstimateItemCreateNestedManyWithoutEstimateInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutEstimateInput
 }
 
 export type EstimateUncheckedCreateWithoutInterventionInput = {
@@ -586,6 +615,7 @@ export type EstimateUncheckedCreateWithoutInterventionInput = {
   createdAt?: Date | string
   updatedAt?: Date | string | null
   items?: Prisma.EstimateItemUncheckedCreateNestedManyWithoutEstimateInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutEstimateInput
 }
 
 export type EstimateCreateOrConnectWithoutInterventionInput = {
@@ -641,6 +671,7 @@ export type EstimateCreateWithoutItemsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string | null
   intervention: Prisma.InterventionCreateNestedOneWithoutEstimatesInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutEstimateInput
 }
 
 export type EstimateUncheckedCreateWithoutItemsInput = {
@@ -654,6 +685,7 @@ export type EstimateUncheckedCreateWithoutItemsInput = {
   discount?: number | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutEstimateInput
 }
 
 export type EstimateCreateOrConnectWithoutItemsInput = {
@@ -683,6 +715,7 @@ export type EstimateUpdateWithoutItemsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   intervention?: Prisma.InterventionUpdateOneRequiredWithoutEstimatesNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutEstimateNestedInput
 }
 
 export type EstimateUncheckedUpdateWithoutItemsInput = {
@@ -696,6 +729,79 @@ export type EstimateUncheckedUpdateWithoutItemsInput = {
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutEstimateNestedInput
+}
+
+export type EstimateCreateWithoutAppointmentsInput = {
+  id?: string
+  status?: $Enums.EstimateStatus
+  type: $Enums.TypeEstimate
+  claimNumber?: string | null
+  deleted?: boolean
+  refusalReason?: string | null
+  discount?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string | null
+  items?: Prisma.EstimateItemCreateNestedManyWithoutEstimateInput
+  intervention: Prisma.InterventionCreateNestedOneWithoutEstimatesInput
+}
+
+export type EstimateUncheckedCreateWithoutAppointmentsInput = {
+  id?: string
+  interventionId: string
+  status?: $Enums.EstimateStatus
+  type: $Enums.TypeEstimate
+  claimNumber?: string | null
+  deleted?: boolean
+  refusalReason?: string | null
+  discount?: number | null
+  createdAt?: Date | string
+  updatedAt?: Date | string | null
+  items?: Prisma.EstimateItemUncheckedCreateNestedManyWithoutEstimateInput
+}
+
+export type EstimateCreateOrConnectWithoutAppointmentsInput = {
+  where: Prisma.EstimateWhereUniqueInput
+  create: Prisma.XOR<Prisma.EstimateCreateWithoutAppointmentsInput, Prisma.EstimateUncheckedCreateWithoutAppointmentsInput>
+}
+
+export type EstimateUpsertWithoutAppointmentsInput = {
+  update: Prisma.XOR<Prisma.EstimateUpdateWithoutAppointmentsInput, Prisma.EstimateUncheckedUpdateWithoutAppointmentsInput>
+  create: Prisma.XOR<Prisma.EstimateCreateWithoutAppointmentsInput, Prisma.EstimateUncheckedCreateWithoutAppointmentsInput>
+  where?: Prisma.EstimateWhereInput
+}
+
+export type EstimateUpdateToOneWithWhereWithoutAppointmentsInput = {
+  where?: Prisma.EstimateWhereInput
+  data: Prisma.XOR<Prisma.EstimateUpdateWithoutAppointmentsInput, Prisma.EstimateUncheckedUpdateWithoutAppointmentsInput>
+}
+
+export type EstimateUpdateWithoutAppointmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEstimateStatusFieldUpdateOperationsInput | $Enums.EstimateStatus
+  type?: Prisma.EnumTypeEstimateFieldUpdateOperationsInput | $Enums.TypeEstimate
+  claimNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  refusalReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  items?: Prisma.EstimateItemUpdateManyWithoutEstimateNestedInput
+  intervention?: Prisma.InterventionUpdateOneRequiredWithoutEstimatesNestedInput
+}
+
+export type EstimateUncheckedUpdateWithoutAppointmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  interventionId?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumEstimateStatusFieldUpdateOperationsInput | $Enums.EstimateStatus
+  type?: Prisma.EnumTypeEstimateFieldUpdateOperationsInput | $Enums.TypeEstimate
+  claimNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  refusalReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  items?: Prisma.EstimateItemUncheckedUpdateManyWithoutEstimateNestedInput
 }
 
 export type EstimateCreateManyInterventionInput = {
@@ -721,6 +827,7 @@ export type EstimateUpdateWithoutInterventionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.EstimateItemUpdateManyWithoutEstimateNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutEstimateNestedInput
 }
 
 export type EstimateUncheckedUpdateWithoutInterventionInput = {
@@ -734,6 +841,7 @@ export type EstimateUncheckedUpdateWithoutInterventionInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.EstimateItemUncheckedUpdateManyWithoutEstimateNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutEstimateNestedInput
 }
 
 export type EstimateUncheckedUpdateManyWithoutInterventionInput = {
@@ -755,10 +863,12 @@ export type EstimateUncheckedUpdateManyWithoutInterventionInput = {
 
 export type EstimateCountOutputType = {
   items: number
+  appointments: number
 }
 
 export type EstimateCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | EstimateCountOutputTypeCountItemsArgs
+  appointments?: boolean | EstimateCountOutputTypeCountAppointmentsArgs
 }
 
 /**
@@ -778,6 +888,13 @@ export type EstimateCountOutputTypeCountItemsArgs<ExtArgs extends runtime.Types.
   where?: Prisma.EstimateItemWhereInput
 }
 
+/**
+ * EstimateCountOutputType without action
+ */
+export type EstimateCountOutputTypeCountAppointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AppointmentWhereInput
+}
+
 
 export type EstimateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -792,6 +909,7 @@ export type EstimateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   updatedAt?: boolean
   items?: boolean | Prisma.Estimate$itemsArgs<ExtArgs>
   intervention?: boolean | Prisma.InterventionDefaultArgs<ExtArgs>
+  appointments?: boolean | Prisma.Estimate$appointmentsArgs<ExtArgs>
   _count?: boolean | Prisma.EstimateCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["estimate"]>
 
@@ -814,6 +932,7 @@ export type EstimateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type EstimateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | Prisma.Estimate$itemsArgs<ExtArgs>
   intervention?: boolean | Prisma.InterventionDefaultArgs<ExtArgs>
+  appointments?: boolean | Prisma.Estimate$appointmentsArgs<ExtArgs>
   _count?: boolean | Prisma.EstimateCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -822,6 +941,7 @@ export type $EstimatePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
   objects: {
     items: Prisma.$EstimateItemPayload<ExtArgs>[]
     intervention: Prisma.$InterventionPayload<ExtArgs>
+    appointments: Prisma.$AppointmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1176,6 +1296,7 @@ export interface Prisma__EstimateClient<T, Null = never, ExtArgs extends runtime
   readonly [Symbol.toStringTag]: "PrismaPromise"
   items<T extends Prisma.Estimate$itemsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Estimate$itemsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EstimateItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   intervention<T extends Prisma.InterventionDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InterventionDefaultArgs<ExtArgs>>): Prisma.Prisma__InterventionClient<runtime.Types.Result.GetResult<Prisma.$InterventionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  appointments<T extends Prisma.Estimate$appointmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Estimate$appointmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1579,6 +1700,30 @@ export type Estimate$itemsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.EstimateItemScalarFieldEnum | Prisma.EstimateItemScalarFieldEnum[]
+}
+
+/**
+ * Estimate.appointments
+ */
+export type Estimate$appointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Appointment
+   */
+  select?: Prisma.AppointmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Appointment
+   */
+  omit?: Prisma.AppointmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AppointmentInclude<ExtArgs> | null
+  where?: Prisma.AppointmentWhereInput
+  orderBy?: Prisma.AppointmentOrderByWithRelationInput | Prisma.AppointmentOrderByWithRelationInput[]
+  cursor?: Prisma.AppointmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AppointmentScalarFieldEnum | Prisma.AppointmentScalarFieldEnum[]
 }
 
 /**

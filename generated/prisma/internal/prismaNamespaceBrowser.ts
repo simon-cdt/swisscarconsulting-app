@@ -58,7 +58,8 @@ export const ModelName = {
   Estimate: 'Estimate',
   EstimateItem: 'EstimateItem',
   Invoice: 'Invoice',
-  Insurance: 'Insurance'
+  Insurance: 'Insurance',
+  Appointment: 'Appointment'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -222,6 +223,22 @@ export const InsuranceScalarFieldEnum = {
 export type InsuranceScalarFieldEnum = (typeof InsuranceScalarFieldEnum)[keyof typeof InsuranceScalarFieldEnum]
 
 
+export const AppointmentScalarFieldEnum = {
+  id: 'id',
+  type: 'type',
+  date: 'date',
+  time: 'time',
+  clientId: 'clientId',
+  vehiculeId: 'vehiculeId',
+  estimateId: 'estimateId',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type AppointmentScalarFieldEnum = (typeof AppointmentScalarFieldEnum)[keyof typeof AppointmentScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -341,4 +358,15 @@ export const InsuranceOrderByRelevanceFieldEnum = {
 } as const
 
 export type InsuranceOrderByRelevanceFieldEnum = (typeof InsuranceOrderByRelevanceFieldEnum)[keyof typeof InsuranceOrderByRelevanceFieldEnum]
+
+
+export const AppointmentOrderByRelevanceFieldEnum = {
+  id: 'id',
+  time: 'time',
+  vehiculeId: 'vehiculeId',
+  estimateId: 'estimateId',
+  notes: 'notes'
+} as const
+
+export type AppointmentOrderByRelevanceFieldEnum = (typeof AppointmentOrderByRelevanceFieldEnum)[keyof typeof AppointmentOrderByRelevanceFieldEnum]
 

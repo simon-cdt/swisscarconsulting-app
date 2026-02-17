@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { Card } from "./ui/card";
 import { CalendarIcon, CarIcon, Trash, UserIcon } from "lucide-react";
 import { format } from "date-fns";
@@ -45,6 +46,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Spinner } from "./ui/spinner";
 import { createInvoice } from "@/lib/actions/invoice";
+import CreateAppointmentDialog from "./form/CreateAppointmentDialog";
 
 export default function Estimate({
   estimate,
@@ -56,6 +58,8 @@ export default function Estimate({
   refetch: () => void;
 }) {
   const router = useRouter();
+  const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false);
+  const [appointmentCreated, setAppointmentCreated] = useState(false);
 
   const truncateText = (text: string, maxLength = 27) => {
     if (text.length <= maxLength) return text;
@@ -300,7 +304,8 @@ export default function Estimate({
 
                           if (response.success) {
                             toast.success(response.message);
-                            router.push("/dashboard/estimates/accepted");
+                            setAppointmentCreated(false);
+                            setAppointmentDialogOpen(true);
                           } else {
                             toast.error(response.message);
                           }
@@ -415,6 +420,31 @@ export default function Estimate({
           </div>
         </div>
       </div>
+
+      {/* Dialog de création de rendez-vous après acceptation */}
+      <CreateAppointmentDialog
+        open={appointmentDialogOpen}
+        onOpenChange={(open) => {
+          setAppointmentDialogOpen(open);
+          // Si le dialog se ferme et qu'aucun rendez-vous n'a été créé, rediriger
+          if (!open && !appointmentCreated) {
+            router.push("/dashboard/mechanical");
+          }
+        }}
+        defaultType={0}
+        defaultClientId={estimate.intervention.vehicule.client.id.toString()}
+        defaultVehiculeId={estimate.intervention.vehicule.id.toString()}
+        defaultEstimateId={estimate.id.toString()}
+        disableType={true}
+        disableClient={true}
+        disableVehicule={true}
+        disableEstimate={true}
+        onSuccess={() => {
+          setAppointmentCreated(true);
+          setAppointmentDialogOpen(false);
+          router.push("/dashboard/calendar");
+        }}
+      />
     </Card>
   );
 }

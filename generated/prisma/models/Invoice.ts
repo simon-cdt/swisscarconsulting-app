@@ -444,10 +444,10 @@ export type InvoiceOrderByWithRelationInput = {
 
 export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  estimateId?: string
   AND?: Prisma.InvoiceWhereInput | Prisma.InvoiceWhereInput[]
   OR?: Prisma.InvoiceWhereInput[]
   NOT?: Prisma.InvoiceWhereInput | Prisma.InvoiceWhereInput[]
-  estimateId?: Prisma.StringFilter<"Invoice"> | string
   typeEstimate?: Prisma.EnumTypeEstimateFilter<"Invoice"> | $Enums.TypeEstimate
   claimNumber?: Prisma.StringNullableFilter<"Invoice"> | string | null
   interventionId?: Prisma.StringFilter<"Invoice"> | string
@@ -474,7 +474,7 @@ export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   status?: Prisma.EnumInvoiceStatusFilter<"Invoice"> | $Enums.InvoiceStatus
   createdAt?: Prisma.DateTimeFilter<"Invoice"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Invoice"> | Date | string | null
-}, "id">
+}, "id" | "estimateId">
 
 export type InvoiceOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

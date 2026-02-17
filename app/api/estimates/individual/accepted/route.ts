@@ -37,11 +37,13 @@ export async function GET() {
           },
           vehicule: {
             select: {
+              id: true,
               brand: true,
               model: true,
               licensePlate: true,
               client: {
                 select: {
+                  id: true,
                   name: true,
                   firstName: true,
                   companyName: true,

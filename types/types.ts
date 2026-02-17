@@ -52,10 +52,12 @@ export type Estimate = {
       username: string;
     };
     vehicule: {
+      id: number;
       brand: string;
       model: string;
       licensePlate: string;
       client: {
+        id: number;
         name: string | null;
         firstName: string | null;
         companyName: string | null;

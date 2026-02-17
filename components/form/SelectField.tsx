@@ -8,6 +8,7 @@ import {
 } from "@/components/ui/select";
 import { Label } from "../ui/label";
 import { FieldError } from "react-hook-form";
+import { useEffect, useState } from "react";
 
 export default function SelectField({
   setValue,
@@ -18,6 +19,7 @@ export default function SelectField({
   label,
   nonempty,
   error,
+  disabled,
 }: {
   // eslint-disable-next-line
   setValue: any;
@@ -28,7 +30,21 @@ export default function SelectField({
   label: string;
   nonempty?: boolean;
   error?: FieldError;
+  disabled?: boolean;
 }) {
+  const [value, setValue_internal] = useState<string>(defaultValue || "");
+
+  // Mettre à jour la valeur quand defaultValue change
+  useEffect(() => {
+    if (defaultValue !== undefined && defaultValue !== value) {
+      setValue_internal(defaultValue);
+      const numValue = parseInt(defaultValue, 10);
+      if (!isNaN(numValue)) {
+        setValue(name, numValue);
+      }
+    }
+  }, [defaultValue, value, name, setValue]);
+
   return (
     <div className="flex flex-col gap-2">
       <Label htmlFor={name}>
@@ -38,9 +54,11 @@ export default function SelectField({
         </p>
       </Label>
       <Select
-        defaultValue={defaultValue}
-        onValueChange={(value) => {
-          const numValue = parseInt(value, 10);
+        value={value}
+        disabled={disabled}
+        onValueChange={(newValue) => {
+          setValue_internal(newValue);
+          const numValue = parseInt(newValue, 10);
           if (!isNaN(numValue)) {
             setValue(name, numValue);
           }

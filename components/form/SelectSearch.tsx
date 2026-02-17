@@ -1,7 +1,7 @@
 "use client";
 
 import { CheckIcon, ChevronDownIcon } from "lucide-react";
-import { useEffect, useId, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,9 @@ export default function SelectSearch({
   noFound,
   error,
   defaultValue,
+  disabled,
+  onValueChange,
+  nonempty,
 }: {
   label: string;
   placeholder: string;
@@ -42,22 +45,70 @@ export default function SelectSearch({
   noFound: string;
   error?: FieldError;
   defaultValue?: string;
+  disabled?: boolean;
+  onValueChange?: (value: string) => void;
+  nonempty?: boolean;
 }) {
   const id = useId();
   const [open, setOpen] = useState<boolean>(false);
   const [selected, setSelected] = useState<string>(defaultValue || "");
+  const prevContentRef = useRef<{ label: string; value: string }[]>([]);
+  const prevSelectedRef = useRef<string>("");
 
+  // Mettre à jour selected quand defaultValue change (pour les valeurs pré-remplies)
   useEffect(() => {
-    if (selected) {
-      console.log(selected);
-
-      setValue(name, selected);
+    if (defaultValue && defaultValue !== selected) {
+      setSelected(defaultValue);
     }
-  }, [selected, name, setValue]);
+  }, [defaultValue, selected]);
+
+  // Appeler setValue UNIQUEMENT quand selected change vraiment
+  useEffect(() => {
+    if (selected !== prevSelectedRef.current) {
+      setValue(name, selected);
+      if (onValueChange) {
+        onValueChange(selected);
+      }
+      prevSelectedRef.current = selected;
+    }
+  }, [selected, name, setValue, onValueChange]);
+
+  // Réinitialiser si le selected n'est plus dans le content (seulement si content a vraiment changé)
+  useEffect(() => {
+    // Ne pas réinitialiser si désactivé
+    if (disabled) {
+      prevContentRef.current = content;
+      return;
+    }
+
+    // Vérifier si le content a vraiment changé (pas juste un re-render)
+    const contentChanged =
+      content.length !== prevContentRef.current.length ||
+      content.some(
+        (item, idx) =>
+          !prevContentRef.current[idx] ||
+          item.value !== prevContentRef.current[idx].value,
+      );
+
+    if (
+      contentChanged &&
+      selected &&
+      !content.find((item) => item.value === selected)
+    ) {
+      setSelected("");
+    }
+
+    prevContentRef.current = content;
+  }, [content, selected, disabled]);
 
   return (
     <div className="*:not-first:mt-2">
-      <Label htmlFor={id}>{label}</Label>
+      <Label htmlFor={id}>
+        <p>
+          {label}&nbsp;
+          {nonempty && <span className="text-red-500">*</span>}
+        </p>
+      </Label>
       <Popover onOpenChange={setOpen} open={open}>
         <PopoverTrigger asChild>
           <Button
@@ -68,6 +119,7 @@ export default function SelectSearch({
             variant="outline"
             tabIndex={0}
             type="button"
+            disabled={disabled}
           >
             <span
               className={cn("truncate", !selected && "text-muted-foreground")}
@@ -100,13 +152,11 @@ export default function SelectSearch({
                 {content.map((item) => (
                   <CommandItem
                     key={item.value}
-                    onSelect={(currentValue) => {
-                      setSelected(
-                        currentValue === selected ? "" : currentValue,
-                      );
+                    onSelect={() => {
+                      setSelected(item.value === selected ? "" : item.value);
                       setOpen(false);
                     }}
-                    value={item.value}
+                    value={item.label}
                     className="pointer"
                   >
                     {item.label}

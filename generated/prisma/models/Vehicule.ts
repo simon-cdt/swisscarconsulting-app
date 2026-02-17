@@ -295,6 +295,7 @@ export type VehiculeWhereInput = {
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
   interventions?: Prisma.InterventionListRelationFilter
   insurance?: Prisma.XOR<Prisma.InsuranceNullableScalarRelationFilter, Prisma.InsuranceWhereInput> | null
+  appointments?: Prisma.AppointmentListRelationFilter
 }
 
 export type VehiculeOrderByWithRelationInput = {
@@ -315,6 +316,7 @@ export type VehiculeOrderByWithRelationInput = {
   client?: Prisma.ClientOrderByWithRelationInput
   interventions?: Prisma.InterventionOrderByRelationAggregateInput
   insurance?: Prisma.InsuranceOrderByWithRelationInput
+  appointments?: Prisma.AppointmentOrderByRelationAggregateInput
   _relevance?: Prisma.VehiculeOrderByRelevanceInput
 }
 
@@ -339,6 +341,7 @@ export type VehiculeWhereUniqueInput = Prisma.AtLeast<{
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
   interventions?: Prisma.InterventionListRelationFilter
   insurance?: Prisma.XOR<Prisma.InsuranceNullableScalarRelationFilter, Prisma.InsuranceWhereInput> | null
+  appointments?: Prisma.AppointmentListRelationFilter
 }, "id">
 
 export type VehiculeOrderByWithAggregationInput = {
@@ -399,6 +402,7 @@ export type VehiculeCreateInput = {
   client: Prisma.ClientCreateNestedOneWithoutVehiculesInput
   interventions?: Prisma.InterventionCreateNestedManyWithoutVehiculeInput
   insurance?: Prisma.InsuranceCreateNestedOneWithoutVehiculesInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutVehiculeInput
 }
 
 export type VehiculeUncheckedCreateInput = {
@@ -417,6 +421,7 @@ export type VehiculeUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string | null
   interventions?: Prisma.InterventionUncheckedCreateNestedManyWithoutVehiculeInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutVehiculeInput
 }
 
 export type VehiculeUpdateInput = {
@@ -435,6 +440,7 @@ export type VehiculeUpdateInput = {
   client?: Prisma.ClientUpdateOneRequiredWithoutVehiculesNestedInput
   interventions?: Prisma.InterventionUpdateManyWithoutVehiculeNestedInput
   insurance?: Prisma.InsuranceUpdateOneWithoutVehiculesNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutVehiculeNestedInput
 }
 
 export type VehiculeUncheckedUpdateInput = {
@@ -453,6 +459,7 @@ export type VehiculeUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   interventions?: Prisma.InterventionUncheckedUpdateManyWithoutVehiculeNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutVehiculeNestedInput
 }
 
 export type VehiculeCreateManyInput = {
@@ -684,6 +691,20 @@ export type VehiculeUncheckedUpdateManyWithoutInsuranceNestedInput = {
   deleteMany?: Prisma.VehiculeScalarWhereInput | Prisma.VehiculeScalarWhereInput[]
 }
 
+export type VehiculeCreateNestedOneWithoutAppointmentsInput = {
+  create?: Prisma.XOR<Prisma.VehiculeCreateWithoutAppointmentsInput, Prisma.VehiculeUncheckedCreateWithoutAppointmentsInput>
+  connectOrCreate?: Prisma.VehiculeCreateOrConnectWithoutAppointmentsInput
+  connect?: Prisma.VehiculeWhereUniqueInput
+}
+
+export type VehiculeUpdateOneRequiredWithoutAppointmentsNestedInput = {
+  create?: Prisma.XOR<Prisma.VehiculeCreateWithoutAppointmentsInput, Prisma.VehiculeUncheckedCreateWithoutAppointmentsInput>
+  connectOrCreate?: Prisma.VehiculeCreateOrConnectWithoutAppointmentsInput
+  upsert?: Prisma.VehiculeUpsertWithoutAppointmentsInput
+  connect?: Prisma.VehiculeWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.VehiculeUpdateToOneWithWhereWithoutAppointmentsInput, Prisma.VehiculeUpdateWithoutAppointmentsInput>, Prisma.VehiculeUncheckedUpdateWithoutAppointmentsInput>
+}
+
 export type VehiculeCreateWithoutClientInput = {
   id?: string
   brand: string
@@ -699,6 +720,7 @@ export type VehiculeCreateWithoutClientInput = {
   updatedAt?: Date | string | null
   interventions?: Prisma.InterventionCreateNestedManyWithoutVehiculeInput
   insurance?: Prisma.InsuranceCreateNestedOneWithoutVehiculesInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutVehiculeInput
 }
 
 export type VehiculeUncheckedCreateWithoutClientInput = {
@@ -716,6 +738,7 @@ export type VehiculeUncheckedCreateWithoutClientInput = {
   createdAt?: Date | string
   updatedAt?: Date | string | null
   interventions?: Prisma.InterventionUncheckedCreateNestedManyWithoutVehiculeInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutVehiculeInput
 }
 
 export type VehiculeCreateOrConnectWithoutClientInput = {
@@ -779,6 +802,7 @@ export type VehiculeCreateWithoutInterventionsInput = {
   updatedAt?: Date | string | null
   client: Prisma.ClientCreateNestedOneWithoutVehiculesInput
   insurance?: Prisma.InsuranceCreateNestedOneWithoutVehiculesInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutVehiculeInput
 }
 
 export type VehiculeUncheckedCreateWithoutInterventionsInput = {
@@ -796,6 +820,7 @@ export type VehiculeUncheckedCreateWithoutInterventionsInput = {
   receptionType?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutVehiculeInput
 }
 
 export type VehiculeCreateOrConnectWithoutInterventionsInput = {
@@ -829,6 +854,7 @@ export type VehiculeUpdateWithoutInterventionsInput = {
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUpdateOneRequiredWithoutVehiculesNestedInput
   insurance?: Prisma.InsuranceUpdateOneWithoutVehiculesNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutVehiculeNestedInput
 }
 
 export type VehiculeUncheckedUpdateWithoutInterventionsInput = {
@@ -846,6 +872,7 @@ export type VehiculeUncheckedUpdateWithoutInterventionsInput = {
   receptionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutVehiculeNestedInput
 }
 
 export type VehiculeCreateWithoutInsuranceInput = {
@@ -863,6 +890,7 @@ export type VehiculeCreateWithoutInsuranceInput = {
   updatedAt?: Date | string | null
   client: Prisma.ClientCreateNestedOneWithoutVehiculesInput
   interventions?: Prisma.InterventionCreateNestedManyWithoutVehiculeInput
+  appointments?: Prisma.AppointmentCreateNestedManyWithoutVehiculeInput
 }
 
 export type VehiculeUncheckedCreateWithoutInsuranceInput = {
@@ -880,6 +908,7 @@ export type VehiculeUncheckedCreateWithoutInsuranceInput = {
   createdAt?: Date | string
   updatedAt?: Date | string | null
   interventions?: Prisma.InterventionUncheckedCreateNestedManyWithoutVehiculeInput
+  appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutVehiculeInput
 }
 
 export type VehiculeCreateOrConnectWithoutInsuranceInput = {
@@ -906,6 +935,94 @@ export type VehiculeUpdateWithWhereUniqueWithoutInsuranceInput = {
 export type VehiculeUpdateManyWithWhereWithoutInsuranceInput = {
   where: Prisma.VehiculeScalarWhereInput
   data: Prisma.XOR<Prisma.VehiculeUpdateManyMutationInput, Prisma.VehiculeUncheckedUpdateManyWithoutInsuranceInput>
+}
+
+export type VehiculeCreateWithoutAppointmentsInput = {
+  id?: string
+  brand: string
+  model: string
+  year: number
+  licensePlate: string
+  chassisNumber?: string | null
+  registrationNumber?: string | null
+  lastExpertise?: Date | string | null
+  certificateImage?: string | null
+  receptionType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string | null
+  client: Prisma.ClientCreateNestedOneWithoutVehiculesInput
+  interventions?: Prisma.InterventionCreateNestedManyWithoutVehiculeInput
+  insurance?: Prisma.InsuranceCreateNestedOneWithoutVehiculesInput
+}
+
+export type VehiculeUncheckedCreateWithoutAppointmentsInput = {
+  id?: string
+  clientId: number
+  brand: string
+  model: string
+  year: number
+  licensePlate: string
+  insuranceId?: string | null
+  chassisNumber?: string | null
+  registrationNumber?: string | null
+  lastExpertise?: Date | string | null
+  certificateImage?: string | null
+  receptionType?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string | null
+  interventions?: Prisma.InterventionUncheckedCreateNestedManyWithoutVehiculeInput
+}
+
+export type VehiculeCreateOrConnectWithoutAppointmentsInput = {
+  where: Prisma.VehiculeWhereUniqueInput
+  create: Prisma.XOR<Prisma.VehiculeCreateWithoutAppointmentsInput, Prisma.VehiculeUncheckedCreateWithoutAppointmentsInput>
+}
+
+export type VehiculeUpsertWithoutAppointmentsInput = {
+  update: Prisma.XOR<Prisma.VehiculeUpdateWithoutAppointmentsInput, Prisma.VehiculeUncheckedUpdateWithoutAppointmentsInput>
+  create: Prisma.XOR<Prisma.VehiculeCreateWithoutAppointmentsInput, Prisma.VehiculeUncheckedCreateWithoutAppointmentsInput>
+  where?: Prisma.VehiculeWhereInput
+}
+
+export type VehiculeUpdateToOneWithWhereWithoutAppointmentsInput = {
+  where?: Prisma.VehiculeWhereInput
+  data: Prisma.XOR<Prisma.VehiculeUpdateWithoutAppointmentsInput, Prisma.VehiculeUncheckedUpdateWithoutAppointmentsInput>
+}
+
+export type VehiculeUpdateWithoutAppointmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  brand?: Prisma.StringFieldUpdateOperationsInput | string
+  model?: Prisma.StringFieldUpdateOperationsInput | string
+  year?: Prisma.IntFieldUpdateOperationsInput | number
+  licensePlate?: Prisma.StringFieldUpdateOperationsInput | string
+  chassisNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastExpertise?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  certificateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receptionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  client?: Prisma.ClientUpdateOneRequiredWithoutVehiculesNestedInput
+  interventions?: Prisma.InterventionUpdateManyWithoutVehiculeNestedInput
+  insurance?: Prisma.InsuranceUpdateOneWithoutVehiculesNestedInput
+}
+
+export type VehiculeUncheckedUpdateWithoutAppointmentsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  clientId?: Prisma.IntFieldUpdateOperationsInput | number
+  brand?: Prisma.StringFieldUpdateOperationsInput | string
+  model?: Prisma.StringFieldUpdateOperationsInput | string
+  year?: Prisma.IntFieldUpdateOperationsInput | number
+  licensePlate?: Prisma.StringFieldUpdateOperationsInput | string
+  insuranceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  chassisNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  registrationNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  lastExpertise?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  certificateImage?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  receptionType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  interventions?: Prisma.InterventionUncheckedUpdateManyWithoutVehiculeNestedInput
 }
 
 export type VehiculeCreateManyClientInput = {
@@ -939,6 +1056,7 @@ export type VehiculeUpdateWithoutClientInput = {
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   interventions?: Prisma.InterventionUpdateManyWithoutVehiculeNestedInput
   insurance?: Prisma.InsuranceUpdateOneWithoutVehiculesNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutVehiculeNestedInput
 }
 
 export type VehiculeUncheckedUpdateWithoutClientInput = {
@@ -956,6 +1074,7 @@ export type VehiculeUncheckedUpdateWithoutClientInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   interventions?: Prisma.InterventionUncheckedUpdateManyWithoutVehiculeNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutVehiculeNestedInput
 }
 
 export type VehiculeUncheckedUpdateManyWithoutClientInput = {
@@ -1005,6 +1124,7 @@ export type VehiculeUpdateWithoutInsuranceInput = {
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   client?: Prisma.ClientUpdateOneRequiredWithoutVehiculesNestedInput
   interventions?: Prisma.InterventionUpdateManyWithoutVehiculeNestedInput
+  appointments?: Prisma.AppointmentUpdateManyWithoutVehiculeNestedInput
 }
 
 export type VehiculeUncheckedUpdateWithoutInsuranceInput = {
@@ -1022,6 +1142,7 @@ export type VehiculeUncheckedUpdateWithoutInsuranceInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   interventions?: Prisma.InterventionUncheckedUpdateManyWithoutVehiculeNestedInput
+  appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutVehiculeNestedInput
 }
 
 export type VehiculeUncheckedUpdateManyWithoutInsuranceInput = {
@@ -1047,10 +1168,12 @@ export type VehiculeUncheckedUpdateManyWithoutInsuranceInput = {
 
 export type VehiculeCountOutputType = {
   interventions: number
+  appointments: number
 }
 
 export type VehiculeCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   interventions?: boolean | VehiculeCountOutputTypeCountInterventionsArgs
+  appointments?: boolean | VehiculeCountOutputTypeCountAppointmentsArgs
 }
 
 /**
@@ -1068,6 +1191,13 @@ export type VehiculeCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Ext
  */
 export type VehiculeCountOutputTypeCountInterventionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.InterventionWhereInput
+}
+
+/**
+ * VehiculeCountOutputType without action
+ */
+export type VehiculeCountOutputTypeCountAppointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.AppointmentWhereInput
 }
 
 
@@ -1089,6 +1219,7 @@ export type VehiculeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   interventions?: boolean | Prisma.Vehicule$interventionsArgs<ExtArgs>
   insurance?: boolean | Prisma.Vehicule$insuranceArgs<ExtArgs>
+  appointments?: boolean | Prisma.Vehicule$appointmentsArgs<ExtArgs>
   _count?: boolean | Prisma.VehiculeCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["vehicule"]>
 
@@ -1116,6 +1247,7 @@ export type VehiculeInclude<ExtArgs extends runtime.Types.Extensions.InternalArg
   client?: boolean | Prisma.ClientDefaultArgs<ExtArgs>
   interventions?: boolean | Prisma.Vehicule$interventionsArgs<ExtArgs>
   insurance?: boolean | Prisma.Vehicule$insuranceArgs<ExtArgs>
+  appointments?: boolean | Prisma.Vehicule$appointmentsArgs<ExtArgs>
   _count?: boolean | Prisma.VehiculeCountOutputTypeDefaultArgs<ExtArgs>
 }
 
@@ -1125,6 +1257,7 @@ export type $VehiculePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     client: Prisma.$ClientPayload<ExtArgs>
     interventions: Prisma.$InterventionPayload<ExtArgs>[]
     insurance: Prisma.$InsurancePayload<ExtArgs> | null
+    appointments: Prisma.$AppointmentPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1484,6 +1617,7 @@ export interface Prisma__VehiculeClient<T, Null = never, ExtArgs extends runtime
   client<T extends Prisma.ClientDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ClientDefaultArgs<ExtArgs>>): Prisma.Prisma__ClientClient<runtime.Types.Result.GetResult<Prisma.$ClientPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   interventions<T extends Prisma.Vehicule$interventionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Vehicule$interventionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InterventionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   insurance<T extends Prisma.Vehicule$insuranceArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Vehicule$insuranceArgs<ExtArgs>>): Prisma.Prisma__InsuranceClient<runtime.Types.Result.GetResult<Prisma.$InsurancePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  appointments<T extends Prisma.Vehicule$appointmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Vehicule$appointmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$AppointmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1910,6 +2044,30 @@ export type Vehicule$insuranceArgs<ExtArgs extends runtime.Types.Extensions.Inte
    */
   include?: Prisma.InsuranceInclude<ExtArgs> | null
   where?: Prisma.InsuranceWhereInput
+}
+
+/**
+ * Vehicule.appointments
+ */
+export type Vehicule$appointmentsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Appointment
+   */
+  select?: Prisma.AppointmentSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Appointment
+   */
+  omit?: Prisma.AppointmentOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.AppointmentInclude<ExtArgs> | null
+  where?: Prisma.AppointmentWhereInput
+  orderBy?: Prisma.AppointmentOrderByWithRelationInput | Prisma.AppointmentOrderByWithRelationInput[]
+  cursor?: Prisma.AppointmentWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.AppointmentScalarFieldEnum | Prisma.AppointmentScalarFieldEnum[]
 }
 
 /**

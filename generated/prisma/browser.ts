@@ -57,3 +57,8 @@ export type Invoice = Prisma.InvoiceModel
  * 
  */
 export type Insurance = Prisma.InsuranceModel
+/**
+ * Model Appointment
+ * 
+ */
+export type Appointment = Prisma.AppointmentModel
