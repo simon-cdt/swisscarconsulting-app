@@ -519,7 +519,7 @@ export const validateEstimate = async ({
     await db.estimate.update({
       where: { id: estimateId },
       data: {
-        status: estimate.type === "INDIVIDUAL" ? "PENDING" : "SENT_TO_GARAGE",
+        status: estimate.type === "INDIVIDUAL" ? "PENDING" : "ACCEPTED",
         refusalReason: null,
       },
     });

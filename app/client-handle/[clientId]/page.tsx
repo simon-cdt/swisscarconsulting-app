@@ -36,6 +36,7 @@ type FetchAllVehiculesOfClient = {
     id: number;
     typeClient: TypeClient;
     phone: string;
+    phone2: string | null;
     email: string;
     name: string | null;
     firstName: string | null;
@@ -224,6 +225,16 @@ export default function ClientVehiculePage() {
                           {formatPhoneNumber(data.client.phone)}
                         </p>
                       </div>
+                      {data.client.phone2 && (
+                        <div>
+                          <p className="text-muted-foreground text-sm">
+                            Téléphone 2
+                          </p>
+                          <p className="text-foreground text-base font-medium">
+                            {formatPhoneNumber(data.client.phone2)}
+                          </p>
+                        </div>
+                      )}
                       <div>
                         <p className="text-muted-foreground text-sm">Email</p>
                         <p className="text-foreground text-base font-medium">

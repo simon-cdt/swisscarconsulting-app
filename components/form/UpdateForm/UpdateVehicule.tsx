@@ -17,6 +17,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { Spinner } from "../../ui/spinner";
 import { FormField } from "../FormField";
+import { DatePicker } from "../DatePicker";
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { updateVehicule } from "@/lib/actions/vehicule";
@@ -121,16 +122,7 @@ export function UpdateVehicule({
         .refine(
           (value) => {
             if (!value) return true;
-            const [day, month, yearStr] = value.split("/");
-            if (!day || !month || !yearStr) return false;
-
-            let year = parseInt(yearStr);
-            // Convertir l'année à 2 chiffres en 4 chiffres
-            if (year < 100) {
-              year = year >= 50 ? 1900 + year : 2000 + year;
-            }
-
-            const date = new Date(year, parseInt(month) - 1, parseInt(day));
+            const date = new Date(value);
             return date <= new Date();
           },
           {
@@ -145,16 +137,8 @@ export function UpdateVehicule({
     .refine(
       (data) => {
         if (!data.lastExpertise || !data.year) return true;
-        // eslint-disable-next-line
-        const [day, month, yearStr] = data.lastExpertise.split("/");
-        let year = parseInt(yearStr);
-
-        // Convertir l'année à 2 chiffres en 4 chiffres
-        if (year < 100) {
-          year = year >= 50 ? 1900 + year : 2000 + year;
-        }
-
-        return year >= data.year;
+        const expertiseDate = new Date(data.lastExpertise);
+        return expertiseDate.getFullYear() >= data.year;
       },
       {
         message:
@@ -199,16 +183,7 @@ export function UpdateVehicule({
       // Convertir la date d'expertise en objet Date si elle existe
       let expertiseDate: Date | undefined = undefined;
       if (data.lastExpertise) {
-        const [day, month, yearStr] = data.lastExpertise.split("/");
-        let year = parseInt(yearStr);
-
-        // Si l'année a 2 chiffres, convertir en 4 chiffres
-        if (year < 100) {
-          // Si l'année est >= 50, on considère que c'est 19xx, sinon 20xx
-          year = year >= 50 ? 1900 + year : 2000 + year;
-        }
-
-        expertiseDate = new Date(year, parseInt(month) - 1, parseInt(day));
+        expertiseDate = new Date(data.lastExpertise);
       }
 
       const response = await updateVehicule({
@@ -337,22 +312,14 @@ export function UpdateVehicule({
                 setValue("registrationNumber", formatted);
               }}
             />
-            <FormField
+            <DatePicker
               label="Dernière expertise"
               name="lastExpertise"
-              register={register}
-              type="text"
+              setValue={setValue}
               error={errors.lastExpertise}
-              placeholder={format(new Date(), "dd/MM/yyyy") as string}
-              defaultValue={
-                vehicule.lastExpertise
-                  ? format(vehicule.lastExpertise, "dd/MM/yyyy")
-                  : ""
-              }
-              onChange={(e) => {
-                const formatted = formatExpertiseDate(e.target.value);
-                setValue("lastExpertise", formatted);
-              }}
+              placeholder="Sélectionnez une date"
+              maxDate={new Date()}
+              defaultValue={vehicule.lastExpertise || undefined}
             />
             <div className="col-span-2">
               <FormField

@@ -25,6 +25,11 @@ export async function GET() {
       id: true,
       status: true,
       type: true,
+      _count: {
+        select: {
+          items: true,
+        },
+      },
       intervention: {
         select: {
           date: true,

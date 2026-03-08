@@ -27,6 +27,7 @@ interface DatePickerProps {
   maxDate?: Date;
   required?: boolean;
   disablePast?: boolean;
+  defaultValue?: string;
 }
 
 export function DatePicker({
@@ -40,9 +41,12 @@ export function DatePicker({
   maxDate,
   required = false,
   disablePast = false,
+  defaultValue,
 }: DatePickerProps) {
   const [open, setOpen] = React.useState(false);
-  const [date, setDate] = React.useState<Date | undefined>(undefined);
+  const [date, setDate] = React.useState<Date | undefined>(
+    defaultValue ? new Date(defaultValue) : undefined,
+  );
 
   // Fonction pour désactiver les dates passées
   const isDateDisabled = (date: Date) => {

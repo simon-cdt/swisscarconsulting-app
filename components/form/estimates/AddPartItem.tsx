@@ -95,7 +95,6 @@ export default function AddPartItem({
   const handleSelectSuggestion = (part: PartTemplate) => {
     setValue("designation", part.designation);
     setValue("description", part.description);
-    setValue("unitPrice", part.unitPrice);
     setValue("quantity", part.quantity);
     setDescriptionValue(part.description);
     setSearchTerm("");
@@ -218,7 +217,7 @@ export default function AddPartItem({
               {suggestions.map((part, index) => (
                 <div
                   key={part.id}
-                  className={`cursor-pointer border-b border-gray-100 px-4 py-3 transition-all duration-150 last:border-b-0 hover:bg-blue-50 ${
+                  className={`cursor-pointer border-b border-gray-100 px-4 py-2 transition-all duration-150 last:border-b-0 hover:bg-blue-50 ${
                     index === 0 ? "bg-gray-50/50" : ""
                   }`}
                   onClick={() => handleSelectSuggestion(part)}
@@ -233,20 +232,12 @@ export default function AddPartItem({
                       </div>
                     </div>
                   </div>
-                  <div className="mt-2.5 flex gap-4 border-t border-gray-100 pt-2">
-                    <span className="inline-flex items-center gap-1 text-xs">
-                      <span className="text-gray-500">Prix:</span>
-                      <span className="font-bold text-green-700">
-                        CHF {part.unitPrice.toFixed(2)}
-                      </span>
+                  <span className="inline-flex items-center gap-1 text-xs">
+                    <span className="text-gray-500">Quantité:</span>
+                    <span className="font-semibold text-gray-700">
+                      {part.quantity}
                     </span>
-                    <span className="inline-flex items-center gap-1 text-xs">
-                      <span className="text-gray-500">Quantité:</span>
-                      <span className="font-semibold text-gray-700">
-                        {part.quantity}
-                      </span>
-                    </span>
-                  </div>
+                  </span>
                 </div>
               ))}
             </div>

@@ -96,6 +96,7 @@ export const ClientScalarFieldEnum = {
   typeClient: 'typeClient',
   email: 'email',
   phone: 'phone',
+  phone2: 'phone2',
   address: 'address',
   postalCode: 'postalCode',
   city: 'city',
@@ -267,6 +268,7 @@ export type UserOrderByRelevanceFieldEnum = (typeof UserOrderByRelevanceFieldEnu
 export const ClientOrderByRelevanceFieldEnum = {
   email: 'email',
   phone: 'phone',
+  phone2: 'phone2',
   address: 'address',
   city: 'city',
   firstName: 'firstName',

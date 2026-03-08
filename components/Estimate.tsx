@@ -107,7 +107,7 @@ export default function Estimate({
   return (
     <Card
       key={estimate.id}
-      className={`${isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 w-115 p-6 transition-colors`}
+      className={`${estimate.type === "INSURANCE" ? "insurance-card" : isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 w-115 p-6 transition-colors`}
     >
       <div className="flex w-full flex-col gap-1">
         <div className="flex w-full flex-row items-center justify-between">
@@ -209,6 +209,23 @@ export default function Estimate({
                   </span>
                 </span>
               )}
+              {estimate.status === "TOFINISH" && estimate._count && (
+                <div className="flex items-center gap-2">
+                  {estimate._count.items === 0 ? (
+                    <span className="flex items-center gap-1 text-sm text-red-500">
+                      <span className="size-2 rounded-full bg-red-500"></span>
+                      Devis vide - Aucun item ajouté
+                    </span>
+                  ) : (
+                    <span className="flex items-center gap-1 text-sm text-green-600">
+                      <span className="size-2 rounded-full bg-green-600"></span>
+                      {estimate._count.items} item
+                      {estimate._count.items > 1 ? "s" : ""} ajouté
+                      {estimate._count.items > 1 ? "s" : ""}
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
           </div>
 
@@ -221,7 +238,7 @@ export default function Estimate({
                   className="w-full"
                 >
                   <Button
-                    className={`${estimate.intervention.vehicule.client.typeClient === "individual" ? "individual-btn" : "company-btn"} w-full`}
+                    className={`${estimate.type === "INSURANCE" ? "insurance-btn" : isIndividual ? "individual-btn" : "company-btn"} w-full`}
                   >
                     {"Modifier le devis"}
                   </Button>

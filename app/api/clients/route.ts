@@ -19,6 +19,7 @@ export async function GET() {
       contactName: true,
 
       phone: true,
+      phone2: true,
       email: true,
 
       typeClient: true,
@@ -71,6 +72,7 @@ export async function GET() {
       name: name,
       companyName: client.companyName,
       phone: client.phone,
+      phone2: client.phone2,
       email: client.email,
       typeClient: client.typeClient,
       nbVehicule: client.vehicules.length,

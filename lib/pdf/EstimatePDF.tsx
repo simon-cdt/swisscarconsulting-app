@@ -634,7 +634,8 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
               Paiement à effectuer dans un délai de 30 jours
             </Text>
             <Text style={{ marginTop: 2 }}>
-              Date limite : {paymentDate.toLocaleDateString("fr-CH")}
+              Devis valable jusqu&apos;au :{" "}
+              {paymentDate.toLocaleDateString("fr-CH")}
             </Text>
             <Text style={[styles.bold, { marginTop: 8 }]}>IBAN :</Text>
             <Text>CH00 0000 0000 0000 0000 0</Text>

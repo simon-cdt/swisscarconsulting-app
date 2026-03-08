@@ -19,7 +19,6 @@ import {
   Hourglass,
   LayoutDashboard,
   LogOutIcon,
-  Send,
   User2,
   Users2,
   Wallet,
@@ -118,21 +117,6 @@ const data = {
         },
       ],
     },
-    /* {
-      title: "Assurances",
-      items: [
-        {
-          title: "Envoyés",
-          url: "/assurances/sent",
-          icon: Send,
-        },
-        {
-          title: "Encaissées",
-          url: "/assurances/paid",
-          icon: Wallet,
-        },
-      ],
-    }, */
     {
       title: "Administrateur",
       onlyAdmin: true,

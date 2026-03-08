@@ -43,6 +43,9 @@ export type Estimate = {
   claimNumber: string | null;
   type: TypeEstimate;
   status: EstimateStatus;
+  _count?: {
+    items: number;
+  };
   intervention: {
     id: string;
     date: Date;

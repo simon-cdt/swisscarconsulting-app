@@ -78,8 +78,9 @@ export default function UploadImage({
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
+          onClick={openFileDialog}
           data-dragging={isDragging || undefined}
-          className="border-input has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 data-[dragging=true]:bg-accent/50 relative flex min-h-32 flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed p-2 transition-colors has-[input:focus]:ring-[3px]"
+          className="pointer border-input has-[input:focus]:border-ring has-[input:focus]:ring-ring/50 data-[dragging=true]:bg-accent/50 relative flex min-h-32 flex-col items-center justify-center overflow-hidden rounded-xl border border-dashed p-2 transition-colors has-[input:focus]:ring-[3px]"
         >
           <input
             {...getInputProps()}
@@ -108,7 +109,7 @@ export default function UploadImage({
               </p>
               <p className="text-muted-foreground text-xs">SVG, PNG, JPG</p>
               <Button
-                variant="outline"
+                variant="default"
                 className="mt-4 flex gap-2"
                 onClick={openFileDialog}
               >

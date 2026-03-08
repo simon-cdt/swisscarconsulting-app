@@ -24,6 +24,7 @@ type FetchAllClients = {
   typeClient: TypeClient;
   email: string;
   phone: string;
+  phone2: string | null;
   name: string;
   companyName: string | null;
   nbVehicule: number;
@@ -53,6 +54,7 @@ export default function ClientHandlePage() {
           customer.id.toString().toLowerCase().includes(search.toLowerCase()) ||
           customer.name?.toLowerCase().includes(search.toLowerCase()) ||
           customer.phone.toLowerCase().includes(search.toLowerCase()) ||
+          customer.phone2?.toLowerCase().includes(search.toLowerCase()) ||
           customer.companyName?.toLowerCase().includes(search.toLowerCase()) ||
           customer.estimateIds.some((estimateId) =>
             estimateId.toLowerCase().includes(search.toLowerCase()),

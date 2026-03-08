@@ -23,6 +23,7 @@ export function UpdateClientCompany({
     contactName: string | null;
     email: string;
     phone: string;
+    phone2: string | null;
     address: string | null;
     postalCode: string | null;
     city: string | null;
@@ -43,6 +44,13 @@ export function UpdateClientCompany({
         "Le numéro de téléphone contient des caractères invalides",
       )
       .min(9, "Le numéro de téléphone doit contenir au moins 9 chiffres"),
+    phone2: z
+      .string()
+      .optional()
+      .refine(
+        (val) => !val || (val.length >= 9 && /^[\d\s\+\-\(\)]+$/.test(val)),
+        "Le numéro de téléphone contient des caractères invalides ou est trop court",
+      ),
     address: z
       .string()
       .optional()
@@ -83,6 +91,7 @@ export function UpdateClientCompany({
         contactName: data.contactName,
         email: data.email,
         phone: data.phone,
+        phone2: data.phone2,
         address: data.address,
         postalCode: data.postalCode,
         city: data.city,
@@ -148,6 +157,16 @@ export function UpdateClientCompany({
           register={register}
           nonempty
         />
+        <div className="col-span-2">
+          <FormField
+            label="Téléphone 2 (optionnel)"
+            name="phone2"
+            type="tel"
+            defaultValue={client.phone2 || ""}
+            error={errors.phone2}
+            register={register}
+          />
+        </div>
         <div className="col-span-2">
           <FormField
             label="Adresse"

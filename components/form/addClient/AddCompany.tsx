@@ -36,6 +36,13 @@ export default function AddCompany({
         "Le numéro de téléphone contient des caractères invalides",
       )
       .min(9, "Le numéro de téléphone doit contenir au moins 9 chiffres"),
+    phone2: z
+      .string()
+      .optional()
+      .refine(
+        (val) => !val || (val.length >= 9 && /^[\d\s\+\-\(\)]+$/.test(val)),
+        "Le numéro de téléphone contient des caractères invalides ou est trop court",
+      ),
     contactFirstName: z.string().nonempty("Le prénom du contact est requis."),
     contactName: z.string().nonempty("Le nom du contact est requis."),
     address: z
@@ -75,6 +82,7 @@ export default function AddCompany({
       contactName: sharedData.name,
       email: sharedData.email,
       phone: sharedData.phone,
+      phone2: sharedData.phone2,
       address: sharedData.address,
       postalCode: sharedData.postalCode,
       city: sharedData.city,
@@ -86,6 +94,7 @@ export default function AddCompany({
   const watchedContactName = watch("contactName");
   const watchedEmail = watch("email");
   const watchedPhone = watch("phone");
+  const watchedPhone2 = watch("phone2");
   const watchedAddress = watch("address");
   const watchedPostalCode = watch("postalCode");
   const watchedCity = watch("city");
@@ -96,6 +105,7 @@ export default function AddCompany({
       name: watchedContactName || "",
       email: watchedEmail || "",
       phone: watchedPhone || "",
+      phone2: watchedPhone2 || "",
       address: watchedAddress || "",
       postalCode: watchedPostalCode,
       city: watchedCity || "",
@@ -105,6 +115,7 @@ export default function AddCompany({
     watchedContactName,
     watchedEmail,
     watchedPhone,
+    watchedPhone2,
     watchedAddress,
     watchedPostalCode,
     watchedCity,
@@ -125,6 +136,10 @@ export default function AddCompany({
       shouldDirty: false,
     });
     setValue("phone", sharedData.phone, {
+      shouldValidate: false,
+      shouldDirty: false,
+    });
+    setValue("phone2", sharedData.phone2, {
       shouldValidate: false,
       shouldDirty: false,
     });
@@ -188,6 +203,17 @@ export default function AddCompany({
             nonempty
             icon={<Phone className="size-4" />}
           />
+        </div>
+        <FormField
+          label="Numéro de téléphone 2 (optionnel)"
+          name="phone2"
+          type="tel"
+          register={register}
+          error={errors.phone2}
+          placeholder="+41 79 123 45 67"
+          icon={<Phone className="size-4" />}
+        />
+        <div className="grid grid-cols-2 gap-4">
           <FormField
             label="Prénom du contact"
             name="contactFirstName"

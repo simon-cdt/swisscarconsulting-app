@@ -41,6 +41,7 @@ import { fr } from "date-fns/locale";
 import UpdateClient from "@/components/form/UpdateForm/UpdateClient";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatPhoneNumber } from "@/lib/utils";
+import { useEffect } from "react";
 
 type FetchClientAndVehicule = {
   vehicule: {
@@ -71,6 +72,7 @@ type FetchClientAndVehicule = {
     name: string | null;
     firstName: string | null;
     phone: string;
+    phone2: string | null;
     email: string;
     address: string | null;
     city: string | null;
@@ -78,6 +80,7 @@ type FetchClientAndVehicule = {
     contactFirstName: null;
     contactName: null;
   };
+  hasInterventionToday: boolean;
 };
 
 function useClientAndVehicule({
@@ -116,11 +119,19 @@ export default function VisitPage() {
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showInterventionTodayDialog, setShowInterventionTodayDialog] =
+    useState(false);
   const [pendingFormData, setPendingFormData] = useState<{
     description: string;
     images?: File[];
     uploadedUrls: string[];
   } | null>(null);
+
+  useEffect(() => {
+    if (data?.hasInterventionToday) {
+      setShowInterventionTodayDialog(true);
+    }
+  }, [data?.hasInterventionToday]);
 
   const handleDescriptionKeyDown = (
     e: React.KeyboardEvent<HTMLTextAreaElement>,
@@ -331,6 +342,12 @@ export default function VisitPage() {
                         label="Téléphone"
                         value={formatPhoneNumber(data.client.phone)}
                       />
+                      {data.client.phone2 && (
+                        <Item
+                          label="Téléphone 2"
+                          value={formatPhoneNumber(data.client.phone2)}
+                        />
+                      )}
                       <Item
                         label="Adresse"
                         value={
@@ -554,6 +571,28 @@ export default function VisitPage() {
             </AlertDialogCancel>
             <AlertDialogAction onClick={handleConfirmSubmit}>
               Continuer
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={showInterventionTodayDialog}
+        onOpenChange={setShowInterventionTodayDialog}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Information</AlertDialogTitle>
+            <AlertDialogDescription>
+              Une intervention a déjà été créée pour cette voiture
+              aujourd&apos;hui.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogAction
+              onClick={() => setShowInterventionTodayDialog(false)}
+            >
+              OK
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

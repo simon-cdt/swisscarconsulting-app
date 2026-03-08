@@ -32,6 +32,7 @@ export async function GET(
           unitPrice: true,
           type: true,
           position: true,
+          calculateByTime: true,
         },
         orderBy: {
           position: "asc",

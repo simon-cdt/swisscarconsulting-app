@@ -37,6 +37,13 @@ export default function AddClient({
         "Le numéro de téléphone contient des caractères invalides",
       )
       .min(9, "Le numéro de téléphone doit contenir au moins 9 chiffres"),
+    phone2: z
+      .string()
+      .optional()
+      .refine(
+        (val) => !val || (val.length >= 9 && /^[\d\s\+\-\(\)]+$/.test(val)),
+        "Le numéro de téléphone contient des caractères invalides ou est trop court",
+      ),
     address: z
       .string()
       .optional()
@@ -73,6 +80,7 @@ export default function AddClient({
       name: sharedData.name,
       email: sharedData.email,
       phone: sharedData.phone,
+      phone2: sharedData.phone2,
       address: sharedData.address,
       postalCode: sharedData.postalCode,
       city: sharedData.city,
@@ -84,6 +92,7 @@ export default function AddClient({
   const watchedName = watch("name");
   const watchedEmail = watch("email");
   const watchedPhone = watch("phone");
+  const watchedPhone2 = watch("phone2");
   const watchedAddress = watch("address");
   const watchedPostalCode = watch("postalCode");
   const watchedCity = watch("city");
@@ -94,6 +103,7 @@ export default function AddClient({
       name: watchedName || "",
       email: watchedEmail || "",
       phone: watchedPhone || "",
+      phone2: watchedPhone2 || "",
       address: watchedAddress || "",
       postalCode: watchedPostalCode,
       city: watchedCity || "",
@@ -103,6 +113,7 @@ export default function AddClient({
     watchedName,
     watchedEmail,
     watchedPhone,
+    watchedPhone2,
     watchedAddress,
     watchedPostalCode,
     watchedCity,
@@ -123,6 +134,10 @@ export default function AddClient({
       shouldDirty: false,
     });
     setValue("phone", sharedData.phone, {
+      shouldValidate: false,
+      shouldDirty: false,
+    });
+    setValue("phone2", sharedData.phone2, {
       shouldValidate: false,
       shouldDirty: false,
     });
@@ -195,6 +210,17 @@ export default function AddClient({
           error={errors.phone}
           placeholder="+41 79 123 45 67"
           nonempty
+          icon={<Phone className="size-4" />}
+        />
+      </div>
+      <div className="grid gap-4">
+        <FormField
+          label="Numéro de téléphone 2 (optionnel)"
+          name="phone2"
+          type="tel"
+          register={register}
+          error={errors.phone2}
+          placeholder="+41 79 123 45 67"
           icon={<Phone className="size-4" />}
         />
       </div>

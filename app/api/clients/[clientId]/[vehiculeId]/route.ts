@@ -56,6 +56,7 @@ export async function GET(
       name: true,
       firstName: true,
       phone: true,
+      phone2: true,
       email: true,
       address: true,
       city: true,
@@ -65,5 +66,24 @@ export async function GET(
     },
   });
 
-  return NextResponse.json({ vehicule, client });
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const tomorrow = new Date(today);
+  tomorrow.setDate(tomorrow.getDate() + 1);
+
+  const hasInterventionToday = await db.intervention.findFirst({
+    where: {
+      vehiculeId,
+      date: {
+        gte: today,
+        lt: tomorrow,
+      },
+    },
+  });
+
+  return NextResponse.json({
+    vehicule,
+    client,
+    hasInterventionToday: !!hasInterventionToday,
+  });
 }

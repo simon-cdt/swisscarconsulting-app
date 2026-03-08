@@ -38,6 +38,7 @@ export async function GET(
       typeClient: true,
       email: true,
       phone: true,
+      phone2: true,
       name: true,
       firstName: true,
       companyName: true,

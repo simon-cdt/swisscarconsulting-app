@@ -22,6 +22,13 @@
   @apply border-sky-100 bg-sky-50;
 }
 
+.insurance-btn {
+  @apply bg-purple-600 hover:bg-purple-700;
+}
+.insurance-card {
+  @apply border-purple-100 bg-purple-50;
+}
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {

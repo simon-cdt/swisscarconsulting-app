@@ -22,18 +22,21 @@ export const GetSidebarCount = async () => {
         where: {
           status: "PENDING",
           type: "INDIVIDUAL",
+          deleted: false,
         },
       });
       const estimateIndividualToFinish = await db.estimate.count({
         where: {
           status: "TOFINISH",
           type: "INDIVIDUAL",
+          deleted: false,
         },
       });
       const estimateIndividualAccepted = await db.estimate.count({
         where: {
           status: "ACCEPTED",
           type: "INDIVIDUAL",
+          deleted: false,
         },
       });
 
@@ -41,18 +44,21 @@ export const GetSidebarCount = async () => {
         where: {
           status: "TOFINISH",
           type: "INSURANCE",
+          deleted: false,
         },
       });
       const estimateInsuranceAccepted = await db.estimate.count({
         where: {
           status: "ACCEPTED",
           type: "INSURANCE",
+          deleted: false,
         },
       });
 
       const estimateSentGarage = await db.estimate.count({
         where: {
           status: "SENT_TO_GARAGE",
+          deleted: false,
         },
       });
 

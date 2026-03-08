@@ -10,7 +10,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { FileText, ImageIcon, Plus, X } from "lucide-react";
+import { Car, FileText, ImageIcon, Plus, X } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -45,7 +45,6 @@ import {
 } from "@/lib/actions/estimate";
 import AddMedias from "@/components/form/AddMedias";
 import InformationsDialog from "@/components/InformationsDialog";
-import { formatPhoneNumber } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -61,6 +60,9 @@ import { UpdateVehicule } from "@/components/form/UpdateForm/UpdateVehicule";
 import { FILE_SERVER_URL } from "@/lib/config";
 import UpdateClaimNumber from "@/components/form/UpdateForm/UpdateClaimNumber";
 import UpdateDiscount from "@/components/form/UpdateForm/UpdateDiscount";
+import { GeistMono } from "geist/font/mono";
+import { format } from "date-fns";
+import { fr } from "date-fns/locale";
 
 type FetchEstimate = {
   id: string;
@@ -322,90 +324,229 @@ export default function QuoteGeneratorPage() {
                 </p>
               </div>
 
-              <Card className="shadow-none">
-                <CardContent>
-                  <div className="flex flex-col gap-3">
-                    <p className="font-semibold">Informations devis</p>
-                    {estimate.type === "INSURANCE" && (
-                      <div className="flex w-full items-center justify-between">
+              <div className="flex w-full justify-between gap-6">
+                <Card className="w-full shadow-none">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Car className="h-5 w-5" />
+                        {"Véhicule concerné"}
+                      </div>
+                      <UpdateVehicule
+                        vehicule={estimate.intervention.vehicule}
+                        refetch={refetch}
+                        label="Modifier"
+                      />
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                      <div>
+                        <p className="text-muted-foreground text-sm">Marque</p>
+                        <p className="text-foreground text-base font-medium">
+                          {estimate.intervention.vehicule.brand}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-sm">Modèle</p>
+                        <p className="text-foreground text-base font-medium">
+                          {estimate.intervention.vehicule.model}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-sm">Année</p>
+                        <p className="text-foreground text-base font-medium">
+                          {estimate.intervention.vehicule.year}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-sm">
+                          Immatriculation
+                        </p>
+                        <p
+                          className={`${GeistMono.className} text-foreground text-base font-medium`}
+                        >
+                          {estimate.intervention.vehicule.licensePlate}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-sm">
+                          Assurance
+                        </p>
+                        <p
+                          className={`${estimate.intervention.vehicule.insurance ? "text-foreground" : "text-red-500"} text-base font-medium`}
+                        >
+                          {estimate.intervention.vehicule.insurance?.name ||
+                            "Non renseigné"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-sm">
+                          Dernière expertise
+                        </p>
+                        <p
+                          className={`${estimate.intervention.vehicule.lastExpertise ? "text-foreground" : "text-red-500"} text-base font-medium`}
+                        >
+                          {estimate.intervention.vehicule.lastExpertise
+                            ? format(
+                                estimate.intervention.vehicule.lastExpertise,
+                                "P",
+                                { locale: fr },
+                              )
+                            : "Non renseigné"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-sm">
+                          Numéro de chassis
+                        </p>
+                        <p
+                          className={`${estimate.intervention.vehicule.chassisNumber ? "text-foreground" : "text-red-500"} text-base font-medium`}
+                        >
+                          {estimate.intervention.vehicule.chassisNumber ||
+                            "Non renseigné"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-muted-foreground text-sm">
+                          Numéro de matricule
+                        </p>
+                        <p
+                          className={`${estimate.intervention.vehicule.registrationNumber ? "text-foreground" : "text-red-500"} text-base font-medium`}
+                        >
+                          {estimate.intervention.vehicule.registrationNumber ||
+                            "Non renseigné"}
+                        </p>
+                      </div>
+                      <div className="col-span-2">
+                        <p className="text-muted-foreground text-sm">
+                          Type de réception
+                        </p>
+                        <p
+                          className={`${estimate.intervention.vehicule.receptionType ? "text-foreground" : "text-red-500"} text-base font-medium`}
+                        >
+                          {estimate.intervention.vehicule.receptionType ||
+                            "Non renseigné"}
+                        </p>
+                      </div>
+                      <div className="col-span-2 mt-2 flex w-full justify-end">
+                        {estimate.intervention.vehicule.certificateImage ? (
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant={"outline"} size="sm">
+                                Voir la carte grise
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent className="sm:max-w-150">
+                              <DialogTitle />
+                              {/* eslint-disable-next-line */}
+                              <img
+                                src={`${FILE_SERVER_URL}/uploads/${estimate.intervention.vehicule.certificateImage}`}
+                                alt="Carte grise du véhicule"
+                                className="w-full"
+                              />
+                            </DialogContent>
+                          </Dialog>
+                        ) : (
+                          <div className="hover:cursor-not-allowed">
+                            <Button
+                              className="border-input bg-background border text-black/70"
+                              disabled
+                              size="sm"
+                            >
+                              Carte grise non enregistrée
+                            </Button>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+                <Card className="h-min w-full shadow-none">
+                  <CardContent>
+                    <div className="flex flex-col gap-3">
+                      <p className="font-semibold">Informations devis</p>
+                      {estimate.type === "INSURANCE" && (
+                        <div className="flex w-full items-center justify-between">
+                          <p className="text-sm">
+                            Numéro de sinistre :{" "}
+                            <span
+                              className={`${estimate.claimNumber ? "text-black" : "text-red-500"} font-semibold`}
+                            >
+                              {estimate.claimNumber || "NON RENSEIGNÉ"}
+                            </span>
+                          </p>
+                          <div>
+                            <UpdateClaimNumber
+                              estimateId={estimate.id}
+                              claimNumber={estimate.claimNumber}
+                              refetch={refetch}
+                              updateDisable={updateDisable}
+                            />
+                          </div>
+                        </div>
+                      )}
+                      <div className="flex items-center justify-between">
                         <p className="text-sm">
-                          Numéro de sinistre :{" "}
-                          <span
-                            className={`${estimate.claimNumber ? "text-black" : "text-red-500"} font-semibold`}
-                          >
-                            {estimate.claimNumber || "NON RENSEIGNÉ"}
+                          Type de devis :{" "}
+                          <span className="font-semibold">
+                            {estimate.type === "INSURANCE"
+                              ? `Assurance${estimate.intervention.vehicule.insurance ? ` - ${estimate.intervention.vehicule.insurance.name}` : " - NON RENSEIGNÉE"}`
+                              : "Individuel"}
                           </span>
                         </p>
-                        <div>
-                          <UpdateClaimNumber
-                            estimateId={estimate.id}
-                            claimNumber={estimate.claimNumber}
-                            refetch={refetch}
-                            updateDisable={updateDisable}
-                          />
-                        </div>
-                      </div>
-                    )}
-                    <div className="flex items-center justify-between">
-                      <p className="text-sm">
-                        Type de devis :{" "}
-                        <span className="font-semibold">
-                          {estimate.type === "INSURANCE"
-                            ? `Assurance${estimate.intervention.vehicule.insurance ? ` - ${estimate.intervention.vehicule.insurance.name}` : " - NON RENSEIGNÉE"}`
-                            : "Individuel"}
-                        </span>
-                      </p>
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button
-                            size={"sm"}
-                            variant={"secondary"}
-                            disabled={updateDisable}
-                          >
-                            Modifier le type de devis
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>
-                              Êtes-vous absolument sûr ?
-                            </AlertDialogTitle>
-                            <AlertDialogDescription>
-                              {estimate.type === "INDIVIDUAL"
-                                ? "Le devis deviendra un devis d'assurance."
-                                : "Le devis deviendra un devis de particulier et le numéro de sinistre sera supprimé."}
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Annuler</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={async () => {
-                                const response =
-                                  estimate.type === "INDIVIDUAL"
-                                    ? await convertIndividualToInsurance({
-                                        estimateId: estimate.id,
-                                      })
-                                    : await convertInsuranceToIndividual({
-                                        estimateId: estimate.id,
-                                      });
-
-                                if (response.success) {
-                                  toast.success(response.message);
-                                  refetch();
-                                } else {
-                                  toast.error(response.message);
-                                }
-                              }}
+                        <AlertDialog>
+                          <AlertDialogTrigger asChild>
+                            <Button
+                              size={"sm"}
+                              variant={"secondary"}
+                              disabled={updateDisable}
                             >
-                              Confirmer
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                              Modifier le type de devis
+                            </Button>
+                          </AlertDialogTrigger>
+                          <AlertDialogContent>
+                            <AlertDialogHeader>
+                              <AlertDialogTitle>
+                                Êtes-vous absolument sûr ?
+                              </AlertDialogTitle>
+                              <AlertDialogDescription>
+                                {estimate.type === "INDIVIDUAL"
+                                  ? "Le devis deviendra un devis d'assurance."
+                                  : "Le devis deviendra un devis de particulier et le numéro de sinistre sera supprimé."}
+                              </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                              <AlertDialogCancel>Annuler</AlertDialogCancel>
+                              <AlertDialogAction
+                                onClick={async () => {
+                                  const response =
+                                    estimate.type === "INDIVIDUAL"
+                                      ? await convertIndividualToInsurance({
+                                          estimateId: estimate.id,
+                                        })
+                                      : await convertInsuranceToIndividual({
+                                          estimateId: estimate.id,
+                                        });
+
+                                  if (response.success) {
+                                    toast.success(response.message);
+                                    refetch();
+                                  } else {
+                                    toast.error(response.message);
+                                  }
+                                }}
+                              >
+                                Confirmer
+                              </AlertDialogAction>
+                            </AlertDialogFooter>
+                          </AlertDialogContent>
+                        </AlertDialog>
+                      </div>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
+                  </CardContent>
+                </Card>
+              </div>
               {estimate.refusalReason && (
                 <Card className="border-red-500/10 bg-red-50 shadow-none">
                   <CardContent className="flex flex-col gap-4">
@@ -421,61 +562,21 @@ export default function QuoteGeneratorPage() {
                 </Card>
               )}
               <div className="flex flex-col gap-6">
-                {/* Colonne gauche - Constat et Médias */}
                 <div className="flex w-full justify-between gap-6">
-                  {/* Zone de constat */}
                   <Card className="w-full shadow-none">
                     <CardHeader>
-                      <CardTitle className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          <FileText className="text-primary h-5 w-5" />
-                          {"Résumé de l'intervention"}
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <UpdateVehicule
-                            vehicule={estimate.intervention.vehicule}
-                            refetch={refetch}
-                            label="Modifier le véhicule"
-                          />
-                          {estimate.intervention.vehicule.certificateImage ? (
-                            <Dialog>
-                              <DialogTrigger asChild>
-                                <Button variant={"outline"}>
-                                  Voir la carte grise
-                                </Button>
-                              </DialogTrigger>
-                              <DialogContent className="sm:max-w-150">
-                                <DialogTitle />
-                                {/* eslint-disable-next-line */}
-                                <img
-                                  src={`${FILE_SERVER_URL}/uploads/${estimate.intervention.vehicule.certificateImage}`}
-                                  alt="Carte grise du véhicule"
-                                  className="w-full"
-                                />
-                              </DialogContent>
-                            </Dialog>
-                          ) : (
-                            <div className="hover:cursor-not-allowed">
-                              <Button
-                                className="border-input bg-background border text-black/70"
-                                disabled
-                                size={"sm"}
-                              >
-                                Carte grise non disponible
-                              </Button>
-                            </div>
-                          )}
-                        </div>
+                      <CardTitle className="flex items-center gap-2">
+                        <FileText className="text-primary h-5 w-5" />
+                        {"Résumé de l'intervention"}
                       </CardTitle>
                       <CardDescription>
-                        {estimate.intervention.vehicule.client.typeClient ===
-                        "individual"
-                          ? `${estimate.intervention.vehicule.client.firstName} ${estimate.intervention.vehicule.client.name}`
-                          : estimate.intervention.vehicule.client.companyName}
-                        {" - "}
-                        {formatPhoneNumber(
-                          estimate.intervention.vehicule.client.phone,
-                        )}
+                        {new Date(
+                          estimate.intervention.date,
+                        ).toLocaleDateString("fr-FR", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        })}
                       </CardDescription>
                     </CardHeader>
                     <CardContent>
@@ -486,7 +587,6 @@ export default function QuoteGeneratorPage() {
                       </div>
                     </CardContent>
                   </Card>
-
                   <Card className="w-full shadow-none">
                     <CardHeader>
                       <CardTitle className="flex items-center justify-between">
@@ -674,10 +774,33 @@ export default function QuoteGeneratorPage() {
                                     ) : (
                                       <>
                                         <div className="text-primary font-semibold">
-                                          {item.unitPrice
-                                            .toFixed(2)
-                                            .replaceAll(".", ",")}{" "}
-                                          CHF
+                                          {item.quantity &&
+                                          item.quantity > 1 ? (
+                                            <div className="flex flex-col">
+                                              <span className="text-xs text-gray-500">
+                                                {item.quantity} ×{" "}
+                                                {item.unitPrice
+                                                  .toFixed(2)
+                                                  .replaceAll(".", ",")}{" "}
+                                                CHF
+                                              </span>
+                                              <span>
+                                                {(
+                                                  item.unitPrice * item.quantity
+                                                )
+                                                  .toFixed(2)
+                                                  .replaceAll(".", ",")}{" "}
+                                                CHF
+                                              </span>
+                                            </div>
+                                          ) : (
+                                            <>
+                                              {item.unitPrice
+                                                .toFixed(2)
+                                                .replaceAll(".", ",")}{" "}
+                                              CHF
+                                            </>
+                                          )}
                                         </div>
                                       </>
                                     )}
@@ -863,7 +986,7 @@ export default function QuoteGeneratorPage() {
                           if (response.success) {
                             toast.success(response.message);
                             router.push(
-                              `/dashboard/estimates/${estimate.type === "INDIVIDUAL" ? "individual" : "insurance"}/pending`,
+                              `/dashboard/estimates/${estimate.type === "INDIVIDUAL" ? "individual/pending" : "insurance/accepted"}`,
                             );
                           } else {
                             toast.error(response.message);

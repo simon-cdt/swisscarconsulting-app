@@ -12,6 +12,7 @@ export const addClientIndividual = async ({
     name: string;
     email: string;
     phone: string;
+    phone2?: string;
     address?: string;
     postalCode?: number;
     city?: string;
@@ -33,6 +34,7 @@ export const addClientIndividual = async ({
         firstName: data.firstName,
         email: data.email,
         phone: data.phone,
+        phone2: data.phone2,
         address: data.address,
         postalCode: data.postalCode,
         city: data.city,
@@ -62,6 +64,7 @@ export const addClientCompany = async ({
     companyName: string;
     email: string;
     phone: string;
+    phone2?: string;
     contactFirstName: string;
     contactName: string;
     address?: string;
@@ -84,6 +87,7 @@ export const addClientCompany = async ({
         companyName: data.companyName,
         email: data.email,
         phone: data.phone,
+        phone2: data.phone2,
         contactFirstName: data.contactFirstName,
         contactName: data.contactName,
         address: data.address,
@@ -118,6 +122,7 @@ export const updateClientIndividual = async ({
     firstName: string;
     email: string;
     phone: string;
+    phone2?: string;
     address?: string;
     postalCode?: number;
     city?: string;
@@ -139,6 +144,7 @@ export const updateClientIndividual = async ({
         firstName: data.firstName,
         email: data.email,
         phone: data.phone,
+        phone2: data.phone2,
         address: data.address,
         postalCode: data.postalCode === undefined ? null : data.postalCode,
         city: data.city,
@@ -165,6 +171,7 @@ export const updateClientCompany = async ({
     companyName: string;
     email: string;
     phone: string;
+    phone2?: string;
     contactFirstName: string;
     contactName: string;
     address?: string;
@@ -187,6 +194,7 @@ export const updateClientCompany = async ({
         companyName: data.companyName,
         email: data.email,
         phone: data.phone,
+        phone2: data.phone2,
         contactFirstName: data.contactFirstName,
         contactName: data.contactName,
         address: data.address,

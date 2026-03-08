@@ -40,6 +40,7 @@ export default function UpdateClient({
 
     email: string;
     phone: string;
+    phone2: string | null;
     address: string | null;
     postalCode: string | null;
     city: string | null;

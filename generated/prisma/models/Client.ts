@@ -41,6 +41,7 @@ export type ClientMinAggregateOutputType = {
   typeClient: $Enums.TypeClient | null
   email: string | null
   phone: string | null
+  phone2: string | null
   address: string | null
   postalCode: number | null
   city: string | null
@@ -58,6 +59,7 @@ export type ClientMaxAggregateOutputType = {
   typeClient: $Enums.TypeClient | null
   email: string | null
   phone: string | null
+  phone2: string | null
   address: string | null
   postalCode: number | null
   city: string | null
@@ -75,6 +77,7 @@ export type ClientCountAggregateOutputType = {
   typeClient: number
   email: number
   phone: number
+  phone2: number
   address: number
   postalCode: number
   city: number
@@ -104,6 +107,7 @@ export type ClientMinAggregateInputType = {
   typeClient?: true
   email?: true
   phone?: true
+  phone2?: true
   address?: true
   postalCode?: true
   city?: true
@@ -121,6 +125,7 @@ export type ClientMaxAggregateInputType = {
   typeClient?: true
   email?: true
   phone?: true
+  phone2?: true
   address?: true
   postalCode?: true
   city?: true
@@ -138,6 +143,7 @@ export type ClientCountAggregateInputType = {
   typeClient?: true
   email?: true
   phone?: true
+  phone2?: true
   address?: true
   postalCode?: true
   city?: true
@@ -242,6 +248,7 @@ export type ClientGroupByOutputType = {
   typeClient: $Enums.TypeClient
   email: string
   phone: string
+  phone2: string | null
   address: string | null
   postalCode: number | null
   city: string | null
@@ -282,6 +289,7 @@ export type ClientWhereInput = {
   typeClient?: Prisma.EnumTypeClientFilter<"Client"> | $Enums.TypeClient
   email?: Prisma.StringFilter<"Client"> | string
   phone?: Prisma.StringFilter<"Client"> | string
+  phone2?: Prisma.StringNullableFilter<"Client"> | string | null
   address?: Prisma.StringNullableFilter<"Client"> | string | null
   postalCode?: Prisma.IntNullableFilter<"Client"> | number | null
   city?: Prisma.StringNullableFilter<"Client"> | string | null
@@ -301,6 +309,7 @@ export type ClientOrderByWithRelationInput = {
   typeClient?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  phone2?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   postalCode?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -324,6 +333,7 @@ export type ClientWhereUniqueInput = Prisma.AtLeast<{
   typeClient?: Prisma.EnumTypeClientFilter<"Client"> | $Enums.TypeClient
   email?: Prisma.StringFilter<"Client"> | string
   phone?: Prisma.StringFilter<"Client"> | string
+  phone2?: Prisma.StringNullableFilter<"Client"> | string | null
   address?: Prisma.StringNullableFilter<"Client"> | string | null
   postalCode?: Prisma.IntNullableFilter<"Client"> | number | null
   city?: Prisma.StringNullableFilter<"Client"> | string | null
@@ -343,6 +353,7 @@ export type ClientOrderByWithAggregationInput = {
   typeClient?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  phone2?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   postalCode?: Prisma.SortOrderInput | Prisma.SortOrder
   city?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -368,6 +379,7 @@ export type ClientScalarWhereWithAggregatesInput = {
   typeClient?: Prisma.EnumTypeClientWithAggregatesFilter<"Client"> | $Enums.TypeClient
   email?: Prisma.StringWithAggregatesFilter<"Client"> | string
   phone?: Prisma.StringWithAggregatesFilter<"Client"> | string
+  phone2?: Prisma.StringNullableWithAggregatesFilter<"Client"> | string | null
   address?: Prisma.StringNullableWithAggregatesFilter<"Client"> | string | null
   postalCode?: Prisma.IntNullableWithAggregatesFilter<"Client"> | number | null
   city?: Prisma.StringNullableWithAggregatesFilter<"Client"> | string | null
@@ -384,6 +396,7 @@ export type ClientCreateInput = {
   typeClient: $Enums.TypeClient
   email: string
   phone: string
+  phone2?: string | null
   address?: string | null
   postalCode?: number | null
   city?: string | null
@@ -403,6 +416,7 @@ export type ClientUncheckedCreateInput = {
   typeClient: $Enums.TypeClient
   email: string
   phone: string
+  phone2?: string | null
   address?: string | null
   postalCode?: number | null
   city?: string | null
@@ -421,6 +435,7 @@ export type ClientUpdateInput = {
   typeClient?: Prisma.EnumTypeClientFieldUpdateOperationsInput | $Enums.TypeClient
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -440,6 +455,7 @@ export type ClientUncheckedUpdateInput = {
   typeClient?: Prisma.EnumTypeClientFieldUpdateOperationsInput | $Enums.TypeClient
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -459,6 +475,7 @@ export type ClientCreateManyInput = {
   typeClient: $Enums.TypeClient
   email: string
   phone: string
+  phone2?: string | null
   address?: string | null
   postalCode?: number | null
   city?: string | null
@@ -475,6 +492,7 @@ export type ClientUpdateManyMutationInput = {
   typeClient?: Prisma.EnumTypeClientFieldUpdateOperationsInput | $Enums.TypeClient
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -492,6 +510,7 @@ export type ClientUncheckedUpdateManyInput = {
   typeClient?: Prisma.EnumTypeClientFieldUpdateOperationsInput | $Enums.TypeClient
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -515,6 +534,7 @@ export type ClientCountOrderByAggregateInput = {
   typeClient?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  phone2?: Prisma.SortOrder
   address?: Prisma.SortOrder
   postalCode?: Prisma.SortOrder
   city?: Prisma.SortOrder
@@ -537,6 +557,7 @@ export type ClientMaxOrderByAggregateInput = {
   typeClient?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  phone2?: Prisma.SortOrder
   address?: Prisma.SortOrder
   postalCode?: Prisma.SortOrder
   city?: Prisma.SortOrder
@@ -554,6 +575,7 @@ export type ClientMinOrderByAggregateInput = {
   typeClient?: Prisma.SortOrder
   email?: Prisma.SortOrder
   phone?: Prisma.SortOrder
+  phone2?: Prisma.SortOrder
   address?: Prisma.SortOrder
   postalCode?: Prisma.SortOrder
   city?: Prisma.SortOrder
@@ -632,6 +654,7 @@ export type ClientCreateWithoutVehiculesInput = {
   typeClient: $Enums.TypeClient
   email: string
   phone: string
+  phone2?: string | null
   address?: string | null
   postalCode?: number | null
   city?: string | null
@@ -650,6 +673,7 @@ export type ClientUncheckedCreateWithoutVehiculesInput = {
   typeClient: $Enums.TypeClient
   email: string
   phone: string
+  phone2?: string | null
   address?: string | null
   postalCode?: number | null
   city?: string | null
@@ -683,6 +707,7 @@ export type ClientUpdateWithoutVehiculesInput = {
   typeClient?: Prisma.EnumTypeClientFieldUpdateOperationsInput | $Enums.TypeClient
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -701,6 +726,7 @@ export type ClientUncheckedUpdateWithoutVehiculesInput = {
   typeClient?: Prisma.EnumTypeClientFieldUpdateOperationsInput | $Enums.TypeClient
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -718,6 +744,7 @@ export type ClientCreateWithoutAppointmentsInput = {
   typeClient: $Enums.TypeClient
   email: string
   phone: string
+  phone2?: string | null
   address?: string | null
   postalCode?: number | null
   city?: string | null
@@ -736,6 +763,7 @@ export type ClientUncheckedCreateWithoutAppointmentsInput = {
   typeClient: $Enums.TypeClient
   email: string
   phone: string
+  phone2?: string | null
   address?: string | null
   postalCode?: number | null
   city?: string | null
@@ -769,6 +797,7 @@ export type ClientUpdateWithoutAppointmentsInput = {
   typeClient?: Prisma.EnumTypeClientFieldUpdateOperationsInput | $Enums.TypeClient
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -787,6 +816,7 @@ export type ClientUncheckedUpdateWithoutAppointmentsInput = {
   typeClient?: Prisma.EnumTypeClientFieldUpdateOperationsInput | $Enums.TypeClient
   email?: Prisma.StringFieldUpdateOperationsInput | string
   phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phone2?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   city?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -845,6 +875,7 @@ export type ClientSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   typeClient?: boolean
   email?: boolean
   phone?: boolean
+  phone2?: boolean
   address?: boolean
   postalCode?: boolean
   city?: boolean
@@ -867,6 +898,7 @@ export type ClientSelectScalar = {
   typeClient?: boolean
   email?: boolean
   phone?: boolean
+  phone2?: boolean
   address?: boolean
   postalCode?: boolean
   city?: boolean
@@ -879,7 +911,7 @@ export type ClientSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "typeClient" | "email" | "phone" | "address" | "postalCode" | "city" | "firstName" | "name" | "companyName" | "contactFirstName" | "contactName" | "createdAt" | "updatedAt", ExtArgs["result"]["client"]>
+export type ClientOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "typeClient" | "email" | "phone" | "phone2" | "address" | "postalCode" | "city" | "firstName" | "name" | "companyName" | "contactFirstName" | "contactName" | "createdAt" | "updatedAt", ExtArgs["result"]["client"]>
 export type ClientInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   vehicules?: boolean | Prisma.Client$vehiculesArgs<ExtArgs>
   appointments?: boolean | Prisma.Client$appointmentsArgs<ExtArgs>
@@ -897,6 +929,7 @@ export type $ClientPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
     typeClient: $Enums.TypeClient
     email: string
     phone: string
+    phone2: string | null
     address: string | null
     postalCode: number | null
     city: string | null
@@ -1282,6 +1315,7 @@ export interface ClientFieldRefs {
   readonly typeClient: Prisma.FieldRef<"Client", 'TypeClient'>
   readonly email: Prisma.FieldRef<"Client", 'String'>
   readonly phone: Prisma.FieldRef<"Client", 'String'>
+  readonly phone2: Prisma.FieldRef<"Client", 'String'>
   readonly address: Prisma.FieldRef<"Client", 'String'>
   readonly postalCode: Prisma.FieldRef<"Client", 'Int'>
   readonly city: Prisma.FieldRef<"Client", 'String'>

@@ -26,6 +26,11 @@ export async function GET() {
       status: true,
       type: true,
       claimNumber: true,
+      _count: {
+        select: {
+          items: true,
+        },
+      },
       intervention: {
         select: {
           date: true,

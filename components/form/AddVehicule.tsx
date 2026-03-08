@@ -19,6 +19,7 @@ import z from "zod";
 import { FormField } from "./FormField";
 import { format } from "date-fns";
 import { Spinner } from "../ui/spinner";
+import { DatePicker } from "./DatePicker";
 import { addClientVehicule } from "@/lib/actions/vehicule";
 import UploadImage from "./UploadImage";
 import { useState } from "react";
@@ -106,16 +107,7 @@ export function AddVehicule({
         .refine(
           (value) => {
             if (!value) return true;
-            const [day, month, yearStr] = value.split("/");
-            if (!day || !month || !yearStr) return false;
-
-            let year = parseInt(yearStr);
-            // Convertir l'année à 2 chiffres en 4 chiffres
-            if (year < 100) {
-              year = year >= 50 ? 1900 + year : 2000 + year;
-            }
-
-            const date = new Date(year, parseInt(month) - 1, parseInt(day));
+            const date = new Date(value);
             return date <= new Date();
           },
           {
@@ -130,16 +122,8 @@ export function AddVehicule({
     .refine(
       (data) => {
         if (!data.lastExpertise || !data.year) return true;
-        // eslint-disable-next-line
-        const [day, month, yearStr] = data.lastExpertise.split("/");
-        let year = parseInt(yearStr);
-
-        // Convertir l'année à 2 chiffres en 4 chiffres
-        if (year < 100) {
-          year = year >= 50 ? 1900 + year : 2000 + year;
-        }
-
-        return year >= data.year;
+        const expertiseDate = new Date(data.lastExpertise);
+        return expertiseDate.getFullYear() >= data.year;
       },
       {
         message:
@@ -179,16 +163,7 @@ export function AddVehicule({
       // Convertir la date d'expertise en objet Date si elle existe
       let expertiseDate: Date | undefined = undefined;
       if (data.lastExpertise) {
-        const [day, month, yearStr] = data.lastExpertise.split("/");
-        let year = parseInt(yearStr);
-
-        // Si l'année a 2 chiffres, convertir en 4 chiffres
-        if (year < 100) {
-          // Si l'année est >= 50, on considère que c'est 19xx, sinon 20xx
-          year = year >= 50 ? 1900 + year : 2000 + year;
-        }
-
-        expertiseDate = new Date(year, parseInt(month) - 1, parseInt(day));
+        expertiseDate = new Date(data.lastExpertise);
       }
 
       const newData = {
@@ -256,7 +231,7 @@ export function AddVehicule({
               error={errors.model}
               nonempty
               onChange={(e) => {
-                const formatted = capitalize(e.target.value);
+                const formatted = e.target.value.toUpperCase();
                 setValue("model", formatted);
               }}
             />
@@ -322,17 +297,13 @@ export function AddVehicule({
                 setValue("registrationNumber", formatted);
               }}
             />
-            <FormField
+            <DatePicker
               label="Dernière expertise"
               name="lastExpertise"
-              register={register}
-              type="text"
+              setValue={setValue}
               error={errors.lastExpertise}
-              placeholder={format(new Date(), "dd/MM/yyyy") as string}
-              onChange={(e) => {
-                const formatted = formatExpertiseDate(e.target.value);
-                setValue("lastExpertise", formatted);
-              }}
+              placeholder="Sélectionnez une date"
+              maxDate={new Date()}
             />
             <div className="col-span-2">
               <FormField

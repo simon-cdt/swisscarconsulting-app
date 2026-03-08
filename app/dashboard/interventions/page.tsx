@@ -209,7 +209,7 @@ export default function InterventionsPage() {
                     return (
                       <Card
                         key={intervention.id}
-                        className={`${isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 flex h-47.5 w-150 items-start justify-between gap-0 p-6`}
+                        className={`${isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 flex h-50 w-150 items-start justify-between gap-0 p-6`}
                       >
                         <div className="flex w-full flex-row items-center justify-between">
                           <div className="flex w-full flex-wrap items-center gap-3">
@@ -396,6 +396,13 @@ export default function InterventionsPage() {
                                 </AlertDialogContent>
                               </AlertDialog>
                             </div>
+
+                            <Button
+                              size={"sm"}
+                              className="bg-fuchsia-600 hover:bg-fuchsia-700"
+                            >
+                              Vente
+                            </Button>
                           </div>
                         </div>
                       </Card>

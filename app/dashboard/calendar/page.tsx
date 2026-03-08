@@ -44,6 +44,7 @@ import { fr } from "date-fns/locale";
 import CreateAppointmentDialog from "@/components/form/CreateAppointmentDialog";
 import { useQuery } from "@tanstack/react-query";
 import { AppointmentType } from "@/generated/prisma/enums";
+import Link from "next/link";
 
 // Types pour les rendez-vous
 interface Appointment {
@@ -409,6 +410,13 @@ export default function CalendarPage() {
                         <Badge variant="secondary">
                           {selectedAppointment.estimateId}
                         </Badge>
+                        <Link
+                          href={`/dashboard/estimates/${selectedAppointment.estimateId}`}
+                        >
+                          <Button variant={"link"} size={"sm"}>
+                            <p className="text-xs">Consulter le devis</p>
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                   )}
