@@ -109,9 +109,14 @@ export default function UploadImage({
               </p>
               <p className="text-muted-foreground text-xs">SVG, PNG, JPG</p>
               <Button
+                type="button"
                 variant="default"
                 className="mt-4 flex gap-2"
-                onClick={openFileDialog}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  openFileDialog();
+                }}
               >
                 <UploadIcon
                   className="-ms-1 size-4 opacity-60"

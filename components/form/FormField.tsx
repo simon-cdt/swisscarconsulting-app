@@ -22,6 +22,7 @@ interface FormFieldProps {
   // eslint-disable-next-line
   setValue?: UseFormSetValue<any>;
   onChange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  transformValue?: (value: string) => string;
 }
 
 // CHAMP DE FORMULAIRE
@@ -40,7 +41,48 @@ export const FormField = ({
   richText,
   setValue,
   onChange,
+  transformValue,
 }: FormFieldProps) => {
+  const registration = register(name, {
+    setValueAs:
+      type === "number"
+        ? (v: string) => {
+            if (v === "" || v === null || v === undefined) {
+              return undefined;
+            }
+            const parsed = parseFloat(v);
+            return isNaN(parsed) ? undefined : parsed;
+          }
+        : undefined,
+    onChange: (event: React.ChangeEvent<HTMLInputElement>) => {
+      if (transformValue) {
+        const input = event.currentTarget;
+        const rawValue = input.value;
+        const selectionStart = input.selectionStart ?? rawValue.length;
+        const selectionEnd = input.selectionEnd ?? selectionStart;
+
+        const formattedValue = transformValue(rawValue);
+
+        if (formattedValue !== rawValue) {
+          const nextSelectionStart = transformValue(
+            rawValue.slice(0, selectionStart),
+          ).length;
+          const nextSelectionEnd = transformValue(
+            rawValue.slice(0, selectionEnd),
+          ).length;
+
+          input.value = formattedValue;
+
+          requestAnimationFrame(() => {
+            input.setSelectionRange(nextSelectionStart, nextSelectionEnd);
+          });
+        }
+      }
+
+      onChange?.(event);
+    },
+  });
+
   return (
     <div className="flex flex-col gap-2">
       <Label htmlFor={name}>
@@ -74,19 +116,7 @@ export const FormField = ({
             id={name}
             type={type}
             placeholder={placeholder}
-            {...register(name, {
-              setValueAs:
-                type === "number"
-                  ? (v: string) => {
-                      if (v === "" || v === null || v === undefined) {
-                        return undefined;
-                      }
-                      const parsed = parseFloat(v);
-                      return isNaN(parsed) ? undefined : parsed;
-                    }
-                  : undefined,
-              onChange: onChange,
-            })}
+            {...registration}
             className={icon ? "pl-9" : ""}
             defaultValue={defaultValue}
             step={step}

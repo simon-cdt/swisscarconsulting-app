@@ -71,12 +71,28 @@ export async function GET(
   const tomorrow = new Date(today);
   tomorrow.setDate(tomorrow.getDate() + 1);
 
-  const hasInterventionToday = await db.intervention.findFirst({
+  const todayIntervention = await db.intervention.findFirst({
     where: {
       vehiculeId,
+      deleted: false,
       date: {
         gte: today,
         lt: tomorrow,
+      },
+    },
+    select: {
+      id: true,
+      estimates: {
+        where: {
+          deleted: false,
+        },
+        orderBy: {
+          createdAt: "desc",
+        },
+        take: 1,
+        select: {
+          id: true,
+        },
       },
     },
   });
@@ -84,6 +100,12 @@ export async function GET(
   return NextResponse.json({
     vehicule,
     client,
-    hasInterventionToday: !!hasInterventionToday,
+    hasInterventionToday: !!todayIntervention,
+    todayIntervention: todayIntervention
+      ? {
+          id: todayIntervention.id,
+          estimateId: todayIntervention.estimates[0]?.id ?? null,
+        }
+      : null,
   });
 }

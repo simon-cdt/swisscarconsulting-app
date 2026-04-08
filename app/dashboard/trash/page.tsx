@@ -215,6 +215,7 @@ export default function TrashPage() {
                                   },
                                 }}
                                 refetch={refetch}
+                                allowEdit={false}
                               />
 
                               <div className="flex w-full gap-2">
@@ -361,6 +362,7 @@ export default function TrashPage() {
                                     },
                                   }}
                                   refetch={refetch}
+                                  allowEdit={false}
                                 />
 
                                 <div className="flex w-full gap-2">

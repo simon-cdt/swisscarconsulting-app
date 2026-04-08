@@ -1,13 +1,17 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import { FILE_SERVER_URL } from "@/lib/config";
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "./ui/dialog";
 import { Button } from "./ui/button";
-import { EyeIcon, ImageIcon, Download, Trash } from "lucide-react";
+import { Edit, EyeIcon, ImageIcon, Download, Trash } from "lucide-react";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -19,20 +23,37 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { deleteMediasIntervention } from "@/lib/actions/intervention";
+import {
+  deleteMediasIntervention,
+  updateInterventionDescription,
+} from "@/lib/actions/intervention";
 import toast from "react-hot-toast";
+import { Textarea } from "./ui/textarea";
+import { Spinner } from "./ui/spinner";
 
 export default function InformationsDialog({
   estimate,
   onlyMedias,
   refetch,
+  allowEdit = true,
 }: {
   estimate: {
     intervention: { id: string; description?: string; medias: string | null };
   };
   onlyMedias?: boolean;
   refetch: () => void;
+  allowEdit?: boolean;
 }) {
+  const [editOpen, setEditOpen] = useState(false);
+  const [description, setDescription] = useState(
+    estimate.intervention.description || "",
+  );
+  const [isSaving, setIsSaving] = useState(false);
+
+  useEffect(() => {
+    setDescription(estimate.intervention.description || "");
+  }, [estimate.intervention.description]);
+
   // Fonction pour télécharger un média
   const handleDownload = async ({ fileName }: { fileName: string }) => {
     try {
@@ -130,16 +151,75 @@ export default function InformationsDialog({
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] w-fit! max-w-[90vw]! overflow-y-auto">
         <DialogHeader className="pt-3">
-          <DialogTitle>Photos et vidéos</DialogTitle>
+          <DialogTitle>
+            {onlyMedias ? "Photos et vidéos" : "Photos, vidéos et description"}
+          </DialogTitle>
         </DialogHeader>
         <div className="flex flex-col gap-5">
           {!onlyMedias &&
             estimate.intervention.description &&
             estimate.intervention.description !== "" && (
-              <div className="bg-muted/30 max-h-64 overflow-y-auto rounded-md border p-4">
-                <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
-                  {estimate.intervention.description}
-                </p>
+              <div className="flex flex-col gap-2">
+                {allowEdit && !onlyMedias && (
+                  <Dialog open={editOpen} onOpenChange={setEditOpen}>
+                    <DialogTrigger asChild>
+                      <Button variant="outline" size="sm" className="gap-2">
+                        <Edit className="size-4" />
+                        Modifier
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="sm:max-w-xl">
+                      <DialogHeader>
+                        <DialogTitle>Modifier la description</DialogTitle>
+                      </DialogHeader>
+                      <div className="flex flex-col gap-4">
+                        <Textarea
+                          value={description}
+                          onChange={(e) => setDescription(e.target.value)}
+                          placeholder="Description de l'intervention"
+                          className="min-h-40"
+                        />
+                        <div className="flex justify-end gap-2">
+                          <DialogClose asChild>
+                            <Button variant="outline">Annuler</Button>
+                          </DialogClose>
+                          <Button
+                            disabled={isSaving || description.trim() === ""}
+                            onClick={async () => {
+                              try {
+                                setIsSaving(true);
+                                const response =
+                                  await updateInterventionDescription({
+                                    interventionId: estimate.intervention.id,
+                                    description: description.trim(),
+                                  });
+
+                                if (response.success) {
+                                  toast.success(response.message);
+                                  setEditOpen(false);
+                                  refetch();
+                                } else {
+                                  toast.error(response.message);
+                                }
+                              } finally {
+                                setIsSaving(false);
+                              }
+                            }}
+                          >
+                            {isSaving ? <Spinner /> : "Enregistrer"}
+                          </Button>
+                        </div>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                )}
+                <div className="bg-muted/30 max-h-64 overflow-y-auto rounded-md border p-4">
+                  <div className="flex items-start justify-between gap-3">
+                    <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
+                      {estimate.intervention.description}
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
           <div className="flex flex-wrap gap-2">

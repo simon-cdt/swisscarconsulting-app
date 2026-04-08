@@ -81,6 +81,10 @@ type FetchClientAndVehicule = {
     contactName: null;
   };
   hasInterventionToday: boolean;
+  todayIntervention: {
+    id: string;
+    estimateId: string | null;
+  } | null;
 };
 
 function useClientAndVehicule({
@@ -128,10 +132,23 @@ export default function VisitPage() {
   } | null>(null);
 
   useEffect(() => {
-    if (data?.hasInterventionToday) {
+    if (data?.todayIntervention) {
       setShowInterventionTodayDialog(true);
     }
-  }, [data?.hasInterventionToday]);
+  }, [data?.todayIntervention]);
+
+  const handleGoToExistingIntervention = () => {
+    if (!data?.todayIntervention) return;
+
+    setShowInterventionTodayDialog(false);
+
+    if (data.todayIntervention.estimateId) {
+      router.push(`/dashboard/estimates/${data.todayIntervention.estimateId}`);
+      return;
+    }
+
+    router.push(`/dashboard/interventions?id=${data.todayIntervention.id}`);
+  };
 
   const handleDescriptionKeyDown = (
     e: React.KeyboardEvent<HTMLTextAreaElement>,
@@ -438,7 +455,8 @@ export default function VisitPage() {
                         ) : (
                           <div className="hover:cursor-not-allowed">
                             <Button
-                              className="border-input bg-background border text-black/70"
+                              variant="outline"
+                              className="border-red-500 text-red-500"
                               disabled
                             >
                               Carte grise non enregistrée
@@ -589,10 +607,11 @@ export default function VisitPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogAction
-              onClick={() => setShowInterventionTodayDialog(false)}
-            >
-              OK
+            <AlertDialogCancel>Continuer quand même</AlertDialogCancel>
+            <AlertDialogAction onClick={handleGoToExistingIntervention}>
+              {data?.todayIntervention?.estimateId
+                ? "Voir le devis lié"
+                : "Voir l'intervention"}
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>

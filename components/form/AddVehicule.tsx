@@ -26,12 +26,7 @@ import { useState } from "react";
 import { FILE_SERVER_URL } from "@/lib/config";
 import SelectSearch from "@/components/form/SelectSearch";
 import { useQuery } from "@tanstack/react-query";
-import {
-  formatLicensePlate,
-  formatExpertiseDate,
-  formatRegistrationNumber,
-  capitalize,
-} from "@/lib/utils";
+import { formatLicensePlate, formatRegistrationNumber } from "@/lib/utils";
 
 type FetchInsurances = {
   id: string;
@@ -253,10 +248,7 @@ export function AddVehicule({
               error={errors.licensePlate}
               placeholder="GE-960123"
               nonempty
-              onChange={(e) => {
-                const formatted = formatLicensePlate(e.target.value);
-                setValue("licensePlate", formatted);
-              }}
+              transformValue={formatLicensePlate}
             />
             <SelectSearch
               label="Séléctionne une assurance"
@@ -292,10 +284,7 @@ export function AddVehicule({
               type="text"
               error={errors.registrationNumber}
               placeholder="123.456.789"
-              onChange={(e) => {
-                const formatted = formatRegistrationNumber(e.target.value);
-                setValue("registrationNumber", formatted);
-              }}
+              transformValue={formatRegistrationNumber}
             />
             <DatePicker
               label="Dernière expertise"

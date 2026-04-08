@@ -72,6 +72,44 @@ export const addIntervention = async ({
   }
 };
 
+export const updateInterventionDescription = async ({
+  interventionId,
+  description,
+}: {
+  interventionId: string;
+  description: string;
+}): Promise<
+  | { success: false; message: string }
+  | {
+      success: true;
+      message: "La description de l'intervention a bien été modifiée.";
+    }
+> => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+      return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+
+    await db.intervention.update({
+      where: {
+        id: interventionId,
+      },
+      data: {
+        description,
+      },
+    });
+
+    return {
+      success: true,
+      message: "La description de l'intervention a bien été modifiée.",
+    };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Une erreur est survenue" };
+  }
+};
+
 export const putInTrash = async ({
   interventionId,
 }: {

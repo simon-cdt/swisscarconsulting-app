@@ -37,7 +37,7 @@ import {
 import toast from "react-hot-toast";
 import { useState } from "react";
 import { Spinner } from "@/components/ui/spinner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { putInTrash } from "@/lib/actions/intervention";
 import InformationsDialog from "@/components/InformationsDialog";
 import { formatPhoneNumber } from "@/lib/utils";
@@ -76,6 +76,7 @@ function useInterventions() {
 
 export default function InterventionsPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
 
   const {
     data: interventions,
@@ -85,7 +86,7 @@ export default function InterventionsPage() {
   } = useInterventions();
 
   const [loading, setLoading] = useState(false);
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(searchParams.get("id") ?? "");
 
   const filteredInterventions =
     interventions?.filter((intervention) => {
@@ -102,12 +103,14 @@ export default function InterventionsPage() {
       const vehiculeName = `${vehicule.brand} ${vehicule.model}`.toLowerCase();
       const licensePlate = vehicule.licensePlate.toLowerCase();
       const phone = client.phone.toLowerCase();
+      const interventionId = intervention.id.toLowerCase();
 
       return (
         clientName.includes(searchLower) ||
         vehiculeName.includes(searchLower) ||
         licensePlate.includes(searchLower) ||
-        phone.includes(searchLower)
+        phone.includes(searchLower) ||
+        interventionId.includes(searchLower)
       );
     }) || [];
 
@@ -185,7 +188,7 @@ export default function InterventionsPage() {
                   <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                   <Input
                     type="text"
-                    placeholder="Rechercher par client, entreprise, véhicule, plaque ou numéro..."
+                    placeholder="Rechercher par ID, client, entreprise, véhicule, plaque ou numéro..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     className="pl-10"
