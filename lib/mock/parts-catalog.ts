@@ -10,13 +10,13 @@ export const PARTS_CATALOG: PartTemplate[] = [
   // Forfaits
   {
     id: "1",
-    designation: "Forfait - disque plaquette AV et AR",
+    designation: "Forfait disque plaquette AV et AR",
     description: "Remplacement Disque et plaquettes de frein AV et AR",
     quantity: 1,
   },
   {
     id: "2",
-    designation: "Forfait - plaquette AV et AR",
+    designation: "Forfait plaquette AV et AR",
     description: "Remplacement Plaquettes de frein AV et AR",
     quantity: 1,
   },

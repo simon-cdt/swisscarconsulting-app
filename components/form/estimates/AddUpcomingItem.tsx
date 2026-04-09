@@ -11,6 +11,14 @@ import { Spinner } from "@/components/ui/spinner";
 import SelectField from "../SelectField";
 import { updateEstimateItems } from "@/lib/actions/estimate";
 
+const capitalizeRichTextStart = (value: string): string => {
+  return value.replace(
+    /^(\s*(?:<[^>]+>\s*)*)([a-zà-ÿ])/i,
+    (_, prefix: string, firstLetter: string) =>
+      `${prefix}${firstLetter.toUpperCase()}`,
+  );
+};
+
 export default function AddUpcomingItem({
   ItemsEstimate,
   setOpen,
@@ -43,11 +51,13 @@ export default function AddUpcomingItem({
 
   const handleSubmitForm = async (data: FormSchema) => {
     try {
+      const normalizedDesignation = capitalizeRichTextStart(data.designation);
+
       // Créer le nouvel item
       const newItem = {
         id: crypto.randomUUID(),
         type: "UPCOMING" as const,
-        designation: data.designation,
+        designation: normalizedDesignation,
         position: data.position,
         description: null,
         unitPrice: 0,

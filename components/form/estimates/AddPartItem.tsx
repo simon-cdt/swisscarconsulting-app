@@ -13,6 +13,7 @@ import { updateEstimateItems } from "@/lib/actions/estimate";
 import { PARTS_CATALOG, PartTemplate } from "@/lib/mock/parts-catalog";
 import { useState, useEffect, useRef } from "react";
 import { Search } from "lucide-react";
+import { capitalize } from "@/lib/utils";
 
 export default function AddPartItem({
   ItemsEstimate,
@@ -93,7 +94,7 @@ export default function AddPartItem({
 
   // Gérer la sélection d'une suggestion
   const handleSelectSuggestion = (part: PartTemplate) => {
-    setValue("designation", part.designation);
+    setValue("designation", capitalize(part.designation));
     setValue("description", part.description);
     setValue("quantity", part.quantity);
     setDescriptionValue(part.description);
@@ -107,7 +108,7 @@ export default function AddPartItem({
       const newItem = {
         id: crypto.randomUUID(),
         type: "PART" as const,
-        designation: data.designation,
+        designation: capitalize(data.designation.trim()),
         description: data.description ?? null,
         unitPrice: data.unitPrice,
         quantity: data.quantity,
@@ -232,12 +233,6 @@ export default function AddPartItem({
                       </div>
                     </div>
                   </div>
-                  <span className="inline-flex items-center gap-1 text-xs">
-                    <span className="text-gray-500">Quantité:</span>
-                    <span className="font-semibold text-gray-700">
-                      {part.quantity}
-                    </span>
-                  </span>
                 </div>
               ))}
             </div>

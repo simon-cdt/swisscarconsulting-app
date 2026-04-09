@@ -54,6 +54,7 @@ type FetchAllVehiculesOfClient = {
         id: string;
         date: Date;
         description: string;
+        isFinished: boolean;
       }[];
     }[];
   };
@@ -392,11 +393,21 @@ export default function ClientVehiculePage() {
                         {filteredInterventions.map((intervention) => (
                           <Card
                             key={intervention.id}
-                            className="border-purple-100 bg-purple-50/50"
+                            className={
+                              intervention.isFinished
+                                ? "border-green-100 bg-green-50/50"
+                                : "border-purple-100 bg-purple-50/50"
+                            }
                           >
                             <CardContent>
                               <div className="flex items-center justify-between">
-                                <p className="text-sm font-semibold text-purple-900">
+                                <p
+                                  className={`text-sm font-semibold ${
+                                    intervention.isFinished
+                                      ? "text-green-900"
+                                      : "text-purple-900"
+                                  }`}
+                                >
                                   {new Date(
                                     intervention.date,
                                   ).toLocaleDateString("fr-FR", {

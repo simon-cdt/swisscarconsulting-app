@@ -63,6 +63,7 @@ type FetchClientAndVehicule = {
       id: string;
       date: Date;
       description: string;
+      isFinished: boolean;
     }[];
   };
   client: {
@@ -485,10 +486,20 @@ export default function VisitPage() {
                         {data.vehicule.interventions.map((intervention) => (
                           <Card
                             key={intervention.id}
-                            className="border-purple-100 bg-purple-50/50"
+                            className={
+                              intervention.isFinished
+                                ? "border-green-100 bg-green-50/50"
+                                : "border-purple-100 bg-purple-50/50"
+                            }
                           >
                             <CardContent>
-                              <p className="pb-2 text-sm font-semibold text-purple-900">
+                              <p
+                                className={`pb-2 text-sm font-semibold ${
+                                  intervention.isFinished
+                                    ? "text-green-900"
+                                    : "text-purple-900"
+                                }`}
+                              >
                                 {new Date(intervention.date).toLocaleDateString(
                                   "fr-FR",
                                   {

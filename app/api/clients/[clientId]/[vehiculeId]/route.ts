@@ -40,6 +40,14 @@ export async function GET(
           id: true,
           date: true,
           description: true,
+          estimates: {
+            where: {
+              deleted: false,
+            },
+            select: {
+              status: true,
+            },
+          },
         },
         orderBy: {
           date: "desc",
@@ -97,8 +105,22 @@ export async function GET(
     },
   });
 
+  const formattedVehicule = vehicule
+    ? {
+        ...vehicule,
+        interventions: vehicule.interventions.map((intervention) => ({
+          id: intervention.id,
+          date: intervention.date,
+          description: intervention.description,
+          isFinished: intervention.estimates.some(
+            (estimate) => estimate.status === "FINISHED",
+          ),
+        })),
+      }
+    : null;
+
   return NextResponse.json({
-    vehicule,
+    vehicule: formattedVehicule,
     client,
     hasInterventionToday: !!todayIntervention,
     todayIntervention: todayIntervention

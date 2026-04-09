@@ -60,6 +60,14 @@ export async function GET(
               id: true,
               date: true,
               description: true,
+              estimates: {
+                where: {
+                  deleted: false,
+                },
+                select: {
+                  status: true,
+                },
+              },
             },
           },
         },
@@ -67,5 +75,22 @@ export async function GET(
     },
   });
 
-  return NextResponse.json({ vehicules, client });
+  const formattedClient = client
+    ? {
+        ...client,
+        vehicules: client.vehicules.map((vehicule) => ({
+          ...vehicule,
+          interventions: vehicule.interventions.map((intervention) => ({
+            id: intervention.id,
+            date: intervention.date,
+            description: intervention.description,
+            isFinished: intervention.estimates.some(
+              (estimate) => estimate.status === "FINISHED",
+            ),
+          })),
+        })),
+      }
+    : null;
+
+  return NextResponse.json({ vehicules, client: formattedClient });
 }
