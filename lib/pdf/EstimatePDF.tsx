@@ -8,6 +8,7 @@ import {
   Image,
   Font,
 } from "@react-pdf/renderer";
+import { capitalizeFirstLetterInHtml } from "@/lib/utils";
 
 // Enregistrer les polices (vous pouvez utiliser des polices système ou hébergées)
 Font.register({
@@ -483,7 +484,9 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
                       </Text>
                       {item.description && (
                         <Text style={styles.itemDescription}>
-                          {parseHtmlToText(item.description)}
+                          {parseHtmlToText(
+                            capitalizeFirstLetterInHtml(item.description),
+                          )}
                         </Text>
                       )}
                     </View>
@@ -567,7 +570,9 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
                           </Text>
                         ) : (
                           <Text style={styles.laborDescription}>
-                            {parseHtmlToText(item.description)}
+                            {parseHtmlToText(
+                              capitalizeFirstLetterInHtml(item.description),
+                            )}
                           </Text>
                         )}
                       </View>
@@ -616,7 +621,9 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
                       </Text>
                       {item.description && (
                         <Text style={styles.itemDescription}>
-                          {parseHtmlToText(item.description)}
+                          {parseHtmlToText(
+                            capitalizeFirstLetterInHtml(item.description),
+                          )}
                         </Text>
                       )}
                     </View>

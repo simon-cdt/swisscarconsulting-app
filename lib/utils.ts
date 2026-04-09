@@ -107,6 +107,39 @@ export const capitalize = (str: string): string => {
   return str.charAt(0).toUpperCase() + str.slice(1);
 };
 
+export const capitalizeFirstLetterInHtml = (html: string): string => {
+  if (!html) return html;
+
+  let result = "";
+  let inTag = false;
+  let inEntity = false;
+  let capitalized = false;
+
+  for (let i = 0; i < html.length; i++) {
+    const char = html[i];
+
+    if (char === "<") {
+      inTag = true;
+    } else if (char === ">") {
+      inTag = false;
+    } else if (char === "&" && !inTag) {
+      inEntity = true;
+    } else if (char === ";" && inEntity) {
+      inEntity = false;
+    }
+
+    if (!inTag && !inEntity && !capitalized && /[A-Za-zÀ-ÖØ-öø-ÿ]/.test(char)) {
+      result += char.toUpperCase();
+      capitalized = true;
+      continue;
+    }
+
+    result += char;
+  }
+
+  return result;
+};
+
 export const formatAddress = (str: string): string => {
   const formatted = str
     .replace(/(\d)([a-zA-Z\u00c0-\u00ff])/g, "$1 $2")

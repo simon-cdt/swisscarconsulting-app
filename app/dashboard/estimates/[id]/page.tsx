@@ -63,6 +63,7 @@ import UpdateDiscount from "@/components/form/UpdateForm/UpdateDiscount";
 import { GeistMono } from "geist/font/mono";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
+import { capitalizeFirstLetterInHtml } from "@/lib/utils";
 
 type FetchEstimate = {
   id: string;
@@ -734,7 +735,9 @@ export default function QuoteGeneratorPage() {
                                     <div
                                       className="prose prose-sm max-w-none text-sm text-black/70"
                                       dangerouslySetInnerHTML={{
-                                        __html: item.description,
+                                        __html: capitalizeFirstLetterInHtml(
+                                          item.description,
+                                        ),
                                       }}
                                     />
                                   )}

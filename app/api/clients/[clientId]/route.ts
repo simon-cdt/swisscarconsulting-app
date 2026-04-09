@@ -9,6 +9,7 @@ export async function GET(
 ) {
   const session = await getServerSession(authOptions);
   const { clientId } = await params;
+  const clientIdNumber = Number(clientId);
 
   if (!session || !session.user?.id) {
     return NextResponse.json({ vehicules: [] }, { status: 401 });
@@ -16,7 +17,7 @@ export async function GET(
 
   const vehicules = await db.vehicule.findMany({
     where: {
-      clientId: Number(clientId),
+      clientId: clientIdNumber,
     },
     select: {
       id: true,
@@ -31,8 +32,28 @@ export async function GET(
       insuranceId: true,
     },
   });
+
+  const finishedInterventions = await db.$queryRaw<{ id: string }[]>`
+    SELECT DISTINCT i.id
+    FROM Intervention i
+    INNER JOIN Vehicule v ON v.id = i.vehiculeId
+    WHERE v.clientId = ${clientIdNumber}
+      AND i.deleted = false
+      AND EXISTS (
+        SELECT 1
+        FROM Estimate e
+        WHERE e.interventionId = i.id
+          AND e.deleted = false
+          AND e.status = 'FINISHED'
+      )
+  `;
+
+  const finishedInterventionIds = new Set(
+    finishedInterventions.map((intervention) => intervention.id),
+  );
+
   const client = await db.client.findUnique({
-    where: { id: Number(clientId) },
+    where: { id: clientIdNumber },
     select: {
       id: true,
       typeClient: true,
@@ -60,14 +81,6 @@ export async function GET(
               id: true,
               date: true,
               description: true,
-              estimates: {
-                where: {
-                  deleted: false,
-                },
-                select: {
-                  status: true,
-                },
-              },
             },
           },
         },
@@ -84,9 +97,7 @@ export async function GET(
             id: intervention.id,
             date: intervention.date,
             description: intervention.description,
-            isFinished: intervention.estimates.some(
-              (estimate) => estimate.status === "FINISHED",
-            ),
+            isFinished: finishedInterventionIds.has(intervention.id),
           })),
         })),
       }
