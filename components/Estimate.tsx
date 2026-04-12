@@ -111,7 +111,7 @@ export default function Estimate({
     >
       <div className="flex w-full flex-col gap-1">
         <div className="flex w-full flex-row items-center justify-between">
-          <div className="flex w-full flex-wrap items-center gap-3">
+          <div className="flex w-full items-center justify-between gap-3">
             <div className="text-muted-foreground flex items-center gap-2">
               <CalendarIcon className="size-4" />
               <span className="text-sm font-medium">
@@ -120,45 +120,56 @@ export default function Estimate({
                 })}
               </span>
             </div>
+            {estimate.status === "SENT_TO_GARAGE" &&
+              estimate.sentToGarageAt && (
+                <div className="text-muted-foreground flex items-center gap-2">
+                  <span className="text-sm font-medium">
+                    Envoyé:{" "}
+                    {format(estimate.sentToGarageAt, "PP", { locale: fr })}
+                  </span>
+                </div>
+              )}
           </div>
-          {estimate.status === "TOFINISH" && (
-            <AlertDialog>
-              <AlertDialogTrigger className="trans h-9 w-9 rounded-md p-1 hover:bg-red-200">
-                <Trash className="size-4" />
-              </AlertDialogTrigger>
-              <AlertDialogContent>
-                <AlertDialogHeader>
-                  <AlertDialogTitle>
-                    Êtes-vous sûr de supprimer ce devis ?
-                  </AlertDialogTitle>
-                  <AlertDialogDescription>
-                    Le devis se mettra dans la corbeille, vous pourrez le
-                    restaurer à tout moment.
-                  </AlertDialogDescription>
-                </AlertDialogHeader>
-                <AlertDialogFooter>
-                  <AlertDialogCancel>Annuler</AlertDialogCancel>
-                  <AlertDialogAction
-                    className="bg-red-600 text-white hover:bg-red-700"
-                    onClick={async () => {
-                      const response = await putInTrash({
-                        estimateId: estimate.id,
-                      });
+          <div className="flex items-center gap-3">
+            {estimate.status === "TOFINISH" && (
+              <AlertDialog>
+                <AlertDialogTrigger className="trans h-9 w-9 rounded-md p-1 hover:bg-red-200">
+                  <Trash className="size-4" />
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>
+                      Êtes-vous sûr de supprimer ce devis ?
+                    </AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Le devis se mettra dans la corbeille, vous pourrez le
+                      restaurer à tout moment.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Annuler</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-red-600 text-white hover:bg-red-700"
+                      onClick={async () => {
+                        const response = await putInTrash({
+                          estimateId: estimate.id,
+                        });
 
-                      if (response.success) {
-                        toast.success(response.message);
-                        refetch();
-                      } else {
-                        toast.error(response.message);
-                      }
-                    }}
-                  >
-                    Supprimer
-                  </AlertDialogAction>
-                </AlertDialogFooter>
-              </AlertDialogContent>
-            </AlertDialog>
-          )}
+                        if (response.success) {
+                          toast.success(response.message);
+                          refetch();
+                        } else {
+                          toast.error(response.message);
+                        }
+                      }}
+                    >
+                      Supprimer
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
+            )}
+          </div>
         </div>
         <div className="flex flex-col gap-2 md:flex-row md:items-start md:justify-between">
           {/* Informations principales */}

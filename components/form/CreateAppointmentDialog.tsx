@@ -209,11 +209,11 @@ export default function CreateAppointmentDialog({
     onOpenChange(false);
   };
 
-  // Générer les créneaux horaires (de 08:00 à 18:00 par pas de 30 minutes)
+  // Générer les créneaux horaires (de 08:00 à 18:00 par pas de 1 minute)
   const generateTimeSlots = () => {
     const slots = [];
     for (let hour = 8; hour <= 18; hour++) {
-      for (let minute = 0; minute < 60; minute += 30) {
+      for (let minute = 0; minute < 60; minute++) {
         const time = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
         slots.push(time);
       }
@@ -314,7 +314,7 @@ export default function CreateAppointmentDialog({
                   id="time"
                   type="time"
                   {...register("time")}
-                  step="1800"
+                  step="60"
                   min="08:00"
                   max="18:00"
                   className="pl-10"

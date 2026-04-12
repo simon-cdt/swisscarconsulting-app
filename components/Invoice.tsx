@@ -99,7 +99,7 @@ export default function Invoice({
                 Voir la facture
               </Button>
             </Link>
-            {invoice.status === "PENDING" && (
+            {invoice.status === "PENDING_PAYMENT" && (
               <AlertDialog>
                 <AlertDialogTrigger asChild>
                   <Button className="bg-emerald-600 hover:bg-emerald-700">

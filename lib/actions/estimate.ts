@@ -519,8 +519,7 @@ export const validateEstimate = async ({
     await db.estimate.update({
       where: { id: estimateId },
       data: {
-        status: estimate.type === "INDIVIDUAL" ? "PENDING" : "ACCEPTED",
-        refusalReason: null,
+        status: "PENDING",
       },
     });
 
@@ -632,6 +631,7 @@ export const sendEstimateToGarage = async ({
       where: { id: estimateId },
       data: {
         status: "SENT_TO_GARAGE",
+        sentToGarageAt: new Date(),
       },
     });
 

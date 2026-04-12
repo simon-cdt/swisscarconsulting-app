@@ -86,6 +86,11 @@ const data = {
           icon: ClipboardList,
         },
         {
+          title: "En attente",
+          url: "/estimates/insurance/pending",
+          icon: Hourglass,
+        },
+        {
           title: "Acceptés",
           url: "/estimates/insurance/accepted",
           icon: FileCheck,
@@ -146,6 +151,7 @@ export function AppSidebar({
   estimateIndividualPending,
   estimateIndividualToFinish,
   estimateIndividualAccepted,
+  estimateInsurancePending,
   estimateInsuranceAccepted,
   estimateInsuranceToFinish,
   estimateSentGarage,
@@ -156,6 +162,7 @@ export function AppSidebar({
   estimateIndividualPending?: number;
   estimateIndividualToFinish?: number;
   estimateIndividualAccepted?: number;
+  estimateInsurancePending?: number;
   estimateInsuranceAccepted?: number;
   estimateInsuranceToFinish?: number;
   estimateSentGarage?: number;
@@ -197,6 +204,8 @@ export function AppSidebar({
                       count = estimateIndividualToFinish;
                     } else if (item.url === "/estimates/individual/accepted") {
                       count = estimateIndividualAccepted;
+                    } else if (item.url === "/estimates/insurance/pending") {
+                      count = estimateInsurancePending;
                     } else if (item.url === "/estimates/insurance/tofinish") {
                       count = estimateInsuranceToFinish;
                     } else if (item.url === "/estimates/insurance/accepted") {

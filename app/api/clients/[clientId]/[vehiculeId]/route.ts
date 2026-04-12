@@ -45,6 +45,7 @@ export async function GET(
               deleted: false,
             },
             select: {
+              id: true,
               status: true,
             },
           },
@@ -74,18 +75,18 @@ export async function GET(
     },
   });
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-  const tomorrow = new Date(today);
-  tomorrow.setDate(tomorrow.getDate() + 1);
-
-  const todayIntervention = await db.intervention.findFirst({
+  // Chercher s'il existe une intervention en cours (avec devis non terminé)
+  const interventionInProgress = await db.intervention.findFirst({
     where: {
       vehiculeId,
       deleted: false,
-      date: {
-        gte: today,
-        lt: tomorrow,
+      estimates: {
+        some: {
+          deleted: false,
+          status: {
+            not: "FINISHED",
+          },
+        },
       },
     },
     select: {
@@ -108,25 +109,34 @@ export async function GET(
   const formattedVehicule = vehicule
     ? {
         ...vehicule,
-        interventions: vehicule.interventions.map((intervention) => ({
-          id: intervention.id,
-          date: intervention.date,
-          description: intervention.description,
-          isFinished: intervention.estimates.some(
-            (estimate) => estimate.status === "FINISHED",
-          ),
-        })),
+        interventions: vehicule.interventions.map((intervention) => {
+          // Trouver le devis actif le plus récent
+          const activeEstimate = intervention.estimates.find(
+            (est) => est.status !== "FINISHED",
+          );
+          const estimate = activeEstimate || intervention.estimates[0];
+
+          return {
+            id: intervention.id,
+            date: intervention.date,
+            description: intervention.description,
+            isFinished: intervention.estimates.some(
+              (est) => est.status === "FINISHED",
+            ),
+            estimateId: estimate?.id ?? null,
+          };
+        }),
       }
     : null;
 
   return NextResponse.json({
     vehicule: formattedVehicule,
     client,
-    hasInterventionToday: !!todayIntervention,
-    todayIntervention: todayIntervention
+    hasInterventionToday: !!interventionInProgress,
+    todayIntervention: interventionInProgress
       ? {
-          id: todayIntervention.id,
-          estimateId: todayIntervention.estimates[0]?.id ?? null,
+          id: interventionInProgress.id,
+          estimateId: interventionInProgress.estimates[0]?.id ?? null,
         }
       : null,
   });

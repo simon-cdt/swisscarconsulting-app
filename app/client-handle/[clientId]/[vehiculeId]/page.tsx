@@ -64,6 +64,7 @@ type FetchClientAndVehicule = {
       date: Date;
       description: string;
       isFinished: boolean;
+      estimateId: string | null;
     }[];
   };
   client: {
@@ -151,6 +152,27 @@ export default function VisitPage() {
     router.push(`/dashboard/interventions?id=${data.todayIntervention.id}`);
   };
 
+  const capitalizeDescription = (description: string) => {
+    return description
+      .split("\n")
+      .map((line) => {
+        if (line.trim().length === 0) return line;
+
+        // Trouver le premier caractère alphabétique
+        for (let i = 0; i < line.length; i++) {
+          if (/[a-zA-Z]/.test(line[i])) {
+            return (
+              line.substring(0, i) +
+              line[i].toUpperCase() +
+              line.substring(i + 1)
+            );
+          }
+        }
+        return line;
+      })
+      .join("\n");
+  };
+
   const handleDescriptionKeyDown = (
     e: React.KeyboardEvent<HTMLTextAreaElement>,
   ) => {
@@ -209,7 +231,7 @@ export default function VisitPage() {
       const response = await addIntervention({
         data: {
           vehiculeId: vehiculeId as string,
-          description: data.description,
+          description: capitalizeDescription(data.description),
           medias: uploadedUrls.join(","),
         },
         forceCreate: false,
@@ -225,7 +247,7 @@ export default function VisitPage() {
       ) {
         // Sauvegarder les données pour la confirmation
         setPendingFormData({
-          description: data.description,
+          description: capitalizeDescription(data.description),
           images: data.images,
           uploadedUrls,
         });
@@ -483,38 +505,56 @@ export default function VisitPage() {
                   <ScrollArea className="h-fit max-h-96">
                     {data.vehicule.interventions.length > 0 ? (
                       <div className="space-y-3 pr-4">
-                        {data.vehicule.interventions.map((intervention) => (
-                          <Card
-                            key={intervention.id}
-                            className={
-                              intervention.isFinished
-                                ? "border-green-100 bg-green-50/50"
-                                : "border-purple-100 bg-purple-50/50"
+                        {data.vehicule.interventions.map((intervention) => {
+                          const handleInterventionClick = () => {
+                            if (intervention.estimateId) {
+                              // Aller au devis (qui peut contenir la facture)
+                              router.push(
+                                `/dashboard/estimates/${intervention.estimateId}`,
+                              );
+                            } else {
+                              // Aller à l'intervention
+                              router.push(
+                                `/dashboard/interventions?id=${intervention.id}`,
+                              );
                             }
-                          >
-                            <CardContent>
-                              <p
-                                className={`pb-2 text-sm font-semibold ${
-                                  intervention.isFinished
-                                    ? "text-green-900"
-                                    : "text-purple-900"
-                                }`}
-                              >
-                                {new Date(intervention.date).toLocaleDateString(
-                                  "fr-FR",
-                                  {
+                          };
+
+                          return (
+                            <Card
+                              key={intervention.id}
+                              className={`${
+                                intervention.isFinished
+                                  ? "border-green-100 bg-green-50/50"
+                                  : "border-purple-100 bg-purple-50/50"
+                              } cursor-pointer transition-all hover:border-purple-300 hover:shadow-md`}
+                              onClick={handleInterventionClick}
+                            >
+                              <CardContent>
+                                <p
+                                  className={`pb-2 text-sm font-semibold ${
+                                    intervention.isFinished
+                                      ? "text-green-900"
+                                      : "text-purple-900"
+                                  }`}
+                                >
+                                  {new Date(
+                                    intervention.date,
+                                  ).toLocaleDateString("fr-FR", {
                                     day: "numeric",
                                     month: "long",
                                     year: "numeric",
-                                  },
-                                )}
-                              </p>
-                              <p className="text-sm text-gray-700">
-                                {intervention.description}
-                              </p>
-                            </CardContent>
-                          </Card>
-                        ))}
+                                  })}
+                                </p>
+                                <p className="text-sm whitespace-pre-wrap text-gray-700">
+                                  {capitalizeDescription(
+                                    intervention.description,
+                                  )}
+                                </p>
+                              </CardContent>
+                            </Card>
+                          );
+                        })}
                       </div>
                     ) : (
                       <div className="flex flex-col items-center justify-center py-12 text-center">
@@ -588,9 +628,9 @@ export default function VisitPage() {
       <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Intervention déjà existante</AlertDialogTitle>
+            <AlertDialogTitle>Intervention en cours</AlertDialogTitle>
             <AlertDialogDescription>
-              Une intervention existe déjà pour ce véhicule aujourd&apos;hui.
+              Une intervention est actuellement en cours pour ce véhicule.
               Voulez-vous quand même créer une nouvelle intervention ?
             </AlertDialogDescription>
           </AlertDialogHeader>
@@ -613,12 +653,13 @@ export default function VisitPage() {
           <AlertDialogHeader>
             <AlertDialogTitle>Information</AlertDialogTitle>
             <AlertDialogDescription>
-              Une intervention a déjà été créée pour cette voiture
-              aujourd&apos;hui.
+              Une intervention est actuellement en cours pour cette voiture.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Continuer quand même</AlertDialogCancel>
+            <AlertDialogCancel onClick={() => router.back()}>
+              Annuler
+            </AlertDialogCancel>
             <AlertDialogAction onClick={handleGoToExistingIntervention}>
               {data?.todayIntervention?.estimateId
                 ? "Voir le devis lié"

@@ -43,6 +43,9 @@ export type EstimateMinAggregateOutputType = {
   deleted: boolean | null
   refusalReason: string | null
   discount: number | null
+  acceptedAt: Date | null
+  refusedAt: Date | null
+  sentToGarageAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -56,6 +59,9 @@ export type EstimateMaxAggregateOutputType = {
   deleted: boolean | null
   refusalReason: string | null
   discount: number | null
+  acceptedAt: Date | null
+  refusedAt: Date | null
+  sentToGarageAt: Date | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -69,6 +75,9 @@ export type EstimateCountAggregateOutputType = {
   deleted: number
   refusalReason: number
   discount: number
+  acceptedAt: number
+  refusedAt: number
+  sentToGarageAt: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -92,6 +101,9 @@ export type EstimateMinAggregateInputType = {
   deleted?: true
   refusalReason?: true
   discount?: true
+  acceptedAt?: true
+  refusedAt?: true
+  sentToGarageAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -105,6 +117,9 @@ export type EstimateMaxAggregateInputType = {
   deleted?: true
   refusalReason?: true
   discount?: true
+  acceptedAt?: true
+  refusedAt?: true
+  sentToGarageAt?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -118,6 +133,9 @@ export type EstimateCountAggregateInputType = {
   deleted?: true
   refusalReason?: true
   discount?: true
+  acceptedAt?: true
+  refusedAt?: true
+  sentToGarageAt?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -218,6 +236,9 @@ export type EstimateGroupByOutputType = {
   deleted: boolean
   refusalReason: string | null
   discount: number | null
+  acceptedAt: Date | null
+  refusedAt: Date | null
+  sentToGarageAt: Date | null
   createdAt: Date
   updatedAt: Date | null
   _count: EstimateCountAggregateOutputType | null
@@ -254,6 +275,9 @@ export type EstimateWhereInput = {
   deleted?: Prisma.BoolFilter<"Estimate"> | boolean
   refusalReason?: Prisma.StringNullableFilter<"Estimate"> | string | null
   discount?: Prisma.FloatNullableFilter<"Estimate"> | number | null
+  acceptedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
+  refusedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
+  sentToGarageAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Estimate"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
   items?: Prisma.EstimateItemListRelationFilter
@@ -270,6 +294,9 @@ export type EstimateOrderByWithRelationInput = {
   deleted?: Prisma.SortOrder
   refusalReason?: Prisma.SortOrderInput | Prisma.SortOrder
   discount?: Prisma.SortOrderInput | Prisma.SortOrder
+  acceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  refusedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  sentToGarageAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   items?: Prisma.EstimateItemOrderByRelationAggregateInput
@@ -290,6 +317,9 @@ export type EstimateWhereUniqueInput = Prisma.AtLeast<{
   deleted?: Prisma.BoolFilter<"Estimate"> | boolean
   refusalReason?: Prisma.StringNullableFilter<"Estimate"> | string | null
   discount?: Prisma.FloatNullableFilter<"Estimate"> | number | null
+  acceptedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
+  refusedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
+  sentToGarageAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Estimate"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
   items?: Prisma.EstimateItemListRelationFilter
@@ -306,6 +336,9 @@ export type EstimateOrderByWithAggregationInput = {
   deleted?: Prisma.SortOrder
   refusalReason?: Prisma.SortOrderInput | Prisma.SortOrder
   discount?: Prisma.SortOrderInput | Prisma.SortOrder
+  acceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  refusedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  sentToGarageAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.EstimateCountOrderByAggregateInput
@@ -327,6 +360,9 @@ export type EstimateScalarWhereWithAggregatesInput = {
   deleted?: Prisma.BoolWithAggregatesFilter<"Estimate"> | boolean
   refusalReason?: Prisma.StringNullableWithAggregatesFilter<"Estimate"> | string | null
   discount?: Prisma.FloatNullableWithAggregatesFilter<"Estimate"> | number | null
+  acceptedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Estimate"> | Date | string | null
+  refusedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Estimate"> | Date | string | null
+  sentToGarageAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Estimate"> | Date | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Estimate"> | Date | string
   updatedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Estimate"> | Date | string | null
 }
@@ -339,6 +375,9 @@ export type EstimateCreateInput = {
   deleted?: boolean
   refusalReason?: string | null
   discount?: number | null
+  acceptedAt?: Date | string | null
+  refusedAt?: Date | string | null
+  sentToGarageAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
   items?: Prisma.EstimateItemCreateNestedManyWithoutEstimateInput
@@ -355,6 +394,9 @@ export type EstimateUncheckedCreateInput = {
   deleted?: boolean
   refusalReason?: string | null
   discount?: number | null
+  acceptedAt?: Date | string | null
+  refusedAt?: Date | string | null
+  sentToGarageAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
   items?: Prisma.EstimateItemUncheckedCreateNestedManyWithoutEstimateInput
@@ -369,6 +411,9 @@ export type EstimateUpdateInput = {
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   refusalReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refusedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.EstimateItemUpdateManyWithoutEstimateNestedInput
@@ -385,6 +430,9 @@ export type EstimateUncheckedUpdateInput = {
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   refusalReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refusedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.EstimateItemUncheckedUpdateManyWithoutEstimateNestedInput
@@ -400,6 +448,9 @@ export type EstimateCreateManyInput = {
   deleted?: boolean
   refusalReason?: string | null
   discount?: number | null
+  acceptedAt?: Date | string | null
+  refusedAt?: Date | string | null
+  sentToGarageAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -412,6 +463,9 @@ export type EstimateUpdateManyMutationInput = {
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   refusalReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refusedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -425,6 +479,9 @@ export type EstimateUncheckedUpdateManyInput = {
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   refusalReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refusedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -454,6 +511,9 @@ export type EstimateCountOrderByAggregateInput = {
   deleted?: Prisma.SortOrder
   refusalReason?: Prisma.SortOrder
   discount?: Prisma.SortOrder
+  acceptedAt?: Prisma.SortOrder
+  refusedAt?: Prisma.SortOrder
+  sentToGarageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -471,6 +531,9 @@ export type EstimateMaxOrderByAggregateInput = {
   deleted?: Prisma.SortOrder
   refusalReason?: Prisma.SortOrder
   discount?: Prisma.SortOrder
+  acceptedAt?: Prisma.SortOrder
+  refusedAt?: Prisma.SortOrder
+  sentToGarageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -484,6 +547,9 @@ export type EstimateMinOrderByAggregateInput = {
   deleted?: Prisma.SortOrder
   refusalReason?: Prisma.SortOrder
   discount?: Prisma.SortOrder
+  acceptedAt?: Prisma.SortOrder
+  refusedAt?: Prisma.SortOrder
+  sentToGarageAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -598,6 +664,9 @@ export type EstimateCreateWithoutInterventionInput = {
   deleted?: boolean
   refusalReason?: string | null
   discount?: number | null
+  acceptedAt?: Date | string | null
+  refusedAt?: Date | string | null
+  sentToGarageAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
   items?: Prisma.EstimateItemCreateNestedManyWithoutEstimateInput
@@ -612,6 +681,9 @@ export type EstimateUncheckedCreateWithoutInterventionInput = {
   deleted?: boolean
   refusalReason?: string | null
   discount?: number | null
+  acceptedAt?: Date | string | null
+  refusedAt?: Date | string | null
+  sentToGarageAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
   items?: Prisma.EstimateItemUncheckedCreateNestedManyWithoutEstimateInput
@@ -656,6 +728,9 @@ export type EstimateScalarWhereInput = {
   deleted?: Prisma.BoolFilter<"Estimate"> | boolean
   refusalReason?: Prisma.StringNullableFilter<"Estimate"> | string | null
   discount?: Prisma.FloatNullableFilter<"Estimate"> | number | null
+  acceptedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
+  refusedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
+  sentToGarageAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"Estimate"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
 }
@@ -668,6 +743,9 @@ export type EstimateCreateWithoutItemsInput = {
   deleted?: boolean
   refusalReason?: string | null
   discount?: number | null
+  acceptedAt?: Date | string | null
+  refusedAt?: Date | string | null
+  sentToGarageAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
   intervention: Prisma.InterventionCreateNestedOneWithoutEstimatesInput
@@ -683,6 +761,9 @@ export type EstimateUncheckedCreateWithoutItemsInput = {
   deleted?: boolean
   refusalReason?: string | null
   discount?: number | null
+  acceptedAt?: Date | string | null
+  refusedAt?: Date | string | null
+  sentToGarageAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
   appointments?: Prisma.AppointmentUncheckedCreateNestedManyWithoutEstimateInput
@@ -712,6 +793,9 @@ export type EstimateUpdateWithoutItemsInput = {
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   refusalReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refusedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   intervention?: Prisma.InterventionUpdateOneRequiredWithoutEstimatesNestedInput
@@ -727,6 +811,9 @@ export type EstimateUncheckedUpdateWithoutItemsInput = {
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   refusalReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refusedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   appointments?: Prisma.AppointmentUncheckedUpdateManyWithoutEstimateNestedInput
@@ -740,6 +827,9 @@ export type EstimateCreateWithoutAppointmentsInput = {
   deleted?: boolean
   refusalReason?: string | null
   discount?: number | null
+  acceptedAt?: Date | string | null
+  refusedAt?: Date | string | null
+  sentToGarageAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
   items?: Prisma.EstimateItemCreateNestedManyWithoutEstimateInput
@@ -755,6 +845,9 @@ export type EstimateUncheckedCreateWithoutAppointmentsInput = {
   deleted?: boolean
   refusalReason?: string | null
   discount?: number | null
+  acceptedAt?: Date | string | null
+  refusedAt?: Date | string | null
+  sentToGarageAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
   items?: Prisma.EstimateItemUncheckedCreateNestedManyWithoutEstimateInput
@@ -784,6 +877,9 @@ export type EstimateUpdateWithoutAppointmentsInput = {
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   refusalReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refusedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.EstimateItemUpdateManyWithoutEstimateNestedInput
@@ -799,6 +895,9 @@ export type EstimateUncheckedUpdateWithoutAppointmentsInput = {
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   refusalReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refusedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.EstimateItemUncheckedUpdateManyWithoutEstimateNestedInput
@@ -812,6 +911,9 @@ export type EstimateCreateManyInterventionInput = {
   deleted?: boolean
   refusalReason?: string | null
   discount?: number | null
+  acceptedAt?: Date | string | null
+  refusedAt?: Date | string | null
+  sentToGarageAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string | null
 }
@@ -824,6 +926,9 @@ export type EstimateUpdateWithoutInterventionInput = {
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   refusalReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refusedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.EstimateItemUpdateManyWithoutEstimateNestedInput
@@ -838,6 +943,9 @@ export type EstimateUncheckedUpdateWithoutInterventionInput = {
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   refusalReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refusedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   items?: Prisma.EstimateItemUncheckedUpdateManyWithoutEstimateNestedInput
@@ -852,6 +960,9 @@ export type EstimateUncheckedUpdateManyWithoutInterventionInput = {
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   refusalReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  refusedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
@@ -905,6 +1016,9 @@ export type EstimateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   deleted?: boolean
   refusalReason?: boolean
   discount?: boolean
+  acceptedAt?: boolean
+  refusedAt?: boolean
+  sentToGarageAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   items?: boolean | Prisma.Estimate$itemsArgs<ExtArgs>
@@ -924,11 +1038,14 @@ export type EstimateSelectScalar = {
   deleted?: boolean
   refusalReason?: boolean
   discount?: boolean
+  acceptedAt?: boolean
+  refusedAt?: boolean
+  sentToGarageAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type EstimateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "interventionId" | "status" | "type" | "claimNumber" | "deleted" | "refusalReason" | "discount" | "createdAt" | "updatedAt", ExtArgs["result"]["estimate"]>
+export type EstimateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "interventionId" | "status" | "type" | "claimNumber" | "deleted" | "refusalReason" | "discount" | "acceptedAt" | "refusedAt" | "sentToGarageAt" | "createdAt" | "updatedAt", ExtArgs["result"]["estimate"]>
 export type EstimateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | Prisma.Estimate$itemsArgs<ExtArgs>
   intervention?: boolean | Prisma.InterventionDefaultArgs<ExtArgs>
@@ -952,6 +1069,9 @@ export type $EstimatePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     deleted: boolean
     refusalReason: string | null
     discount: number | null
+    acceptedAt: Date | null
+    refusedAt: Date | null
+    sentToGarageAt: Date | null
     createdAt: Date
     updatedAt: Date | null
   }, ExtArgs["result"]["estimate"]>
@@ -1334,6 +1454,9 @@ export interface EstimateFieldRefs {
   readonly deleted: Prisma.FieldRef<"Estimate", 'Boolean'>
   readonly refusalReason: Prisma.FieldRef<"Estimate", 'String'>
   readonly discount: Prisma.FieldRef<"Estimate", 'Float'>
+  readonly acceptedAt: Prisma.FieldRef<"Estimate", 'DateTime'>
+  readonly refusedAt: Prisma.FieldRef<"Estimate", 'DateTime'>
+  readonly sentToGarageAt: Prisma.FieldRef<"Estimate", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"Estimate", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Estimate", 'DateTime'>
 }

@@ -17,15 +17,15 @@ export async function GET() {
 
   const estimates = await db.estimate.findMany({
     where: {
-      status: "SENT_TO_GARAGE",
+      status: "PENDING",
       deleted: false,
+      type: "INSURANCE",
     },
     select: {
       id: true,
       status: true,
       type: true,
       claimNumber: true,
-      sentToGarageAt: true,
       intervention: {
         select: {
           date: true,
@@ -58,7 +58,7 @@ export async function GET() {
       },
     },
     orderBy: {
-      sentToGarageAt: "asc",
+      createdAt: "asc",
     },
   });
 

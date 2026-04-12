@@ -156,6 +156,9 @@ export const EstimateScalarFieldEnum = {
   deleted: 'deleted',
   refusalReason: 'refusalReason',
   discount: 'discount',
+  acceptedAt: 'acceptedAt',
+  refusedAt: 'refusedAt',
+  sentToGarageAt: 'sentToGarageAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

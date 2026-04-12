@@ -12,6 +12,7 @@ export default async function SideBar() {
       estimateIndividualPending={count?.estimateIndividualPending}
       estimateIndividualAccepted={count?.estimateIndividualAccepted}
       estimateIndividualToFinish={count?.estimateIndividualToFinish}
+      estimateInsurancePending={count?.estimateInsurancePending}
       estimateInsuranceAccepted={count?.estimateInsuranceAccepted}
       estimateInsuranceToFinish={count?.estimateInsuranceToFinish}
       estimateSentGarage={count?.estimateSentGarage}

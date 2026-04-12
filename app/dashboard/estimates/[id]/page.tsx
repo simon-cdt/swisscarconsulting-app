@@ -325,617 +325,615 @@ export default function QuoteGeneratorPage() {
                 </p>
               </div>
 
-              <div className="flex w-full justify-between gap-6">
-                <Card className="w-full shadow-none">
-                  <CardHeader>
-                    <CardTitle className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <Car className="h-5 w-5" />
-                        {"Véhicule concerné"}
-                      </div>
-                      <UpdateVehicule
-                        vehicule={estimate.intervention.vehicule}
-                        refetch={refetch}
-                        label="Modifier"
-                      />
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-2 gap-x-8 gap-y-2">
-                      <div>
-                        <p className="text-muted-foreground text-sm">Marque</p>
-                        <p className="text-foreground text-base font-medium">
-                          {estimate.intervention.vehicule.brand}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-sm">Modèle</p>
-                        <p className="text-foreground text-base font-medium">
-                          {estimate.intervention.vehicule.model}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-sm">Année</p>
-                        <p className="text-foreground text-base font-medium">
-                          {estimate.intervention.vehicule.year}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-sm">
-                          Immatriculation
-                        </p>
-                        <p
-                          className={`${GeistMono.className} text-foreground text-base font-medium`}
-                        >
-                          {estimate.intervention.vehicule.licensePlate}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-sm">
-                          Assurance
-                        </p>
-                        <p
-                          className={`${estimate.intervention.vehicule.insurance ? "text-foreground" : "text-red-500"} text-base font-medium`}
-                        >
-                          {estimate.intervention.vehicule.insurance?.name ||
-                            "Non renseigné"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-sm">
-                          Dernière expertise
-                        </p>
-                        <p
-                          className={`${estimate.intervention.vehicule.lastExpertise ? "text-foreground" : "text-red-500"} text-base font-medium`}
-                        >
-                          {estimate.intervention.vehicule.lastExpertise
-                            ? format(
-                                estimate.intervention.vehicule.lastExpertise,
-                                "P",
-                                { locale: fr },
-                              )
-                            : "Non renseigné"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-sm">
-                          Numéro de chassis
-                        </p>
-                        <p
-                          className={`${estimate.intervention.vehicule.chassisNumber ? "text-foreground" : "text-red-500"} text-base font-medium`}
-                        >
-                          {estimate.intervention.vehicule.chassisNumber ||
-                            "Non renseigné"}
-                        </p>
-                      </div>
-                      <div>
-                        <p className="text-muted-foreground text-sm">
-                          Numéro de matricule
-                        </p>
-                        <p
-                          className={`${estimate.intervention.vehicule.registrationNumber ? "text-foreground" : "text-red-500"} text-base font-medium`}
-                        >
-                          {estimate.intervention.vehicule.registrationNumber ||
-                            "Non renseigné"}
-                        </p>
-                      </div>
-                      <div className="col-span-2">
-                        <p className="text-muted-foreground text-sm">
-                          Type de réception
-                        </p>
-                        <p
-                          className={`${estimate.intervention.vehicule.receptionType ? "text-foreground" : "text-red-500"} text-base font-medium`}
-                        >
-                          {estimate.intervention.vehicule.receptionType ||
-                            "Non renseigné"}
-                        </p>
-                      </div>
-                      <div className="col-span-2 mt-2 flex w-full justify-end">
-                        {estimate.intervention.vehicule.certificateImage ? (
-                          <Dialog>
-                            <DialogTrigger asChild>
-                              <Button variant={"outline"} size="sm">
-                                Voir la carte grise
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="sm:max-w-150">
-                              <DialogTitle />
-                              {/* eslint-disable-next-line */}
-                              <img
-                                src={`${FILE_SERVER_URL}/uploads/${estimate.intervention.vehicule.certificateImage}`}
-                                alt="Carte grise du véhicule"
-                                className="w-full"
-                              />
-                            </DialogContent>
-                          </Dialog>
-                        ) : (
-                          <div className="hover:cursor-not-allowed">
-                            <Button
-                              className="border-input bg-background border text-black/70"
-                              disabled
-                              size="sm"
-                            >
-                              Carte grise non enregistrée
-                            </Button>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-                <Card className="h-min w-full shadow-none">
-                  <CardContent>
-                    <div className="flex flex-col gap-3">
-                      <p className="font-semibold">Informations devis</p>
-                      {estimate.type === "INSURANCE" && (
-                        <div className="flex w-full items-center justify-between">
-                          <p className="text-sm">
-                            Numéro de sinistre :{" "}
-                            <span
-                              className={`${estimate.claimNumber ? "text-black" : "text-red-500"} font-semibold`}
-                            >
-                              {estimate.claimNumber || "NON RENSEIGNÉ"}
-                            </span>
-                          </p>
-                          <div>
-                            <UpdateClaimNumber
-                              estimateId={estimate.id}
-                              claimNumber={estimate.claimNumber}
-                              refetch={refetch}
-                              updateDisable={updateDisable}
-                            />
-                          </div>
-                        </div>
-                      )}
-                      <div className="flex items-center justify-between">
-                        <p className="text-sm">
-                          Type de devis :{" "}
-                          <span className="font-semibold">
-                            {estimate.type === "INSURANCE"
-                              ? `Assurance${estimate.intervention.vehicule.insurance ? ` - ${estimate.intervention.vehicule.insurance.name}` : " - NON RENSEIGNÉE"}`
-                              : "Individuel"}
-                          </span>
-                        </p>
-                        <AlertDialog>
-                          <AlertDialogTrigger asChild>
-                            <Button
-                              size={"sm"}
-                              variant={"secondary"}
-                              disabled={updateDisable}
-                            >
-                              Modifier le type de devis
-                            </Button>
-                          </AlertDialogTrigger>
-                          <AlertDialogContent>
-                            <AlertDialogHeader>
-                              <AlertDialogTitle>
-                                Êtes-vous absolument sûr ?
-                              </AlertDialogTitle>
-                              <AlertDialogDescription>
-                                {estimate.type === "INDIVIDUAL"
-                                  ? "Le devis deviendra un devis d'assurance."
-                                  : "Le devis deviendra un devis de particulier et le numéro de sinistre sera supprimé."}
-                              </AlertDialogDescription>
-                            </AlertDialogHeader>
-                            <AlertDialogFooter>
-                              <AlertDialogCancel>Annuler</AlertDialogCancel>
-                              <AlertDialogAction
-                                onClick={async () => {
-                                  const response =
-                                    estimate.type === "INDIVIDUAL"
-                                      ? await convertIndividualToInsurance({
-                                          estimateId: estimate.id,
-                                        })
-                                      : await convertInsuranceToIndividual({
-                                          estimateId: estimate.id,
-                                        });
-
-                                  if (response.success) {
-                                    toast.success(response.message);
-                                    refetch();
-                                  } else {
-                                    toast.error(response.message);
-                                  }
-                                }}
-                              >
-                                Confirmer
-                              </AlertDialogAction>
-                            </AlertDialogFooter>
-                          </AlertDialogContent>
-                        </AlertDialog>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </div>
-              {estimate.refusalReason && (
-                <Card className="border-red-500/10 bg-red-50 shadow-none">
-                  <CardContent className="flex flex-col gap-4">
-                    <CardTitle className="font-semibold">
-                      Raison du devis refusé
-                    </CardTitle>
-                    <div className="bg-muted/30 max-h-40 overflow-y-auto rounded-md border p-4">
-                      <p className="text-sm leading-relaxed font-semibold whitespace-pre-wrap text-red-500">
-                        {estimate.refusalReason}
-                      </p>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
-              <div className="flex flex-col gap-6">
+              <div className="flex w-full flex-col gap-6">
                 <div className="flex w-full justify-between gap-6">
-                  <Card className="w-full shadow-none">
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <FileText className="text-primary h-5 w-5" />
-                        {"Résumé de l'intervention"}
-                      </CardTitle>
-                      <CardDescription>
-                        {new Date(
-                          estimate.intervention.date,
-                        ).toLocaleDateString("fr-FR", {
-                          day: "numeric",
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="bg-muted/30 max-h-24 overflow-y-auto rounded-md border p-4">
-                        <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
-                          {estimate.intervention.description}
-                        </p>
-                      </div>
-                    </CardContent>
-                  </Card>
-                  <Card className="w-full shadow-none">
+                  <Card className="h-min w-full shadow-none">
                     <CardHeader>
                       <CardTitle className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
-                          <ImageIcon className="h-5 w-5 text-black/50" />
-                          {"Photos et Vidéos"}
+                          <Car className="h-5 w-5" />
+                          {"Véhicule concerné"}
                         </div>
-                        <AddMedias
+                        <UpdateVehicule
+                          vehicule={estimate.intervention.vehicule}
                           refetch={refetch}
-                          interventionId={estimate.intervention.id}
+                          label="Modifier"
                         />
                       </CardTitle>
-                      <CardDescription>
-                        {estimate.intervention.medias
-                          ? `${estimate.intervention.medias.split(",").length} fichier(s) disponible(s)`
-                          : "Aucun média n'a été ajouté à l'intervention"}
-                      </CardDescription>
                     </CardHeader>
                     <CardContent>
-                      <InformationsDialog
-                        onlyMedias
-                        estimate={estimate}
-                        refetch={refetch}
-                      />
+                      <div className="grid grid-cols-2 gap-x-8 gap-y-2">
+                        <div>
+                          <p className="text-muted-foreground text-sm">
+                            Marque
+                          </p>
+                          <p className="text-foreground text-base font-medium">
+                            {estimate.intervention.vehicule.brand}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground text-sm">
+                            Modèle
+                          </p>
+                          <p className="text-foreground text-base font-medium">
+                            {estimate.intervention.vehicule.model}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground text-sm">Année</p>
+                          <p className="text-foreground text-base font-medium">
+                            {estimate.intervention.vehicule.year}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground text-sm">
+                            Immatriculation
+                          </p>
+                          <p
+                            className={`${GeistMono.className} text-foreground text-base font-medium`}
+                          >
+                            {estimate.intervention.vehicule.licensePlate}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground text-sm">
+                            Assurance
+                          </p>
+                          <p
+                            className={`${estimate.intervention.vehicule.insurance ? "text-foreground" : "text-red-500"} text-base font-medium`}
+                          >
+                            {estimate.intervention.vehicule.insurance?.name ||
+                              "Non renseigné"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground text-sm">
+                            Dernière expertise
+                          </p>
+                          <p
+                            className={`${estimate.intervention.vehicule.lastExpertise ? "text-foreground" : "text-red-500"} text-base font-medium`}
+                          >
+                            {estimate.intervention.vehicule.lastExpertise
+                              ? format(
+                                  estimate.intervention.vehicule.lastExpertise,
+                                  "P",
+                                  { locale: fr },
+                                )
+                              : "Non renseigné"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground text-sm">
+                            Numéro de chassis
+                          </p>
+                          <p
+                            className={`${estimate.intervention.vehicule.chassisNumber ? "text-foreground" : "text-red-500"} text-base font-medium`}
+                          >
+                            {estimate.intervention.vehicule.chassisNumber ||
+                              "Non renseigné"}
+                          </p>
+                        </div>
+                        <div>
+                          <p className="text-muted-foreground text-sm">
+                            Numéro de matricule
+                          </p>
+                          <p
+                            className={`${estimate.intervention.vehicule.registrationNumber ? "text-foreground" : "text-red-500"} text-base font-medium`}
+                          >
+                            {estimate.intervention.vehicule
+                              .registrationNumber || "Non renseigné"}
+                          </p>
+                        </div>
+                        <div className="col-span-2">
+                          <p className="text-muted-foreground text-sm">
+                            Type de réception
+                          </p>
+                          <p
+                            className={`${estimate.intervention.vehicule.receptionType ? "text-foreground" : "text-red-500"} text-base font-medium`}
+                          >
+                            {estimate.intervention.vehicule.receptionType ||
+                              "Non renseigné"}
+                          </p>
+                        </div>
+                        <div className="col-span-2 mt-2 flex w-full justify-end">
+                          {estimate.intervention.vehicule.certificateImage ? (
+                            <Dialog>
+                              <DialogTrigger asChild>
+                                <Button
+                                  variant={"outline"}
+                                  size="sm"
+                                  className="border-blue-200 text-blue-600 hover:bg-blue-50"
+                                >
+                                  Voir la carte grise
+                                </Button>
+                              </DialogTrigger>
+                              <DialogContent className="sm:max-w-150">
+                                <DialogTitle />
+                                {/* eslint-disable-next-line */}
+                                <img
+                                  src={`${FILE_SERVER_URL}/uploads/${estimate.intervention.vehicule.certificateImage}`}
+                                  alt="Carte grise du véhicule"
+                                  className="w-full"
+                                />
+                              </DialogContent>
+                            </Dialog>
+                          ) : (
+                            <div className="hover:cursor-not-allowed">
+                              <Button
+                                className="border-input cursor-not-allowed border bg-gray-100 text-gray-600"
+                                disabled
+                                size="sm"
+                              >
+                                Carte grise non enregistrée
+                              </Button>
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </CardContent>
                   </Card>
-                </div>
+                  <div className="flex h-min w-full flex-col gap-1">
+                    <Card className="h-min w-full shadow-none">
+                      <CardContent>
+                        <div className="flex flex-col gap-3">
+                          <p className="font-semibold">Informations devis</p>
+                          {estimate.type === "INSURANCE" && (
+                            <div className="flex w-full items-center justify-between">
+                              <p className="text-sm">
+                                Numéro de sinistre :{" "}
+                                <span
+                                  className={`${estimate.claimNumber ? "text-black" : "text-red-500"} font-semibold`}
+                                >
+                                  {estimate.claimNumber || "NON RENSEIGNÉ"}
+                                </span>
+                              </p>
+                              <div>
+                                <UpdateClaimNumber
+                                  estimateId={estimate.id}
+                                  claimNumber={estimate.claimNumber}
+                                  refetch={refetch}
+                                  updateDisable={updateDisable}
+                                />
+                              </div>
+                            </div>
+                          )}
+                          <div className="flex items-center justify-between">
+                            <p className="text-sm">
+                              Type de devis :{" "}
+                              <span className="font-semibold">
+                                {estimate.type === "INSURANCE"
+                                  ? `Assurance${estimate.intervention.vehicule.insurance ? ` - ${estimate.intervention.vehicule.insurance.name}` : " - NON RENSEIGNÉE"}`
+                                  : "Individuel"}
+                              </span>
+                            </p>
+                            <AlertDialog>
+                              <AlertDialogTrigger asChild>
+                                <Button
+                                  size={"sm"}
+                                  className="bg-blue-600 text-white hover:bg-blue-700"
+                                  disabled={updateDisable}
+                                >
+                                  Modifier le type de devis
+                                </Button>
+                              </AlertDialogTrigger>
+                              <AlertDialogContent>
+                                <AlertDialogHeader>
+                                  <AlertDialogTitle>
+                                    Êtes-vous absolument sûr ?
+                                  </AlertDialogTitle>
+                                  <AlertDialogDescription>
+                                    {estimate.type === "INDIVIDUAL"
+                                      ? "Le devis deviendra un devis d'assurance."
+                                      : "Le devis deviendra un devis de particulier et le numéro de sinistre sera supprimé."}
+                                  </AlertDialogDescription>
+                                </AlertDialogHeader>
+                                <AlertDialogFooter>
+                                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                                  <AlertDialogAction
+                                    onClick={async () => {
+                                      const response =
+                                        estimate.type === "INDIVIDUAL"
+                                          ? await convertIndividualToInsurance({
+                                              estimateId: estimate.id,
+                                            })
+                                          : await convertInsuranceToIndividual({
+                                              estimateId: estimate.id,
+                                            });
 
-                {/* Colonne droite - Items et Total */}
-                <div className="flex flex-col gap-6">
-                  <Card className="border-2">
-                    <CardHeader>
-                      <CardTitle className="flex items-center justify-between">
-                        <span>{"Items du devis"}</span>
-                        <div className="flex items-center gap-2">
-                          <UpdateDiscount
-                            estimateId={estimate.id}
-                            discount={estimate.discount}
-                            refetch={refetch}
-                            updateDisable={updateDisable}
-                          />
-                          <Dialog
-                            open={dialogOpen}
-                            onOpenChange={setDialogOpen}
-                          >
-                            <DialogTrigger asChild>
-                              <Button
-                                size="sm"
-                                variant={"outline"}
-                                disabled={updateDisable}
-                              >
-                                <Plus className="mr-2 h-4 w-4" />
-                                Ajouter
-                              </Button>
-                            </DialogTrigger>
-                            <DialogContent className="min-w-[40vw]">
-                              <DialogHeader>
-                                <DialogTitle>{"Ajouter un item"}</DialogTitle>
-                                <DialogDescription>
-                                  Ajoutez un nouvel item au devis avec sa
-                                  description et son prix
-                                </DialogDescription>
-                              </DialogHeader>
-                              <Tabs defaultValue="piece" className="w-full">
-                                <TabsList className="w-full">
-                                  <TabsTrigger className="w-full" value="piece">
-                                    Pièce
-                                  </TabsTrigger>
-                                  <TabsTrigger className="w-full" value="MO">
-                                    Main d&apos;oeuvre
-                                  </TabsTrigger>
-                                  <TabsTrigger
-                                    className="w-full"
-                                    value="upcoming"
+                                      if (response.success) {
+                                        toast.success(response.message);
+                                        refetch();
+                                      } else {
+                                        toast.error(response.message);
+                                      }
+                                    }}
                                   >
-                                    À venir
-                                  </TabsTrigger>
-                                </TabsList>
-                                <TabsContent value="piece">
-                                  <AddPartItem
-                                    ItemsEstimate={selectedItems}
-                                    setOpen={setDialogOpen}
-                                    setSelectedItems={setSelectedItems}
-                                    estimateId={params.id}
-                                  />
-                                </TabsContent>
-                                <TabsContent value="MO">
-                                  <AddMOItem
-                                    ItemsEstimate={selectedItems}
-                                    setOpen={setDialogOpen}
-                                    setSelectedItems={setSelectedItems}
-                                    estimateId={params.id}
-                                  />
-                                </TabsContent>
-                                <TabsContent value="upcoming">
-                                  <AddUpcomingItem
-                                    ItemsEstimate={selectedItems}
-                                    setOpen={setDialogOpen}
-                                    setSelectedItems={setSelectedItems}
-                                    estimateId={params.id}
-                                  />
-                                </TabsContent>
-                              </Tabs>
-                            </DialogContent>
-                          </Dialog>
+                                    Confirmer
+                                  </AlertDialogAction>
+                                </AlertDialogFooter>
+                              </AlertDialogContent>
+                            </AlertDialog>
+                          </div>
                         </div>
+                      </CardContent>
+                    </Card>
+                    <Card className="shadow-none">
+                      <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                          <FileText className="text-primary h-5 w-5" />
+                          {"Résumé de l'intervention"}
+                        </CardTitle>
+                        <CardDescription>
+                          {new Date(
+                            estimate.intervention.date,
+                          ).toLocaleDateString("fr-FR", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                          })}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <div className="bg-muted/30 max-h-24 overflow-y-auto rounded-md border p-4">
+                          <p className="text-foreground text-sm leading-relaxed whitespace-pre-wrap">
+                            {estimate.intervention.description}
+                          </p>
+                        </div>
+                      </CardContent>
+                    </Card>
+                    <Card className="w-full shadow-none">
+                      <CardHeader>
+                        <CardTitle className="flex items-center justify-between">
+                          <div className="flex items-center gap-2">
+                            <ImageIcon className="h-5 w-5 text-black/50" />
+                            {"Photos et Vidéos"}
+                          </div>
+                          <AddMedias
+                            refetch={refetch}
+                            interventionId={estimate.intervention.id}
+                          />
+                        </CardTitle>
+                        <CardDescription>
+                          {estimate.intervention.medias
+                            ? `${estimate.intervention.medias.split(",").length} fichier(s) disponible(s)`
+                            : "Aucun média n'a été ajouté à l'intervention"}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent>
+                        <InformationsDialog
+                          onlyMedias
+                          estimate={estimate}
+                          refetch={refetch}
+                        />
+                      </CardContent>
+                    </Card>
+                  </div>
+                </div>
+                {estimate.refusalReason && (
+                  <Card className="border-red-500/10 bg-red-50 shadow-none">
+                    <CardContent className="flex flex-col gap-4">
+                      <CardTitle className="font-semibold">
+                        Raison du devis refusé
                       </CardTitle>
-                      <CardDescription>
-                        {estimate.discount && estimate.discount > 0
-                          ? `Liste des prestations du devis - Réduction de ${estimate.discount}% appliquée`
-                          : "Liste des prestations du devis"}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      {selectedItems.length > 0 ? (
-                        <div className="max-h-96 space-y-2 overflow-y-auto">
-                          {selectedItems
-                            .sort((a, b) => {
-                              // PART en premier
-                              if (a.type === "PART" && b.type !== "PART")
-                                return -1;
-                              if (a.type !== "PART" && b.type === "PART")
-                                return 1;
-                              // LABOR en deuxième
-                              if (a.type === "LABOR" && b.type === "UPCOMING")
-                                return -1;
-                              if (a.type === "UPCOMING" && b.type === "LABOR")
-                                return 1;
-                              // Sinon, trier par position
-                              return a.position - b.position;
-                            })
-                            .map((item) => (
-                              <div
-                                key={item.id}
-                                className="bg-card flex items-center justify-between rounded-lg border p-3"
-                              >
-                                <div className="w-[50%] overflow-hidden">
+                      <div className="bg-muted/30 max-h-40 overflow-y-auto rounded-md border p-4">
+                        <p className="text-sm leading-relaxed font-semibold whitespace-pre-wrap text-red-500">
+                          {estimate.refusalReason}
+                        </p>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+
+                {/* Items du devis */}
+                <Card className="border-2">
+                  <CardHeader>
+                    <CardTitle className="flex items-center justify-between">
+                      <span>{"Items du devis"}</span>
+                      <div className="flex items-center gap-2">
+                        <UpdateDiscount
+                          estimateId={estimate.id}
+                          discount={estimate.discount}
+                          refetch={refetch}
+                          updateDisable={updateDisable}
+                        />
+                        <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
+                          <DialogTrigger asChild>
+                            <Button
+                              size="sm"
+                              className="bg-green-600 text-white hover:bg-green-700"
+                              disabled={updateDisable}
+                            >
+                              <Plus className="mr-2 h-4 w-4" />
+                              Ajouter
+                            </Button>
+                          </DialogTrigger>
+                          <DialogContent className="min-w-[40vw]">
+                            <DialogHeader>
+                              <DialogTitle>{"Ajouter un item"}</DialogTitle>
+                              <DialogDescription>
+                                Ajoutez un nouvel item au devis avec sa
+                                description et son prix
+                              </DialogDescription>
+                            </DialogHeader>
+                            <Tabs defaultValue="piece" className="w-full">
+                              <TabsList className="w-full">
+                                <TabsTrigger className="w-full" value="piece">
+                                  Pièce
+                                </TabsTrigger>
+                                <TabsTrigger className="w-full" value="MO">
+                                  Main d&apos;oeuvre
+                                </TabsTrigger>
+                                <TabsTrigger
+                                  className="w-full"
+                                  value="upcoming"
+                                >
+                                  À venir
+                                </TabsTrigger>
+                              </TabsList>
+                              <TabsContent value="piece">
+                                <AddPartItem
+                                  ItemsEstimate={selectedItems}
+                                  setOpen={setDialogOpen}
+                                  setSelectedItems={setSelectedItems}
+                                  estimateId={params.id}
+                                />
+                              </TabsContent>
+                              <TabsContent value="MO">
+                                <AddMOItem
+                                  ItemsEstimate={selectedItems}
+                                  setOpen={setDialogOpen}
+                                  setSelectedItems={setSelectedItems}
+                                  estimateId={params.id}
+                                />
+                              </TabsContent>
+                              <TabsContent value="upcoming">
+                                <AddUpcomingItem
+                                  ItemsEstimate={selectedItems}
+                                  setOpen={setDialogOpen}
+                                  setSelectedItems={setSelectedItems}
+                                  estimateId={params.id}
+                                />
+                              </TabsContent>
+                            </Tabs>
+                          </DialogContent>
+                        </Dialog>
+                      </div>
+                    </CardTitle>
+                    <CardDescription>
+                      {estimate.discount && estimate.discount > 0
+                        ? `Liste des prestations du devis - Réduction de ${estimate.discount}% appliquée`
+                        : "Liste des prestations du devis"}
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    {selectedItems.length > 0 ? (
+                      <div className="max-h-96 space-y-2 overflow-y-auto">
+                        {selectedItems
+                          .sort((a, b) => {
+                            // PART en premier
+                            if (a.type === "PART" && b.type !== "PART")
+                              return -1;
+                            if (a.type !== "PART" && b.type === "PART")
+                              return 1;
+                            // LABOR en deuxième
+                            if (a.type === "LABOR" && b.type === "UPCOMING")
+                              return -1;
+                            if (a.type === "UPCOMING" && b.type === "LABOR")
+                              return 1;
+                            // Sinon, trier par position
+                            return a.position - b.position;
+                          })
+                          .map((item) => (
+                            <div
+                              key={item.id}
+                              className="bg-card flex items-center justify-between rounded-lg border p-3"
+                            >
+                              <div className="w-[50%] overflow-hidden">
+                                <div
+                                  className={`${item.type === "UPCOMING" && "text-red-500"} prose prose-sm max-w-none font-semibold`}
+                                  dangerouslySetInnerHTML={{
+                                    __html: item.designation,
+                                  }}
+                                />
+                                {item.description && (
                                   <div
-                                    className={`${item.type === "UPCOMING" && "text-red-500"} prose prose-sm max-w-none font-semibold`}
+                                    className="prose prose-sm max-w-none text-sm text-black/70"
                                     dangerouslySetInnerHTML={{
-                                      __html: item.designation,
+                                      __html: capitalizeFirstLetterInHtml(
+                                        item.description,
+                                      ),
                                     }}
                                   />
-                                  {item.description && (
-                                    <div
-                                      className="prose prose-sm max-w-none text-sm text-black/70"
-                                      dangerouslySetInnerHTML={{
-                                        __html: capitalizeFirstLetterInHtml(
-                                          item.description,
-                                        ),
-                                      }}
-                                    />
-                                  )}
-                                </div>
-                                <div className="flex w-[47%] items-center justify-between">
-                                  <div className="w-[53%]">
-                                    {item.type ===
-                                    "UPCOMING" ? null : item.type ===
-                                      "LABOR" ? (
-                                      <>
-                                        <div className="text-primary font-semibold">
-                                          {(() => {
-                                            let itemTotal: number;
+                                )}
+                              </div>
+                              <div className="flex w-[47%] items-center justify-between">
+                                <div className="w-[53%]">
+                                  {item.type ===
+                                  "UPCOMING" ? null : item.type === "LABOR" ? (
+                                    <>
+                                      <div className="text-primary font-semibold">
+                                        {(() => {
+                                          let itemTotal: number;
 
-                                            // Si calculateByTime est true ET qu'il y a une quantity
-                                            if (
-                                              item.calculateByTime &&
-                                              item.quantity
-                                            ) {
-                                              itemTotal =
-                                                (item.unitPrice *
-                                                  item.quantity) /
-                                                60;
-                                            } else {
-                                              // Sinon, utiliser simplement le unitPrice
-                                              itemTotal = item.unitPrice;
-                                            }
+                                          // Si calculateByTime est true ET qu'il y a une quantity
+                                          if (
+                                            item.calculateByTime &&
+                                            item.quantity
+                                          ) {
+                                            itemTotal =
+                                              (item.unitPrice * item.quantity) /
+                                              60;
+                                          } else {
+                                            // Sinon, utiliser simplement le unitPrice
+                                            itemTotal = item.unitPrice;
+                                          }
 
-                                            return (
-                                              itemTotal
-                                                .toFixed(2)
-                                                .replaceAll(".", ",") + " CHF"
-                                            );
-                                          })()}
-                                        </div>
-                                      </>
-                                    ) : (
-                                      <>
-                                        <div className="text-primary font-semibold">
-                                          {item.quantity &&
-                                          item.quantity > 1 ? (
-                                            <div className="flex flex-col">
-                                              <span className="text-xs text-gray-500">
-                                                {item.quantity} ×{" "}
-                                                {item.unitPrice
-                                                  .toFixed(2)
-                                                  .replaceAll(".", ",")}{" "}
-                                                CHF
-                                              </span>
-                                              <span>
-                                                {(
-                                                  item.unitPrice * item.quantity
-                                                )
-                                                  .toFixed(2)
-                                                  .replaceAll(".", ",")}{" "}
-                                                CHF
-                                              </span>
-                                            </div>
-                                          ) : (
-                                            <>
+                                          return (
+                                            itemTotal
+                                              .toFixed(2)
+                                              .replaceAll(".", ",") + " CHF"
+                                          );
+                                        })()}
+                                      </div>
+                                    </>
+                                  ) : (
+                                    <>
+                                      <div className="text-primary font-semibold">
+                                        {item.quantity && item.quantity > 1 ? (
+                                          <div className="flex flex-col">
+                                            <span className="text-xs text-gray-500">
+                                              {item.quantity} ×{" "}
                                               {item.unitPrice
                                                 .toFixed(2)
                                                 .replaceAll(".", ",")}{" "}
                                               CHF
-                                            </>
-                                          )}
-                                        </div>
-                                      </>
-                                    )}
-                                  </div>
-                                  {estimate.status !== "ACCEPTED" &&
-                                    estimate.status !== "PENDING" && (
-                                      <div className="flex w-[40%]">
-                                        {item.type === "PART" ? (
-                                          <UpdatePartItem
-                                            ItemsEstimate={selectedItems}
-                                            setSelectedItems={setSelectedItems}
-                                            item={{
-                                              ...item,
-                                              unitPrice: item.unitPrice,
-                                            }}
-                                            estimateId={params.id}
-                                            disable={updateDisable}
-                                          />
-                                        ) : item.type === "LABOR" ? (
-                                          <UpdateMOItem
-                                            ItemsEstimate={selectedItems}
-                                            setSelectedItems={setSelectedItems}
-                                            item={{
-                                              ...item,
-                                              unitPrice: item.unitPrice,
-                                              quantity: item.quantity,
-                                              calculateByTime:
-                                                item.calculateByTime || null,
-                                            }}
-                                            estimateId={params.id}
-                                            disable={updateDisable}
-                                          />
+                                            </span>
+                                            <span>
+                                              {(item.unitPrice * item.quantity)
+                                                .toFixed(2)
+                                                .replaceAll(".", ",")}{" "}
+                                              CHF
+                                            </span>
+                                          </div>
                                         ) : (
-                                          item.type === "UPCOMING" && (
-                                            <UpdateUpcomingItem
-                                              ItemsEstimate={selectedItems}
-                                              setSelectedItems={
-                                                setSelectedItems
-                                              }
-                                              item={{
-                                                ...item,
-                                              }}
-                                              estimateId={params.id}
-                                              disable={updateDisable}
-                                            />
-                                          )
+                                          <>
+                                            {item.unitPrice
+                                              .toFixed(2)
+                                              .replaceAll(".", ",")}{" "}
+                                            CHF
+                                          </>
                                         )}
-                                        <Button
-                                          variant="ghost"
-                                          size="sm"
-                                          onClick={() =>
-                                            handleRemoveItem(item.id)
-                                          }
-                                          className="text-destructive hover:text-destructive hover:bg-destructive/10 h-8 w-full p-0"
-                                          disabled={updateDisable}
-                                        >
-                                          <X className="h-4 w-4" />
-                                        </Button>
                                       </div>
-                                    )}
+                                    </>
+                                  )}
                                 </div>
+                                {estimate.status !== "ACCEPTED" &&
+                                  estimate.status !== "PENDING" && (
+                                    <div className="flex w-[40%]">
+                                      {item.type === "PART" ? (
+                                        <UpdatePartItem
+                                          ItemsEstimate={selectedItems}
+                                          setSelectedItems={setSelectedItems}
+                                          item={{
+                                            ...item,
+                                            unitPrice: item.unitPrice,
+                                          }}
+                                          estimateId={params.id}
+                                          disable={updateDisable}
+                                        />
+                                      ) : item.type === "LABOR" ? (
+                                        <UpdateMOItem
+                                          ItemsEstimate={selectedItems}
+                                          setSelectedItems={setSelectedItems}
+                                          item={{
+                                            ...item,
+                                            unitPrice: item.unitPrice,
+                                            quantity: item.quantity,
+                                            calculateByTime:
+                                              item.calculateByTime || null,
+                                          }}
+                                          estimateId={params.id}
+                                          disable={updateDisable}
+                                        />
+                                      ) : (
+                                        item.type === "UPCOMING" && (
+                                          <UpdateUpcomingItem
+                                            ItemsEstimate={selectedItems}
+                                            setSelectedItems={setSelectedItems}
+                                            item={{
+                                              ...item,
+                                            }}
+                                            estimateId={params.id}
+                                            disable={updateDisable}
+                                          />
+                                        )
+                                      )}
+                                      <Button
+                                        variant="ghost"
+                                        size="sm"
+                                        onClick={() =>
+                                          handleRemoveItem(item.id)
+                                        }
+                                        className="h-8 w-full p-0 text-red-600 hover:bg-red-50 hover:text-red-700"
+                                        disabled={updateDisable}
+                                      >
+                                        <X className="h-4 w-4" />
+                                      </Button>
+                                    </div>
+                                  )}
                               </div>
-                            ))}
+                            </div>
+                          ))}
+                      </div>
+                    ) : (
+                      <p className="text-muted-foreground py-8 text-center text-sm">
+                        {
+                          "Aucun item ajouté. Cliquez sur Ajouter pour commencer."
+                        }
+                      </p>
+                    )}
+                  </CardContent>
+                  <CardFooter className="flex flex-col items-start gap-2">
+                    {estimate.discount !== undefined &&
+                      estimate.discount !== null &&
+                      estimate.discount > 0 && (
+                        <div className="text-muted-foreground flex w-full justify-between text-sm">
+                          <span>Sous-total :</span>
+                          <span>
+                            {selectedItems
+                              .reduce((sum, item) => {
+                                let itemTotal: number;
+                                if (item.type === "LABOR") {
+                                  if (item.calculateByTime && item.quantity) {
+                                    itemTotal =
+                                      (item.unitPrice * item.quantity) / 60;
+                                  } else {
+                                    itemTotal = item.unitPrice;
+                                  }
+                                } else {
+                                  itemTotal =
+                                    item.unitPrice * (item.quantity ?? 0);
+                                }
+                                return sum + itemTotal;
+                              }, 0)
+                              .toFixed(2)}
+                            &nbsp;CHF
+                          </span>
                         </div>
-                      ) : (
-                        <p className="text-muted-foreground py-8 text-center text-sm">
-                          {
-                            "Aucun item ajouté. Cliquez sur Ajouter pour commencer."
-                          }
-                        </p>
                       )}
-                    </CardContent>
-                    <CardFooter className="flex flex-col items-start gap-2">
-                      {estimate.discount !== undefined &&
-                        estimate.discount !== null &&
-                        estimate.discount > 0 && (
-                          <div className="text-muted-foreground flex w-full justify-between text-sm">
-                            <span>Sous-total :</span>
-                            <span>
-                              {selectedItems
-                                .reduce((sum, item) => {
-                                  let itemTotal: number;
-                                  if (item.type === "LABOR") {
-                                    if (item.calculateByTime && item.quantity) {
-                                      itemTotal =
-                                        (item.unitPrice * item.quantity) / 60;
-                                    } else {
-                                      itemTotal = item.unitPrice;
-                                    }
-                                  } else {
+                    {estimate.discount !== undefined &&
+                      estimate.discount !== null &&
+                      estimate.discount > 0 && (
+                        <div className="flex w-full justify-between text-sm text-red-500">
+                          <span>Réduction ({estimate.discount}%) :</span>
+                          <span>
+                            -
+                            {(
+                              selectedItems.reduce((sum, item) => {
+                                let itemTotal: number;
+                                if (item.type === "LABOR") {
+                                  if (item.calculateByTime && item.quantity) {
                                     itemTotal =
-                                      item.unitPrice * (item.quantity ?? 0);
-                                  }
-                                  return sum + itemTotal;
-                                }, 0)
-                                .toFixed(2)}
-                              &nbsp;CHF
-                            </span>
-                          </div>
-                        )}
-                      {estimate.discount !== undefined &&
-                        estimate.discount !== null &&
-                        estimate.discount > 0 && (
-                          <div className="flex w-full justify-between text-sm text-red-500">
-                            <span>Réduction ({estimate.discount}%) :</span>
-                            <span>
-                              -
-                              {(
-                                selectedItems.reduce((sum, item) => {
-                                  let itemTotal: number;
-                                  if (item.type === "LABOR") {
-                                    if (item.calculateByTime && item.quantity) {
-                                      itemTotal =
-                                        (item.unitPrice * item.quantity) / 60;
-                                    } else {
-                                      itemTotal = item.unitPrice;
-                                    }
+                                      (item.unitPrice * item.quantity) / 60;
                                   } else {
-                                    itemTotal =
-                                      item.unitPrice * (item.quantity ?? 0);
+                                    itemTotal = item.unitPrice;
                                   }
-                                  return sum + itemTotal;
-                                }, 0) *
-                                (estimate.discount / 100)
-                              ).toFixed(2)}
-                              &nbsp;CHF
-                            </span>
-                          </div>
-                        )}
+                                } else {
+                                  itemTotal =
+                                    item.unitPrice * (item.quantity ?? 0);
+                                }
+                                return sum + itemTotal;
+                              }, 0) *
+                              (estimate.discount / 100)
+                            ).toFixed(2)}
+                            &nbsp;CHF
+                          </span>
+                        </div>
+                      )}
+                    <div className="flex w-full flex-col gap-2">
                       <div className="flex w-full items-center justify-between">
                         <p>
-                          Total
+                          Total HT
                           {estimate.discount && estimate.discount > 0
                             ? " après réduction"
                             : ""}
@@ -945,9 +943,17 @@ export default function QuoteGeneratorPage() {
                           </span>
                         </p>
                       </div>
-                    </CardFooter>
-                  </Card>
-                </div>
+                      <div className="flex w-full items-center justify-between border-t pt-2">
+                        <p className="text-primary font-semibold">
+                          Total TTC (TVA 10%) &nbsp;
+                          <span>
+                            {(calculateTotal() * 1.1).toFixed(2)}&nbsp;CHF
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </CardFooter>
+                </Card>
               </div>
 
               {/* Prévisualisation du PDF */}
@@ -989,7 +995,7 @@ export default function QuoteGeneratorPage() {
                           if (response.success) {
                             toast.success(response.message);
                             router.push(
-                              `/dashboard/estimates/${estimate.type === "INDIVIDUAL" ? "individual/pending" : "insurance/accepted"}`,
+                              `/dashboard/estimates/${estimate.type === "INDIVIDUAL" ? "individual/pending" : "insurance/pending"}`,
                             );
                           } else {
                             toast.error(response.message);

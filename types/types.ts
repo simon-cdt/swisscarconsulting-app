@@ -43,6 +43,7 @@ export type Estimate = {
   claimNumber: string | null;
   type: TypeEstimate;
   status: EstimateStatus;
+  sentToGarageAt?: Date | null;
   _count?: {
     items: number;
   };
