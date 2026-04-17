@@ -101,6 +101,11 @@ const data = {
       title: "Mécanique",
       items: [
         {
+          title: "Attente de pièces",
+          url: "/mechanical/waiting-parts",
+          icon: Hourglass,
+        },
+        {
           title: "En cours",
           url: "/mechanical",
           icon: Wrench,
@@ -155,6 +160,7 @@ export function AppSidebar({
   estimateInsuranceAccepted,
   estimateInsuranceToFinish,
   estimateSentGarage,
+  estimateWaitingParts,
   invoicePending,
   invoicePaid,
 }: {
@@ -166,6 +172,7 @@ export function AppSidebar({
   estimateInsuranceAccepted?: number;
   estimateInsuranceToFinish?: number;
   estimateSentGarage?: number;
+  estimateWaitingParts?: number;
   invoicePending?: number;
   invoicePaid?: number;
 }) {
@@ -212,6 +219,8 @@ export function AppSidebar({
                       count = estimateInsuranceAccepted;
                     } else if (item.url === "/mechanical") {
                       count = estimateSentGarage;
+                    } else if (item.url === "/mechanical/waiting-parts") {
+                      count = estimateWaitingParts;
                     } else if (item.url === "/invoices/pending") {
                       count = invoicePending;
                     } else if (item.url === "/invoices/paid") {

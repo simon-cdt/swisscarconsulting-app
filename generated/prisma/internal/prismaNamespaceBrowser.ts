@@ -57,6 +57,7 @@ export const ModelName = {
   Intervention: 'Intervention',
   Estimate: 'Estimate',
   EstimateItem: 'EstimateItem',
+  EstimateRefusal: 'EstimateRefusal',
   Invoice: 'Invoice',
   Insurance: 'Insurance',
   Appointment: 'Appointment'
@@ -154,11 +155,12 @@ export const EstimateScalarFieldEnum = {
   type: 'type',
   claimNumber: 'claimNumber',
   deleted: 'deleted',
-  refusalReason: 'refusalReason',
   discount: 'discount',
-  acceptedAt: 'acceptedAt',
-  refusedAt: 'refusedAt',
   sentToGarageAt: 'sentToGarageAt',
+  acceptedAt: 'acceptedAt',
+  paidAt: 'paidAt',
+  partsOrderedAt: 'partsOrderedAt',
+  partsArrivedAt: 'partsArrivedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -181,6 +183,17 @@ export const EstimateItemScalarFieldEnum = {
 } as const
 
 export type EstimateItemScalarFieldEnum = (typeof EstimateItemScalarFieldEnum)[keyof typeof EstimateItemScalarFieldEnum]
+
+
+export const EstimateRefusalScalarFieldEnum = {
+  id: 'id',
+  estimateId: 'estimateId',
+  reason: 'reason',
+  refusedAt: 'refusedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EstimateRefusalScalarFieldEnum = (typeof EstimateRefusalScalarFieldEnum)[keyof typeof EstimateRefusalScalarFieldEnum]
 
 
 export const InvoiceScalarFieldEnum = {
@@ -313,8 +326,7 @@ export type InterventionOrderByRelevanceFieldEnum = (typeof InterventionOrderByR
 export const EstimateOrderByRelevanceFieldEnum = {
   id: 'id',
   interventionId: 'interventionId',
-  claimNumber: 'claimNumber',
-  refusalReason: 'refusalReason'
+  claimNumber: 'claimNumber'
 } as const
 
 export type EstimateOrderByRelevanceFieldEnum = (typeof EstimateOrderByRelevanceFieldEnum)[keyof typeof EstimateOrderByRelevanceFieldEnum]
@@ -328,6 +340,15 @@ export const EstimateItemOrderByRelevanceFieldEnum = {
 } as const
 
 export type EstimateItemOrderByRelevanceFieldEnum = (typeof EstimateItemOrderByRelevanceFieldEnum)[keyof typeof EstimateItemOrderByRelevanceFieldEnum]
+
+
+export const EstimateRefusalOrderByRelevanceFieldEnum = {
+  id: 'id',
+  estimateId: 'estimateId',
+  reason: 'reason'
+} as const
+
+export type EstimateRefusalOrderByRelevanceFieldEnum = (typeof EstimateRefusalOrderByRelevanceFieldEnum)[keyof typeof EstimateRefusalOrderByRelevanceFieldEnum]
 
 
 export const InvoiceOrderByRelevanceFieldEnum = {

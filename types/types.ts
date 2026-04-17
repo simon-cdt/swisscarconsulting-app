@@ -44,6 +44,15 @@ export type Estimate = {
   type: TypeEstimate;
   status: EstimateStatus;
   sentToGarageAt?: Date | null;
+  acceptedAt?: Date | null;
+  paidAt?: Date | null;
+  partsOrderedAt?: Date | null;
+  partsArrivedAt?: Date | null;
+  refusals?: Array<{
+    id: string;
+    reason: string;
+    refusedAt: Date;
+  }>;
   _count?: {
     items: number;
   };

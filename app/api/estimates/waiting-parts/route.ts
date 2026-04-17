@@ -17,15 +17,18 @@ export async function GET() {
 
   const estimates = await db.estimate.findMany({
     where: {
-      status: "ACCEPTED",
+      status: "WAITING_PARTS",
       deleted: false,
-      type: "INDIVIDUAL",
     },
     select: {
       id: true,
       status: true,
       type: true,
+      claimNumber: true,
+      sentToGarageAt: true,
       acceptedAt: true,
+      partsOrderedAt: true,
+      partsArrivedAt: true,
       refusals: {
         select: {
           id: true,
@@ -68,7 +71,7 @@ export async function GET() {
       },
     },
     orderBy: {
-      acceptedAt: "desc",
+      partsOrderedAt: "asc",
     },
   });
 

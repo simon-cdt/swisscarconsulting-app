@@ -71,6 +71,13 @@ export const GetSidebarCount = async () => {
         },
       });
 
+      const estimateWaitingParts = await db.estimate.count({
+        where: {
+          status: "WAITING_PARTS",
+          deleted: false,
+        },
+      });
+
       const invoicePending = await db.invoice.count({
         where: {
           status: "PENDING_PAYMENT",
@@ -92,6 +99,7 @@ export const GetSidebarCount = async () => {
         estimateInsurancePending,
         estimateInsuranceAccepted,
         estimateSentGarage,
+        estimateWaitingParts,
         invoicePending,
         invoicePaid,
       };

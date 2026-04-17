@@ -104,15 +104,19 @@ model Estimate {
 
   deleted Boolean @default(false)
 
-  refusalReason  String?
   discount       Float?
   sentToGarageAt DateTime?
+  acceptedAt     DateTime?
+  paidAt         DateTime?
+  partsOrderedAt DateTime?
+  partsArrivedAt DateTime?
 
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
 
-  intervention Intervention  @relation(fields: [interventionId], references: [id], onDelete: Cascade)
+  intervention Intervention      @relation(fields: [interventionId], references: [id], onDelete: Cascade)
   appointments Appointment[]
+  refusals     EstimateRefusal[]
 }
 
 model EstimateItem {
@@ -131,6 +135,16 @@ model EstimateItem {
 
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt
+
+  estimate Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
+}
+
+model EstimateRefusal {
+  id         String @id @default(cuid())
+  estimateId String
+  reason     String
+  refusedAt  DateTime @default(now())
+  createdAt  DateTime @default(now())
 
   estimate Estimate @relation(fields: [estimateId], references: [id], onDelete: Cascade)
 }
@@ -224,6 +238,7 @@ enum EstimateStatus {
   PENDING
   ACCEPTED
   SENT_TO_GARAGE
+  WAITING_PARTS
   FINISHED
 }
 

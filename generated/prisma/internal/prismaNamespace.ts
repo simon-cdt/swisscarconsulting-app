@@ -390,6 +390,7 @@ export const ModelName = {
   Intervention: 'Intervention',
   Estimate: 'Estimate',
   EstimateItem: 'EstimateItem',
+  EstimateRefusal: 'EstimateRefusal',
   Invoice: 'Invoice',
   Insurance: 'Insurance',
   Appointment: 'Appointment'
@@ -408,7 +409,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "user" | "client" | "vehicule" | "intervention" | "estimate" | "estimateItem" | "invoice" | "insurance" | "appointment"
+    modelProps: "user" | "client" | "vehicule" | "intervention" | "estimate" | "estimateItem" | "estimateRefusal" | "invoice" | "insurance" | "appointment"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -808,6 +809,72 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    EstimateRefusal: {
+      payload: Prisma.$EstimateRefusalPayload<ExtArgs>
+      fields: Prisma.EstimateRefusalFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.EstimateRefusalFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstimateRefusalPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.EstimateRefusalFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstimateRefusalPayload>
+        }
+        findFirst: {
+          args: Prisma.EstimateRefusalFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstimateRefusalPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.EstimateRefusalFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstimateRefusalPayload>
+        }
+        findMany: {
+          args: Prisma.EstimateRefusalFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstimateRefusalPayload>[]
+        }
+        create: {
+          args: Prisma.EstimateRefusalCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstimateRefusalPayload>
+        }
+        createMany: {
+          args: Prisma.EstimateRefusalCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        delete: {
+          args: Prisma.EstimateRefusalDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstimateRefusalPayload>
+        }
+        update: {
+          args: Prisma.EstimateRefusalUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstimateRefusalPayload>
+        }
+        deleteMany: {
+          args: Prisma.EstimateRefusalDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.EstimateRefusalUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        upsert: {
+          args: Prisma.EstimateRefusalUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$EstimateRefusalPayload>
+        }
+        aggregate: {
+          args: Prisma.EstimateRefusalAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateEstimateRefusal>
+        }
+        groupBy: {
+          args: Prisma.EstimateRefusalGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EstimateRefusalGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.EstimateRefusalCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.EstimateRefusalCountAggregateOutputType> | number
+        }
+      }
+    }
     Invoice: {
       payload: Prisma.$InvoicePayload<ExtArgs>
       fields: Prisma.InvoiceFieldRefs
@@ -1121,11 +1188,12 @@ export const EstimateScalarFieldEnum = {
   type: 'type',
   claimNumber: 'claimNumber',
   deleted: 'deleted',
-  refusalReason: 'refusalReason',
   discount: 'discount',
-  acceptedAt: 'acceptedAt',
-  refusedAt: 'refusedAt',
   sentToGarageAt: 'sentToGarageAt',
+  acceptedAt: 'acceptedAt',
+  paidAt: 'paidAt',
+  partsOrderedAt: 'partsOrderedAt',
+  partsArrivedAt: 'partsArrivedAt',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
@@ -1148,6 +1216,17 @@ export const EstimateItemScalarFieldEnum = {
 } as const
 
 export type EstimateItemScalarFieldEnum = (typeof EstimateItemScalarFieldEnum)[keyof typeof EstimateItemScalarFieldEnum]
+
+
+export const EstimateRefusalScalarFieldEnum = {
+  id: 'id',
+  estimateId: 'estimateId',
+  reason: 'reason',
+  refusedAt: 'refusedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type EstimateRefusalScalarFieldEnum = (typeof EstimateRefusalScalarFieldEnum)[keyof typeof EstimateRefusalScalarFieldEnum]
 
 
 export const InvoiceScalarFieldEnum = {
@@ -1280,8 +1359,7 @@ export type InterventionOrderByRelevanceFieldEnum = (typeof InterventionOrderByR
 export const EstimateOrderByRelevanceFieldEnum = {
   id: 'id',
   interventionId: 'interventionId',
-  claimNumber: 'claimNumber',
-  refusalReason: 'refusalReason'
+  claimNumber: 'claimNumber'
 } as const
 
 export type EstimateOrderByRelevanceFieldEnum = (typeof EstimateOrderByRelevanceFieldEnum)[keyof typeof EstimateOrderByRelevanceFieldEnum]
@@ -1295,6 +1373,15 @@ export const EstimateItemOrderByRelevanceFieldEnum = {
 } as const
 
 export type EstimateItemOrderByRelevanceFieldEnum = (typeof EstimateItemOrderByRelevanceFieldEnum)[keyof typeof EstimateItemOrderByRelevanceFieldEnum]
+
+
+export const EstimateRefusalOrderByRelevanceFieldEnum = {
+  id: 'id',
+  estimateId: 'estimateId',
+  reason: 'reason'
+} as const
+
+export type EstimateRefusalOrderByRelevanceFieldEnum = (typeof EstimateRefusalOrderByRelevanceFieldEnum)[keyof typeof EstimateRefusalOrderByRelevanceFieldEnum]
 
 
 export const InvoiceOrderByRelevanceFieldEnum = {
@@ -1533,6 +1620,7 @@ export type GlobalOmitConfig = {
   intervention?: Prisma.InterventionOmit
   estimate?: Prisma.EstimateOmit
   estimateItem?: Prisma.EstimateItemOmit
+  estimateRefusal?: Prisma.EstimateRefusalOmit
   invoice?: Prisma.InvoiceOmit
   insurance?: Prisma.InsuranceOmit
   appointment?: Prisma.AppointmentOmit

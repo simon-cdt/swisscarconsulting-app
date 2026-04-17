@@ -48,6 +48,11 @@ export type Estimate = Prisma.EstimateModel
  */
 export type EstimateItem = Prisma.EstimateItemModel
 /**
+ * Model EstimateRefusal
+ * 
+ */
+export type EstimateRefusal = Prisma.EstimateRefusalModel
+/**
  * Model Invoice
  * 
  */

@@ -26,6 +26,17 @@ export async function GET() {
       type: true,
       claimNumber: true,
       sentToGarageAt: true,
+      acceptedAt: true,
+      refusals: {
+        select: {
+          id: true,
+          reason: true,
+          refusedAt: true,
+        },
+        orderBy: {
+          refusedAt: "desc",
+        },
+      },
       intervention: {
         select: {
           date: true,

@@ -554,13 +554,23 @@ export const refuseEstimate = async ({
       return { success: false, message: "Devis introuvable" };
     }
 
+    // Créer un nouvel enregistrement de refus
+    await db.estimateRefusal.create({
+      data: {
+        estimateId: estimateId,
+        reason: reason,
+        refusedAt: new Date(),
+      },
+    });
+
+    // Mettre à jour le statut du devis
     await db.estimate.update({
       where: { id: estimateId },
       data: {
         status: "TOFINISH",
-        refusalReason: reason,
       },
     });
+
     return { success: true, message: "Le devis a bien été refusé." };
   } catch (error) {
     console.error(error);
@@ -595,6 +605,7 @@ export const acceptEstimate = async ({
       where: { id: estimateId },
       data: {
         status: "ACCEPTED",
+        acceptedAt: new Date(),
       },
     });
     return { success: true, message: "Le devis a bien été accepté." };
@@ -636,6 +647,95 @@ export const sendEstimateToGarage = async ({
     });
 
     return { success: true, message: "Le devis a bien été envoyé au garage." };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Une erreur est survenue" };
+  }
+};
+
+export const markEstimateAsWaitingParts = async ({
+  estimateId,
+}: {
+  estimateId: string;
+}): Promise<
+  | { success: false; message: string }
+  | { success: true; message: "Le devis est en attente de pièces." }
+> => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+      return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+
+    const estimate = await db.estimate.findUnique({
+      where: { id: estimateId },
+      select: { id: true },
+    });
+
+    if (!estimate) {
+      return { success: false, message: "Devis introuvable" };
+    }
+
+    await db.estimate.update({
+      where: { id: estimateId },
+      data: {
+        status: "WAITING_PARTS",
+        partsOrderedAt: new Date(),
+      },
+    });
+
+    return {
+      success: true,
+      message: "Le devis est en attente de pièces.",
+    };
+  } catch (error) {
+    console.error(error);
+    return { success: false, message: "Une erreur est survenue" };
+  }
+};
+
+export const markPartsAsArrived = async ({
+  estimateId,
+}: {
+  estimateId: string;
+}): Promise<
+  | { success: false; message: string }
+  | { success: true; message: "Les pièces sont arrivées." }
+> => {
+  try {
+    const session = await getServerSession(authOptions);
+    if (!session || !session.user.id) {
+      return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+
+    const estimate = await db.estimate.findUnique({
+      where: { id: estimateId },
+      select: { id: true, status: true },
+    });
+
+    if (!estimate) {
+      return { success: false, message: "Devis introuvable" };
+    }
+
+    if (estimate.status !== "WAITING_PARTS") {
+      return {
+        success: false,
+        message: "Ce devis n'est pas en attente de pièces.",
+      };
+    }
+
+    await db.estimate.update({
+      where: { id: estimateId },
+      data: {
+        status: "SENT_TO_GARAGE",
+        partsArrivedAt: new Date(),
+      },
+    });
+
+    return {
+      success: true,
+      message: "Les pièces sont arrivées.",
+    };
   } catch (error) {
     console.error(error);
     return { success: false, message: "Une erreur est survenue" };

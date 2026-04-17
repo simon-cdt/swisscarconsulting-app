@@ -27,6 +27,8 @@ import {
   putInTrash,
   refuseEstimate,
   sendEstimateToGarage,
+  markEstimateAsWaitingParts,
+  markPartsAsArrived,
 } from "@/lib/actions/estimate";
 import { useRouter } from "next/navigation";
 import { Estimate as EstimateType } from "@/types/types";
@@ -129,6 +131,76 @@ export default function Estimate({
                   </span>
                 </div>
               )}
+            {estimate.status === "ACCEPTED" && estimate.acceptedAt && (
+              <div className="text-muted-foreground flex items-center gap-2">
+                <span className="text-sm font-medium">
+                  Accepté: {format(estimate.acceptedAt, "PP", { locale: fr })}
+                </span>
+              </div>
+            )}
+            {estimate.status === "TOFINISH" && estimate.refusals && estimate.refusals.length > 0 && (
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button className="text-muted-foreground flex items-center gap-2 hover:underline">
+                    <span className="text-sm font-medium">
+                      Refusé ({estimate.refusals.length})
+                    </span>
+                  </button>
+                </DialogTrigger>
+                <DialogContent className="max-w-lg">
+                  <DialogHeader>
+                    <DialogTitle>Historique des refus</DialogTitle>
+                    <DialogDescription>
+                      Consultez l'historique de toutes les demandes de refus pour ce devis
+                    </DialogDescription>
+                  </DialogHeader>
+                  <div className="flex flex-col gap-3 max-h-96 overflow-y-auto">
+                    {estimate.refusals.map((refusal) => (
+                      <div
+                        key={refusal.id}
+                        className="rounded-lg border border-gray-200 p-3"
+                      >
+                        <p className="text-sm font-semibold">
+                          {format(refusal.refusedAt, "PPP 'à' HH:mm", { locale: fr })}
+                        </p>
+                        <p className="text-sm text-muted-foreground mt-1">
+                          {refusal.reason}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  <DialogFooter>
+                    <DialogClose asChild>
+                      <Button variant="outline">Fermer</Button>
+                    </DialogClose>
+                  </DialogFooter>
+                </DialogContent>
+              </Dialog>
+            )}
+            {estimate.paidAt && (
+              <div className="text-muted-foreground flex items-center gap-2">
+                <span className="text-sm font-medium">
+                  Payé le: {format(estimate.paidAt, "PP", { locale: fr })}
+                </span>
+              </div>
+            )}
+            {estimate.status === "WAITING_PARTS" &&
+              estimate.partsOrderedAt && (
+                <div className="text-muted-foreground flex items-center gap-2">
+                  <span className="text-sm font-medium">
+                    Commandé:{" "}
+                    {format(estimate.partsOrderedAt, "PP", { locale: fr })}
+                  </span>
+                </div>
+              )}
+            {estimate.partsArrivedAt && (
+              <div className="text-muted-foreground flex items-center gap-2">
+                <span className="text-sm font-medium">
+                  Arrivé:{" "}
+                  {format(estimate.partsArrivedAt, "PP", { locale: fr })}
+                </span>
+              </div>
+            )}
           </div>
           <div className="flex items-center gap-3">
             {estimate.status === "TOFINISH" && (
@@ -406,6 +478,42 @@ export default function Estimate({
                   <InformationsDialog estimate={estimate} refetch={refetch} />
                   <AlertDialog>
                     <AlertDialogTrigger asChild>
+                      <Button className="bg-yellow-600 hover:bg-yellow-700">
+                        Pièces en attente
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          Le véhicule sera marqué comme en attente de pièces
+                          commandées.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Annuler</AlertDialogCancel>
+                        <AlertDialogAction
+                          className="bg-yellow-600 hover:bg-yellow-700"
+                          onClick={async () => {
+                            const response = await markEstimateAsWaitingParts({
+                              estimateId: estimate.id,
+                            });
+
+                            if (response.success) {
+                              toast.success(response.message);
+                              refetch();
+                            } else {
+                              toast.error(response.message);
+                            }
+                          }}
+                        >
+                          Confirmer
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
                       <Button className="bg-pink-700 hover:bg-pink-800">
                         Envoyer en facture
                       </Button>
@@ -445,6 +553,55 @@ export default function Estimate({
                 </>
               )
             )}
+            {estimate.status === "WAITING_PARTS" && (
+              <>
+                <Link
+                  href={`/dashboard/estimates/${estimate.id}`}
+                  className="w-full"
+                >
+                  <Button className="w-full" variant={"link"}>
+                    Voir le devis
+                  </Button>
+                </Link>
+                <InformationsDialog estimate={estimate} refetch={refetch} />
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button className="bg-blue-600 hover:bg-blue-700">
+                      Pièces arrivées
+                    </Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                      <AlertDialogDescription>
+                        Les pièces sont arrivées et le véhicule retournera en
+                        &quot;Au garage&quot;.
+                      </AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Annuler</AlertDialogCancel>
+                      <AlertDialogAction
+                        className="bg-blue-600 hover:bg-blue-700"
+                        onClick={async () => {
+                          const response = await markPartsAsArrived({
+                            estimateId: estimate.id,
+                          });
+
+                          if (response.success) {
+                            toast.success(response.message);
+                            refetch();
+                          } else {
+                            toast.error(response.message);
+                          }
+                        }}
+                      >
+                        Confirmer
+                      </AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+              </>
+            )}
           </div>
         </div>
       </div>
@@ -454,9 +611,12 @@ export default function Estimate({
         open={appointmentDialogOpen}
         onOpenChange={(open) => {
           setAppointmentDialogOpen(open);
-          // Si le dialog se ferme et qu'aucun rendez-vous n'a été créé, rediriger
+          // Si le dialog se ferme et qu'aucun rendez-vous n'a été créé, rediriger vers la page acceptée
           if (!open && !appointmentCreated) {
-            router.push("/dashboard/mechanical");
+            const acceptedPath = estimate.type === "INDIVIDUAL"
+              ? "/dashboard/estimates/individual/accepted"
+              : "/dashboard/estimates/insurance/accepted";
+            router.push(acceptedPath);
           }
         }}
         defaultType={0}
@@ -470,7 +630,10 @@ export default function Estimate({
         onSuccess={() => {
           setAppointmentCreated(true);
           setAppointmentDialogOpen(false);
-          router.push("/dashboard/calendar");
+          const acceptedPath = estimate.type === "INDIVIDUAL"
+            ? "/dashboard/estimates/individual/accepted"
+            : "/dashboard/estimates/insurance/accepted";
+          router.push(acceptedPath);
         }}
       />
     </Card>

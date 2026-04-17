@@ -25,6 +25,16 @@ export async function GET() {
       id: true,
       status: true,
       type: true,
+      refusals: {
+        select: {
+          id: true,
+          reason: true,
+          refusedAt: true,
+        },
+        orderBy: {
+          refusedAt: "desc",
+        },
+      },
       _count: {
         select: {
           items: true,

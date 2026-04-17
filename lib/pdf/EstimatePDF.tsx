@@ -252,6 +252,7 @@ type EstimateItem = {
 type EstimateData = {
   id: string;
   type: TypeEstimate;
+  status: "TOFINISH" | "PENDING" | "ACCEPTED" | "SENT_TO_GARAGE" | "FINISHED";
   claimNumber: string | null;
   discount: number | null;
   logoBase64: string;
@@ -399,7 +400,8 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
               Numéro client : <Text style={styles.bold}>{client.id}</Text>
             </Text>
             <Text>
-              Numéro facture : <Text style={styles.bold}>{data.id}</Text>
+              {data.status === "SENT_TO_GARAGE" || data.status === "FINISHED" ? "Numéro facture" : "Numéro devis"} :{" "}
+              <Text style={styles.bold}>{data.id}</Text>
             </Text>
           </View>
         </View>

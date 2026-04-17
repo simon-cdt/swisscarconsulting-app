@@ -26,6 +26,17 @@ export async function GET() {
       status: true,
       type: true,
       claimNumber: true,
+      acceptedAt: true,
+      refusals: {
+        select: {
+          id: true,
+          reason: true,
+          refusedAt: true,
+        },
+        orderBy: {
+          refusedAt: "desc",
+        },
+      },
       intervention: {
         select: {
           date: true,
@@ -58,7 +69,7 @@ export async function GET() {
       },
     },
     orderBy: {
-      createdAt: "asc",
+      acceptedAt: "desc",
     },
   });
 

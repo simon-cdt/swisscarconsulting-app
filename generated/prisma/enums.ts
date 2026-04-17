@@ -39,6 +39,7 @@ export const EstimateStatus = {
   PENDING: 'PENDING',
   ACCEPTED: 'ACCEPTED',
   SENT_TO_GARAGE: 'SENT_TO_GARAGE',
+  WAITING_PARTS: 'WAITING_PARTS',
   FINISHED: 'FINISHED'
 } as const
 

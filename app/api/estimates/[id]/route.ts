@@ -21,8 +21,18 @@ export async function GET(
       status: true,
       type: true,
       claimNumber: true,
-      refusalReason: true,
       discount: true,
+      acceptedAt: true,
+      refusals: {
+        select: {
+          id: true,
+          reason: true,
+          refusedAt: true,
+        },
+        orderBy: {
+          refusedAt: "desc",
+        },
+      },
       items: {
         select: {
           id: true,

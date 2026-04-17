@@ -71,7 +71,11 @@ type FetchEstimate = {
   type: TypeEstimate;
   items: ItemEstimate;
   claimNumber: string | null;
-  refusalReason: string | null;
+  refusals?: Array<{
+    id: string;
+    reason: string;
+    refusedAt: Date;
+  }>;
   discount: number | null;
   intervention: {
     id: string;
@@ -235,6 +239,7 @@ export default function QuoteGeneratorPage() {
         const pdfData = {
           id: estimate.id,
           type: estimate.type,
+          status: estimate.status,
           claimNumber: estimate.claimNumber,
           discount: estimate.discount,
           items: selectedItems.map((item) => ({
@@ -609,16 +614,35 @@ export default function QuoteGeneratorPage() {
                     </Card>
                   </div>
                 </div>
-                {estimate.refusalReason && (
+                {estimate.refusals && estimate.refusals.length > 0 && (
                   <Card className="border-red-500/10 bg-red-50 shadow-none">
-                    <CardContent className="flex flex-col gap-4">
-                      <CardTitle className="font-semibold">
-                        Raison du devis refusé
+                    <CardHeader>
+                      <CardTitle className="text-red-600">
+                        Historique des refus ({estimate.refusals.length})
                       </CardTitle>
-                      <div className="bg-muted/30 max-h-40 overflow-y-auto rounded-md border p-4">
-                        <p className="text-sm leading-relaxed font-semibold whitespace-pre-wrap text-red-500">
-                          {estimate.refusalReason}
-                        </p>
+                      <CardDescription>
+                        Consultez les demandes de refus pour ce devis
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-col gap-3">
+                        {estimate.refusals.map((refusal) => (
+                          <div
+                            key={refusal.id}
+                            className="rounded-lg border border-red-200 bg-white p-3"
+                          >
+                            <p className="text-sm font-semibold text-red-600">
+                              {format(refusal.refusedAt, "PPP 'à' HH:mm", {
+                                locale: fr,
+                              })}
+                            </p>
+                            <div className="bg-muted/30 mt-2 max-h-24 overflow-y-auto rounded-md border border-red-100 p-3">
+                              <p className="text-sm leading-relaxed whitespace-pre-wrap text-red-700">
+                                {refusal.reason}
+                              </p>
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     </CardContent>
                   </Card>
