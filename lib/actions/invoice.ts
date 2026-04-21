@@ -98,10 +98,11 @@ export const createInvoice = async ({
       const logoBuffer = readFileSync(logoPath);
       const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
 
-      // Préparer les données pour le PDF
+      // Préparer les données pour le PDF (avec le statut FINISHED pour afficher "Numéro facture")
       const pdfData = {
         id: estimate.id,
         type: estimate.type,
+        status: "FINISHED",
         claimNumber: estimate.claimNumber,
         logoBase64,
         items: estimate.items,
