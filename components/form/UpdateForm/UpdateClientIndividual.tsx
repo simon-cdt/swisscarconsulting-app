@@ -6,6 +6,7 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { Spinner } from "../../ui/spinner";
 import { FormField } from "../FormField";
+import { PhoneInputField } from "../PhoneInputField";
 import { updateClientIndividual } from "@/lib/actions/client";
 import toast from "react-hot-toast";
 
@@ -22,8 +23,10 @@ export function UpdateClientIndividual({
     contactFirstName: string | null;
     contactName: string | null;
     email: string;
-    phone: string;
-    phone2: string | null;
+    phonePrefix: string;
+    phoneNumber: string;
+    phone2Prefix: string | null;
+    phone2Number: string | null;
     address: string | null;
     postalCode: string | null;
     city: string | null;
@@ -35,20 +38,31 @@ export function UpdateClientIndividual({
     name: z.string().nonempty("Le nom est requis."),
     firstName: z.string().nonempty("Le prénom est requis."),
     email: z.email("L'email est invalide."),
-    phone: z
+    phonePrefix: z
+      .string()
+      .nonempty("Le préfixe est requis.")
+      .regex(/^\+\d{1,3}$/, "Le préfixe doit être au format +XX ou +XXX"),
+    phoneNumber: z
       .string()
       .nonempty("Le numéro de téléphone est requis.")
       .regex(
-        /^[\d\s\+\-\(\)]+$/,
-        "Le numéro de téléphone contient des caractères invalides",
+        /^[\d\s\-()]+$/,
+        "Le numéro ne doit contenir que des chiffres et espaces",
       )
-      .min(9, "Le numéro de téléphone doit contenir au moins 9 chiffres"),
-    phone2: z
+      .min(6, "Le numéro doit contenir au moins 6 chiffres"),
+    phone2Prefix: z
       .string()
       .optional()
       .refine(
-        (val) => !val || (val.length >= 9 && /^[\d\s\+\-\(\)]+$/.test(val)),
-        "Le numéro de téléphone contient des caractères invalides ou est trop court",
+        (val) => !val || /^\+\d{1,3}$/.test(val),
+        "Le préfixe doit être au format +XX ou +XXX",
+      ),
+    phone2Number: z
+      .string()
+      .optional()
+      .refine(
+        (val) => !val || (/^[\d\s\-()]+$/.test(val) && val.length >= 6),
+        "Le numéro doit contenir au moins 6 chiffres et des caractères valides",
       ),
     address: z
       .string()
@@ -79,6 +93,18 @@ export function UpdateClientIndividual({
     formState: { errors, isSubmitting },
   } = useForm<FormSchema>({
     resolver: zodResolver(zodFormSchema),
+    defaultValues: {
+      name: client.name || client.contactName || "",
+      firstName: client.firstName || client.contactFirstName || "",
+      email: client.email,
+      phonePrefix: client.phonePrefix,
+      phoneNumber: client.phoneNumber,
+      phone2Prefix: client.phone2Prefix || "",
+      phone2Number: client.phone2Number || "",
+      address: client.address || "",
+      postalCode: client.postalCode ? parseInt(client.postalCode) : undefined,
+      city: client.city || "",
+    },
   });
 
   const handleSubmitForm = async (data: FormSchema) => {
@@ -88,8 +114,10 @@ export function UpdateClientIndividual({
         name: data.name,
         firstName: data.firstName,
         email: data.email,
-        phone: data.phone,
-        phone2: data.phone2,
+        phonePrefix: data.phonePrefix,
+        phoneNumber: data.phoneNumber,
+        phone2Prefix: data.phone2Prefix,
+        phone2Number: data.phone2Number,
         address: data.address,
         postalCode: data.postalCode,
         city: data.city,
@@ -112,7 +140,6 @@ export function UpdateClientIndividual({
           label="Nom"
           name="name"
           type="text"
-          defaultValue={client.name || client.contactName || ""}
           error={errors.name}
           register={register}
           nonempty
@@ -121,37 +148,41 @@ export function UpdateClientIndividual({
           label="Prénom"
           name="firstName"
           type="text"
-          defaultValue={client.firstName || client.contactFirstName || ""}
           error={errors.firstName}
-          register={register}
-          nonempty
-        />
-        <FormField
-          label="Email"
-          name="email"
-          type="email"
-          defaultValue={client.email}
-          error={errors.email}
-          register={register}
-          nonempty
-        />
-        <FormField
-          label="Téléphone"
-          name="phone"
-          type="text"
-          defaultValue={client.phone}
-          error={errors.phone}
           register={register}
           nonempty
         />
         <div className="col-span-2">
           <FormField
-            label="Téléphone 2 (optionnel)"
-            name="phone2"
-            type="tel"
-            defaultValue={client.phone2 || ""}
-            error={errors.phone2}
+            label="Email"
+            name="email"
+            type="email"
+            error={errors.email}
             register={register}
+            nonempty
+          />
+        </div>
+        <div className="col-span-2">
+          <PhoneInputField
+            prefixName="phonePrefix"
+            numberName="phoneNumber"
+            prefixLabel="Préfixe"
+            numberLabel="Numéro de téléphone"
+            register={register}
+            prefixError={errors.phonePrefix}
+            numberError={errors.phoneNumber}
+          />
+        </div>
+        <div className="col-span-2">
+          <PhoneInputField
+            prefixName="phone2Prefix"
+            numberName="phone2Number"
+            prefixLabel="Préfixe (optionnel)"
+            numberLabel="Numéro de téléphone 2"
+            register={register}
+            prefixError={errors.phone2Prefix}
+            numberError={errors.phone2Number}
+            optional={true}
           />
         </div>
         <div className="col-span-2">
@@ -159,7 +190,6 @@ export function UpdateClientIndividual({
             label="Adresse"
             name="address"
             type="text"
-            defaultValue={client.address || ""}
             error={errors.address}
             register={register}
           />
@@ -168,7 +198,6 @@ export function UpdateClientIndividual({
           label="Code Postal"
           name="postalCode"
           type="number"
-          defaultValue={client.postalCode || undefined}
           error={errors.postalCode}
           register={register}
           step="1"
@@ -177,7 +206,6 @@ export function UpdateClientIndividual({
           label="Ville"
           name="city"
           type="text"
-          defaultValue={client.city || ""}
           error={errors.city}
           register={register}
         />

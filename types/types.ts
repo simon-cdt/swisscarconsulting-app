@@ -75,7 +75,8 @@ export type Estimate = {
         firstName: string | null;
         companyName: string | null;
         typeClient: TypeClient;
-        phone: string;
+        phonePrefix: string;
+        phoneNumber: string;
       };
     };
   };
@@ -98,6 +99,7 @@ export type Invoice = {
   firstName: string;
   companyName: string | null;
   typeClient: TypeClient;
-  phone: string;
+  phonePrefix: string;
+  phoneNumber: string;
   pdfUrl: string;
 };

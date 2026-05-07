@@ -10,8 +10,10 @@ export type SharedFormData = {
   firstName: string;
   name: string;
   email: string;
-  phone: string;
-  phone2: string;
+  phonePrefix: string;
+  phoneNumber: string;
+  phone2Prefix: string;
+  phone2Number: string;
   address: string;
   postalCode: number | undefined;
   city: string;
@@ -22,8 +24,10 @@ export default function CustomTabs() {
     firstName: "",
     name: "",
     email: "",
-    phone: "",
-    phone2: "",
+    phonePrefix: "",
+    phoneNumber: "",
+    phone2Prefix: "",
+    phone2Number: "",
     address: "",
     postalCode: undefined,
     city: "",

@@ -15,7 +15,7 @@ import ErrorPage from "@/components/ErrorPage";
 import LoadingPage from "@/components/LoadingPage";
 import UpdateClient from "@/components/form/UpdateForm/UpdateClient";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { formatPhoneNumber } from "@/lib/utils";
+import { formatFullPhoneNumber } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle } from "lucide-react";
 
@@ -35,9 +35,11 @@ type FetchAllVehiculesOfClient = {
   client: {
     id: number;
     typeClient: TypeClient;
-    phone: string;
-    phone2: string | null;
     email: string;
+    phonePrefix: string;
+    phoneNumber: string;
+    phone2Prefix: string | null;
+    phone2Number: string | null;
     name: string | null;
     firstName: string | null;
     companyName: string | null;
@@ -169,7 +171,7 @@ export default function ClientVehiculePage() {
             </header>
 
             {/* Main Content */}
-            <main className="mx-auto flex w-full max-w-350 gap-6 px-6 pb-10">
+            <main className="mx-auto flex w-full max-w-screen-2xl gap-6 px-6 pb-10">
               {/* Left Section - Client Info and Vehicles */}
               <div className="flex flex-1 flex-col gap-6">
                 <Card
@@ -223,16 +225,22 @@ export default function ClientVehiculePage() {
                           Téléphone
                         </p>
                         <p className="text-foreground text-base font-medium">
-                          {formatPhoneNumber(data.client.phone)}
+                          {formatFullPhoneNumber(
+                            data.client.phonePrefix,
+                            data.client.phoneNumber,
+                          )}
                         </p>
                       </div>
-                      {data.client.phone2 && (
+                      {data.client.phone2Prefix && data.client.phone2Number && (
                         <div>
                           <p className="text-muted-foreground text-sm">
                             Téléphone 2
                           </p>
                           <p className="text-foreground text-base font-medium">
-                            {formatPhoneNumber(data.client.phone2)}
+                            {formatFullPhoneNumber(
+                              data.client.phone2Prefix,
+                              data.client.phone2Number,
+                            )}
                           </p>
                         </div>
                       )}
@@ -292,7 +300,7 @@ export default function ClientVehiculePage() {
                         return (
                           <Card
                             key={vehicule.id}
-                            className={`group trans flex cursor-pointer flex-row items-center px-5 py-4 hover:shadow-lg ${data && data.client.typeClient === "individual" ? "individual-card" : "company-card"}`}
+                            className={`group flex cursor-pointer flex-row items-center px-5 py-4 transition hover:shadow-lg ${data && data.client.typeClient === "individual" ? "individual-card" : "company-card"}`}
                             onClick={() => {
                               router.push(
                                 `/client-handle/${id}/${vehicule.id}`,
@@ -301,7 +309,7 @@ export default function ClientVehiculePage() {
                           >
                             <div className="flex w-full items-center gap-4">
                               <div
-                                className={`${data && data.client.typeClient === "individual" ? "bg-sky-200/50" : "bg-amber-200/50"} trans flex h-16 w-16 shrink-0 items-center justify-center rounded-lg`}
+                                className={`${data && data.client.typeClient === "individual" ? "bg-sky-200/50" : "bg-amber-200/50"} flex h-16 w-16 shrink-0 items-center justify-center rounded-lg transition`}
                               >
                                 <Car className="text-primary h-8 w-8" />
                               </div>

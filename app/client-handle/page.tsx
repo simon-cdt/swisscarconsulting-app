@@ -17,15 +17,18 @@ import { ReactNode, useState } from "react";
 import { GeistMono } from "geist/font/mono";
 import Link from "next/link";
 import { TypeClient } from "@/generated/prisma/enums";
-import { formatPhoneNumber } from "@/lib/utils";
+import { formatPhoneNumber, formatFullPhoneNumber } from "@/lib/utils";
 
 type FetchAllClients = {
   id: number;
   typeClient: TypeClient;
   email: string;
-  phone: string;
-  phone2: string | null;
+  phonePrefix: string;
+  phoneNumber: string;
+  phone2Prefix: string | null;
+  phone2Number: string | null;
   name: string;
+  firstName: string | null;
   companyName: string | null;
   nbVehicule: number;
   estimateIds: string[];
@@ -49,20 +52,32 @@ export default function ClientHandlePage() {
   const searchClients =
     clients &&
     clients
-      .filter(
-        (customer) =>
+      .filter((customer) => {
+        const fullPhone = formatFullPhoneNumber(
+          customer.phonePrefix,
+          customer.phoneNumber,
+        );
+        const fullPhone2 =
+          customer.phone2Prefix && customer.phone2Number
+            ? formatFullPhoneNumber(
+                customer.phone2Prefix,
+                customer.phone2Number,
+              )
+            : "";
+        return (
           customer.id.toString().toLowerCase().includes(search.toLowerCase()) ||
           customer.name?.toLowerCase().includes(search.toLowerCase()) ||
-          customer.phone.toLowerCase().includes(search.toLowerCase()) ||
-          customer.phone2?.toLowerCase().includes(search.toLowerCase()) ||
+          fullPhone.toLowerCase().includes(search.toLowerCase()) ||
+          fullPhone2.toLowerCase().includes(search.toLowerCase()) ||
           customer.companyName?.toLowerCase().includes(search.toLowerCase()) ||
           customer.estimateIds.some((estimateId) =>
             estimateId.toLowerCase().includes(search.toLowerCase()),
           ) ||
           customer.claimNumbers.some((claimNumber) =>
             claimNumber.toLowerCase().includes(search.toLowerCase()),
-          ),
-      )
+          )
+        );
+      })
       .sort((a, b) => {
         // Si l'ID correspond exactement, mettre en premier
         const aExactMatch = a.id.toString() === search;
@@ -90,7 +105,7 @@ export default function ClientHandlePage() {
                 Créer un nouveau client
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-150">
+            <DialogContent className="sm:max-w-2xl">
               <DialogHeader>
                 <DialogTitle>Créer un client</DialogTitle>
               </DialogHeader>
@@ -112,7 +127,7 @@ export default function ClientHandlePage() {
             className="border-indigo-400 focus-visible:ring-indigo-200"
             onChange={(e) => setSearch(e.target.value)}
           />
-          <div className="flex max-h-62.5 w-full flex-col gap-3 overflow-y-auto">
+          <div className="flex max-h-96 w-full flex-col gap-3 overflow-y-auto">
             {search !== "" &&
               (isLoading ? null : isError ? null : searchClients &&
                 searchClients.length === 0 ? (
@@ -143,7 +158,10 @@ export default function ClientHandlePage() {
                       bold
                     />
                     <ItemClient
-                      name={formatPhoneNumber(customer.phone)}
+                      name={formatFullPhoneNumber(
+                        customer.phonePrefix,
+                        customer.phoneNumber,
+                      )}
                       icon={<Phone />}
                     />
                     <p>

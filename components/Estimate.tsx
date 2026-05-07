@@ -9,7 +9,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { GeistMono } from "geist/font/mono";
 import InformationsDialog from "./InformationsDialog";
-import { formatPhoneNumber } from "@/lib/utils";
+import { formatPhoneNumber, formatFullPhoneNumber } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -138,45 +138,50 @@ export default function Estimate({
                 </span>
               </div>
             )}
-            {estimate.status === "TOFINISH" && estimate.refusals && estimate.refusals.length > 0 && (
-              <Dialog>
-                <DialogTrigger asChild>
-                  <button className="text-muted-foreground flex items-center gap-2 hover:underline">
-                    <span className="text-sm font-medium">
-                      Refusé ({estimate.refusals.length})
-                    </span>
-                  </button>
-                </DialogTrigger>
-                <DialogContent className="max-w-lg">
-                  <DialogHeader>
-                    <DialogTitle>Historique des refus</DialogTitle>
-                    <DialogDescription>
-                      Consultez l'historique de toutes les demandes de refus pour ce devis
-                    </DialogDescription>
-                  </DialogHeader>
-                  <div className="flex flex-col gap-3 max-h-96 overflow-y-auto">
-                    {estimate.refusals.map((refusal) => (
-                      <div
-                        key={refusal.id}
-                        className="rounded-lg border border-gray-200 p-3"
-                      >
-                        <p className="text-sm font-semibold">
-                          {format(refusal.refusedAt, "PPP 'à' HH:mm", { locale: fr })}
-                        </p>
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {refusal.reason}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                  <DialogFooter>
-                    <DialogClose asChild>
-                      <Button variant="outline">Fermer</Button>
-                    </DialogClose>
-                  </DialogFooter>
-                </DialogContent>
-              </Dialog>
-            )}
+            {estimate.status === "TOFINISH" &&
+              estimate.refusals &&
+              estimate.refusals.length > 0 && (
+                <Dialog>
+                  <DialogTrigger asChild>
+                    <button className="text-muted-foreground flex items-center gap-2 hover:underline">
+                      <span className="text-sm font-medium">
+                        Refusé ({estimate.refusals.length})
+                      </span>
+                    </button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-lg">
+                    <DialogHeader>
+                      <DialogTitle>Historique des refus</DialogTitle>
+                      <DialogDescription>
+                        Consultez l&apos;historique de toutes les demandes de
+                        refus pour ce devis
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="flex max-h-96 flex-col gap-3 overflow-y-auto">
+                      {estimate.refusals.map((refusal) => (
+                        <div
+                          key={refusal.id}
+                          className="rounded-lg border border-gray-200 p-3"
+                        >
+                          <p className="text-sm font-semibold">
+                            {format(refusal.refusedAt, "PPP 'à' HH:mm", {
+                              locale: fr,
+                            })}
+                          </p>
+                          <p className="text-muted-foreground mt-1 text-sm">
+                            {refusal.reason}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                    <DialogFooter>
+                      <DialogClose asChild>
+                        <Button variant="outline">Fermer</Button>
+                      </DialogClose>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              )}
             {estimate.paidAt && (
               <div className="text-muted-foreground flex items-center gap-2">
                 <span className="text-sm font-medium">
@@ -184,15 +189,14 @@ export default function Estimate({
                 </span>
               </div>
             )}
-            {estimate.status === "WAITING_PARTS" &&
-              estimate.partsOrderedAt && (
-                <div className="text-muted-foreground flex items-center gap-2">
-                  <span className="text-sm font-medium">
-                    Commandé:{" "}
-                    {format(estimate.partsOrderedAt, "PP", { locale: fr })}
-                  </span>
-                </div>
-              )}
+            {estimate.status === "WAITING_PARTS" && estimate.partsOrderedAt && (
+              <div className="text-muted-foreground flex items-center gap-2">
+                <span className="text-sm font-medium">
+                  Commandé:{" "}
+                  {format(estimate.partsOrderedAt, "PP", { locale: fr })}
+                </span>
+              </div>
+            )}
             {estimate.partsArrivedAt && (
               <div className="text-muted-foreground flex items-center gap-2">
                 <span className="text-sm font-medium">
@@ -252,8 +256,9 @@ export default function Estimate({
                   {`${getClientDisplayName(estimate.intervention.vehicule.client)}`}
                 </h3>
                 <h3 className="text-foreground w-full text-lg font-semibold">
-                  {formatPhoneNumber(
-                    estimate.intervention.vehicule.client.phone,
+                  {formatFullPhoneNumber(
+                    estimate.intervention.vehicule.client.phonePrefix,
+                    estimate.intervention.vehicule.client.phoneNumber,
                   )}
                 </h3>
               </div>
@@ -613,9 +618,10 @@ export default function Estimate({
           setAppointmentDialogOpen(open);
           // Si le dialog se ferme et qu'aucun rendez-vous n'a été créé, rediriger vers la page acceptée
           if (!open && !appointmentCreated) {
-            const acceptedPath = estimate.type === "INDIVIDUAL"
-              ? "/dashboard/estimates/individual/accepted"
-              : "/dashboard/estimates/insurance/accepted";
+            const acceptedPath =
+              estimate.type === "INDIVIDUAL"
+                ? "/dashboard/estimates/individual/accepted"
+                : "/dashboard/estimates/insurance/accepted";
             router.push(acceptedPath);
           }
         }}
@@ -630,9 +636,10 @@ export default function Estimate({
         onSuccess={() => {
           setAppointmentCreated(true);
           setAppointmentDialogOpen(false);
-          const acceptedPath = estimate.type === "INDIVIDUAL"
-            ? "/dashboard/estimates/individual/accepted"
-            : "/dashboard/estimates/insurance/accepted";
+          const acceptedPath =
+            estimate.type === "INDIVIDUAL"
+              ? "/dashboard/estimates/individual/accepted"
+              : "/dashboard/estimates/insurance/accepted";
           router.push(acceptedPath);
         }}
       />

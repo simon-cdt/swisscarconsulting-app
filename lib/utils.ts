@@ -71,29 +71,6 @@ export const formatRegistrationNumber = (value: string) => {
   return formatted;
 };
 
-export const formatPhoneNumber = (phone: string) => {
-  // Si le numéro commence par +41, formater comme +41 76 123 45 67
-  if (phone.startsWith("+41")) {
-    const cleaned = phone.replace(/\D/g, ""); // Supprimer tous les non-chiffres
-    if (cleaned.length === 11) {
-      // +41 (2) + 9 chiffres
-      return `+${cleaned.slice(0, 2)} ${cleaned.slice(2, 4)} ${cleaned.slice(4, 7)} ${cleaned.slice(7, 9)} ${cleaned.slice(9)}`;
-    }
-    return phone;
-  }
-
-  // Si le numéro commence par 0, formater comme 076 123 45 67
-  if (phone.startsWith("0")) {
-    const cleaned = phone.replace(/\D/g, "");
-    if (cleaned.length === 10) {
-      return `${cleaned.slice(0, 3)} ${cleaned.slice(3, 6)} ${cleaned.slice(6, 8)} ${cleaned.slice(8)}`;
-    }
-    return phone;
-  }
-
-  return phone;
-};
-
 export const toCamelCase = (str: string): string => {
   return str
     .toLowerCase()
@@ -145,4 +122,49 @@ export const formatAddress = (str: string): string => {
     .replace(/(\d)([a-zA-Z\u00c0-\u00ff])/g, "$1 $2")
     .replace(/([a-zA-Z\u00c0-\u00ff])(\d)/g, "$1 $2");
   return capitalize(formatted);
+};
+
+export const formatFullPhoneNumber = (
+  prefix: string,
+  number: string,
+): string => {
+  if (!prefix || !number) return "";
+
+  // Nettoyer le préfixe et le numéro
+  const cleanedPrefix = prefix.replace(/\D/g, "");
+  const cleanedNumber = number.replace(/\D/g, "");
+
+  // Combiner prefix et number
+  const fullPhone = cleanedPrefix + cleanedNumber;
+
+  // Format suisse: +CC NN NNN NN NN (ex: +41 76 504 67 47)
+  if (fullPhone.startsWith("41") && fullPhone.length === 11) {
+    return `+${fullPhone.slice(0, 2)} ${fullPhone.slice(2, 4)} ${fullPhone.slice(4, 7)} ${fullPhone.slice(7, 9)} ${fullPhone.slice(9)}`;
+  }
+
+  // Format par défaut: +prefix NN NNN NN NN
+  return `+${cleanedPrefix} ${cleanedNumber.slice(0, 2)} ${cleanedNumber.slice(2, 5)} ${cleanedNumber.slice(5, 7)} ${cleanedNumber.slice(7)}`.trim();
+};
+
+export const formatPhoneNumber = (phone: string): string => {
+  if (!phone) return "";
+
+  // Nettoyer le numéro en supprimant les espaces et caractères spéciaux
+  const cleanedPhone = phone.replace(/\D/g, "");
+
+  // Format suisse: +CC NN NNN NN NN (ex: +41 76 504 67 47)
+  if (cleanedPhone.startsWith("41") && cleanedPhone.length === 11) {
+    return `+${cleanedPhone.slice(0, 2)} ${cleanedPhone.slice(2, 4)} ${cleanedPhone.slice(4, 7)} ${cleanedPhone.slice(7, 9)} ${cleanedPhone.slice(9)}`;
+  }
+
+  // Format par défaut: espaces tous les 2 chiffres
+  let formattedPhone = "";
+  for (let i = 0; i < cleanedPhone.length; i++) {
+    if (i > 0 && i % 2 === 0) {
+      formattedPhone += " ";
+    }
+    formattedPhone += cleanedPhone[i];
+  }
+
+  return formattedPhone;
 };

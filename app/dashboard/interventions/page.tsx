@@ -40,7 +40,7 @@ import { Spinner } from "@/components/ui/spinner";
 import { useRouter, useSearchParams } from "next/navigation";
 import { putInTrash } from "@/lib/actions/intervention";
 import InformationsDialog from "@/components/InformationsDialog";
-import { formatPhoneNumber } from "@/lib/utils";
+import { formatPhoneNumber, formatFullPhoneNumber } from "@/lib/utils";
 
 type FetchAllInterventions = {
   id: string;
@@ -59,7 +59,8 @@ type FetchAllInterventions = {
       firstName: string | null;
       companyName: string | null;
       typeClient: TypeClient;
-      phone: string;
+      phonePrefix: string;
+      phoneNumber: string;
     };
   };
 }[];
@@ -102,7 +103,7 @@ export default function InterventionsPage() {
 
       const vehiculeName = `${vehicule.brand} ${vehicule.model}`.toLowerCase();
       const licensePlate = vehicule.licensePlate.toLowerCase();
-      const phone = client.phone.toLowerCase();
+      const phone = `${client.phonePrefix} ${client.phoneNumber}`.toLowerCase();
       const interventionId = intervention.id.toLowerCase();
 
       return (
@@ -271,8 +272,9 @@ export default function InterventionsPage() {
                               <h3 className="text-foreground text-lg font-semibold">
                                 {`${getClientDisplayName(
                                   intervention.vehicule.client,
-                                )} - ${formatPhoneNumber(
-                                  intervention.vehicule.client.phone,
+                                )} - ${formatFullPhoneNumber(
+                                  intervention.vehicule.client.phonePrefix,
+                                  intervention.vehicule.client.phoneNumber,
                                 )}`}
                               </h3>
 

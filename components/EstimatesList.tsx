@@ -38,7 +38,7 @@ export default function EstimatesList({
 
       const vehiculeName = `${vehicule.brand} ${vehicule.model}`.toLowerCase();
       const licensePlate = vehicule.licensePlate.toLowerCase();
-      const phone = client.phone.toLowerCase();
+      const phone = `${client.phonePrefix} ${client.phoneNumber}`.toLowerCase();
 
       return (
         clientName.includes(searchLower) ||

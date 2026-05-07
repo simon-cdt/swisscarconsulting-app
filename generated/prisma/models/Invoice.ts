@@ -57,7 +57,8 @@ export type InvoiceMinAggregateOutputType = {
   name: string | null
   firstName: string | null
   email: string | null
-  phone: string | null
+  phonePrefix: string | null
+  phoneNumber: string | null
   companyName: string | null
   address: string | null
   postalCode: number | null
@@ -88,7 +89,8 @@ export type InvoiceMaxAggregateOutputType = {
   name: string | null
   firstName: string | null
   email: string | null
-  phone: string | null
+  phonePrefix: string | null
+  phoneNumber: string | null
   companyName: string | null
   address: string | null
   postalCode: number | null
@@ -119,7 +121,8 @@ export type InvoiceCountAggregateOutputType = {
   name: number
   firstName: number
   email: number
-  phone: number
+  phonePrefix: number
+  phoneNumber: number
   companyName: number
   address: number
   postalCode: number
@@ -164,7 +167,8 @@ export type InvoiceMinAggregateInputType = {
   name?: true
   firstName?: true
   email?: true
-  phone?: true
+  phonePrefix?: true
+  phoneNumber?: true
   companyName?: true
   address?: true
   postalCode?: true
@@ -195,7 +199,8 @@ export type InvoiceMaxAggregateInputType = {
   name?: true
   firstName?: true
   email?: true
-  phone?: true
+  phonePrefix?: true
+  phoneNumber?: true
   companyName?: true
   address?: true
   postalCode?: true
@@ -226,7 +231,8 @@ export type InvoiceCountAggregateInputType = {
   name?: true
   firstName?: true
   email?: true
-  phone?: true
+  phonePrefix?: true
+  phoneNumber?: true
   companyName?: true
   address?: true
   postalCode?: true
@@ -344,7 +350,8 @@ export type InvoiceGroupByOutputType = {
   name: string
   firstName: string
   email: string
-  phone: string
+  phonePrefix: string
+  phoneNumber: string
   companyName: string | null
   address: string | null
   postalCode: number | null
@@ -398,7 +405,8 @@ export type InvoiceWhereInput = {
   name?: Prisma.StringFilter<"Invoice"> | string
   firstName?: Prisma.StringFilter<"Invoice"> | string
   email?: Prisma.StringFilter<"Invoice"> | string
-  phone?: Prisma.StringFilter<"Invoice"> | string
+  phonePrefix?: Prisma.StringFilter<"Invoice"> | string
+  phoneNumber?: Prisma.StringFilter<"Invoice"> | string
   companyName?: Prisma.StringNullableFilter<"Invoice"> | string | null
   address?: Prisma.StringNullableFilter<"Invoice"> | string | null
   postalCode?: Prisma.IntNullableFilter<"Invoice"> | number | null
@@ -429,7 +437,8 @@ export type InvoiceOrderByWithRelationInput = {
   name?: Prisma.SortOrder
   firstName?: Prisma.SortOrder
   email?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
+  phonePrefix?: Prisma.SortOrder
+  phoneNumber?: Prisma.SortOrder
   companyName?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   postalCode?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -464,7 +473,8 @@ export type InvoiceWhereUniqueInput = Prisma.AtLeast<{
   name?: Prisma.StringFilter<"Invoice"> | string
   firstName?: Prisma.StringFilter<"Invoice"> | string
   email?: Prisma.StringFilter<"Invoice"> | string
-  phone?: Prisma.StringFilter<"Invoice"> | string
+  phonePrefix?: Prisma.StringFilter<"Invoice"> | string
+  phoneNumber?: Prisma.StringFilter<"Invoice"> | string
   companyName?: Prisma.StringNullableFilter<"Invoice"> | string | null
   address?: Prisma.StringNullableFilter<"Invoice"> | string | null
   postalCode?: Prisma.IntNullableFilter<"Invoice"> | number | null
@@ -495,7 +505,8 @@ export type InvoiceOrderByWithAggregationInput = {
   name?: Prisma.SortOrder
   firstName?: Prisma.SortOrder
   email?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
+  phonePrefix?: Prisma.SortOrder
+  phoneNumber?: Prisma.SortOrder
   companyName?: Prisma.SortOrderInput | Prisma.SortOrder
   address?: Prisma.SortOrderInput | Prisma.SortOrder
   postalCode?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -534,7 +545,8 @@ export type InvoiceScalarWhereWithAggregatesInput = {
   name?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
   firstName?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
   email?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
-  phone?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
+  phonePrefix?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
+  phoneNumber?: Prisma.StringWithAggregatesFilter<"Invoice"> | string
   companyName?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
   address?: Prisma.StringNullableWithAggregatesFilter<"Invoice"> | string | null
   postalCode?: Prisma.IntNullableWithAggregatesFilter<"Invoice"> | number | null
@@ -565,7 +577,8 @@ export type InvoiceCreateInput = {
   name: string
   firstName: string
   email: string
-  phone: string
+  phonePrefix: string
+  phoneNumber: string
   companyName?: string | null
   address?: string | null
   postalCode?: number | null
@@ -596,7 +609,8 @@ export type InvoiceUncheckedCreateInput = {
   name: string
   firstName: string
   email: string
-  phone: string
+  phonePrefix: string
+  phoneNumber: string
   companyName?: string | null
   address?: string | null
   postalCode?: number | null
@@ -627,7 +641,8 @@ export type InvoiceUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phonePrefix?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -658,7 +673,8 @@ export type InvoiceUncheckedUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phonePrefix?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -689,7 +705,8 @@ export type InvoiceCreateManyInput = {
   name: string
   firstName: string
   email: string
-  phone: string
+  phonePrefix: string
+  phoneNumber: string
   companyName?: string | null
   address?: string | null
   postalCode?: number | null
@@ -720,7 +737,8 @@ export type InvoiceUpdateManyMutationInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phonePrefix?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -751,7 +769,8 @@ export type InvoiceUncheckedUpdateManyInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   firstName?: Prisma.StringFieldUpdateOperationsInput | string
   email?: Prisma.StringFieldUpdateOperationsInput | string
-  phone?: Prisma.StringFieldUpdateOperationsInput | string
+  phonePrefix?: Prisma.StringFieldUpdateOperationsInput | string
+  phoneNumber?: Prisma.StringFieldUpdateOperationsInput | string
   companyName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   address?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   postalCode?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
@@ -788,7 +807,8 @@ export type InvoiceCountOrderByAggregateInput = {
   name?: Prisma.SortOrder
   firstName?: Prisma.SortOrder
   email?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
+  phonePrefix?: Prisma.SortOrder
+  phoneNumber?: Prisma.SortOrder
   companyName?: Prisma.SortOrder
   address?: Prisma.SortOrder
   postalCode?: Prisma.SortOrder
@@ -825,7 +845,8 @@ export type InvoiceMaxOrderByAggregateInput = {
   name?: Prisma.SortOrder
   firstName?: Prisma.SortOrder
   email?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
+  phonePrefix?: Prisma.SortOrder
+  phoneNumber?: Prisma.SortOrder
   companyName?: Prisma.SortOrder
   address?: Prisma.SortOrder
   postalCode?: Prisma.SortOrder
@@ -856,7 +877,8 @@ export type InvoiceMinOrderByAggregateInput = {
   name?: Prisma.SortOrder
   firstName?: Prisma.SortOrder
   email?: Prisma.SortOrder
-  phone?: Prisma.SortOrder
+  phonePrefix?: Prisma.SortOrder
+  phoneNumber?: Prisma.SortOrder
   companyName?: Prisma.SortOrder
   address?: Prisma.SortOrder
   postalCode?: Prisma.SortOrder
@@ -899,7 +921,8 @@ export type InvoiceSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   name?: boolean
   firstName?: boolean
   email?: boolean
-  phone?: boolean
+  phonePrefix?: boolean
+  phoneNumber?: boolean
   companyName?: boolean
   address?: boolean
   postalCode?: boolean
@@ -932,7 +955,8 @@ export type InvoiceSelectScalar = {
   name?: boolean
   firstName?: boolean
   email?: boolean
-  phone?: boolean
+  phonePrefix?: boolean
+  phoneNumber?: boolean
   companyName?: boolean
   address?: boolean
   postalCode?: boolean
@@ -944,7 +968,7 @@ export type InvoiceSelectScalar = {
   updatedAt?: boolean
 }
 
-export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "estimateId" | "typeEstimate" | "claimNumber" | "interventionId" | "interventionDate" | "description" | "medias" | "vehiculeId" | "brand" | "model" | "year" | "licensePlate" | "clientId" | "typeClient" | "name" | "firstName" | "email" | "phone" | "companyName" | "address" | "postalCode" | "city" | "estimateItems" | "pdfUrl" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["invoice"]>
+export type InvoiceOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "estimateId" | "typeEstimate" | "claimNumber" | "interventionId" | "interventionDate" | "description" | "medias" | "vehiculeId" | "brand" | "model" | "year" | "licensePlate" | "clientId" | "typeClient" | "name" | "firstName" | "email" | "phonePrefix" | "phoneNumber" | "companyName" | "address" | "postalCode" | "city" | "estimateItems" | "pdfUrl" | "status" | "createdAt" | "updatedAt", ExtArgs["result"]["invoice"]>
 
 export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Invoice"
@@ -968,7 +992,8 @@ export type $InvoicePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     name: string
     firstName: string
     email: string
-    phone: string
+    phonePrefix: string
+    phoneNumber: string
     companyName: string | null
     address: string | null
     postalCode: number | null
@@ -1365,7 +1390,8 @@ export interface InvoiceFieldRefs {
   readonly name: Prisma.FieldRef<"Invoice", 'String'>
   readonly firstName: Prisma.FieldRef<"Invoice", 'String'>
   readonly email: Prisma.FieldRef<"Invoice", 'String'>
-  readonly phone: Prisma.FieldRef<"Invoice", 'String'>
+  readonly phonePrefix: Prisma.FieldRef<"Invoice", 'String'>
+  readonly phoneNumber: Prisma.FieldRef<"Invoice", 'String'>
   readonly companyName: Prisma.FieldRef<"Invoice", 'String'>
   readonly address: Prisma.FieldRef<"Invoice", 'String'>
   readonly postalCode: Prisma.FieldRef<"Invoice", 'Int'>

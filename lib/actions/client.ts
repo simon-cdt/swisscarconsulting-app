@@ -11,8 +11,10 @@ export const addClientIndividual = async ({
     firstName: string;
     name: string;
     email: string;
-    phone: string;
-    phone2?: string;
+    phonePrefix: string;
+    phoneNumber: string;
+    phone2Prefix?: string;
+    phone2Number?: string;
     address?: string;
     postalCode?: number;
     city?: string;
@@ -33,8 +35,10 @@ export const addClientIndividual = async ({
         name: data.name,
         firstName: data.firstName,
         email: data.email,
-        phone: data.phone,
-        phone2: data.phone2,
+        phonePrefix: data.phonePrefix,
+        phoneNumber: data.phoneNumber,
+        phone2Prefix: data.phone2Prefix,
+        phone2Number: data.phone2Number,
         address: data.address,
         postalCode: data.postalCode,
         city: data.city,
@@ -63,8 +67,10 @@ export const addClientCompany = async ({
   data: {
     companyName: string;
     email: string;
-    phone: string;
-    phone2?: string;
+    phonePrefix: string;
+    phoneNumber: string;
+    phone2Prefix?: string;
+    phone2Number?: string;
     contactFirstName: string;
     contactName: string;
     address?: string;
@@ -86,8 +92,10 @@ export const addClientCompany = async ({
         typeClient: "company",
         companyName: data.companyName,
         email: data.email,
-        phone: data.phone,
-        phone2: data.phone2,
+        phonePrefix: data.phonePrefix,
+        phoneNumber: data.phoneNumber,
+        phone2Prefix: data.phone2Prefix,
+        phone2Number: data.phone2Number,
         contactFirstName: data.contactFirstName,
         contactName: data.contactName,
         address: data.address,
@@ -121,8 +129,10 @@ export const updateClientIndividual = async ({
     name: string;
     firstName: string;
     email: string;
-    phone: string;
-    phone2?: string;
+    phonePrefix: string;
+    phoneNumber: string;
+    phone2Prefix?: string;
+    phone2Number?: string;
     address?: string;
     postalCode?: number;
     city?: string;
@@ -143,8 +153,10 @@ export const updateClientIndividual = async ({
         name: data.name,
         firstName: data.firstName,
         email: data.email,
-        phone: data.phone,
-        phone2: data.phone2,
+        phonePrefix: data.phonePrefix,
+        phoneNumber: data.phoneNumber,
+        phone2Prefix: data.phone2Prefix,
+        phone2Number: data.phone2Number,
         address: data.address,
         postalCode: data.postalCode === undefined ? null : data.postalCode,
         city: data.city,
@@ -170,8 +182,10 @@ export const updateClientCompany = async ({
   data: {
     companyName: string;
     email: string;
-    phone: string;
-    phone2?: string;
+    phonePrefix: string;
+    phoneNumber: string;
+    phone2Prefix?: string;
+    phone2Number?: string;
     contactFirstName: string;
     contactName: string;
     address?: string;
@@ -193,8 +207,10 @@ export const updateClientCompany = async ({
       data: {
         companyName: data.companyName,
         email: data.email,
-        phone: data.phone,
-        phone2: data.phone2,
+        phonePrefix: data.phonePrefix,
+        phoneNumber: data.phoneNumber,
+        phone2Prefix: data.phone2Prefix,
+        phone2Number: data.phone2Number,
         contactFirstName: data.contactFirstName,
         contactName: data.contactName,
         address: data.address,

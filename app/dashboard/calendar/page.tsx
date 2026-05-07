@@ -45,6 +45,7 @@ import CreateAppointmentDialog from "@/components/form/CreateAppointmentDialog";
 import { useQuery } from "@tanstack/react-query";
 import { AppointmentType } from "@/generated/prisma/enums";
 import Link from "next/link";
+import { formatFullPhoneNumber } from "@/lib/utils";
 
 // Types pour les rendez-vous
 interface Appointment {
@@ -53,7 +54,8 @@ interface Appointment {
   time: string;
   date: Date;
   clientName: string;
-  clientPhone: string;
+  clientPhonePrefix: string;
+  clientPhoneNumber: string;
   vehicleBrand: string;
   vehicleModel: string;
   licensePlate: string;
@@ -72,7 +74,8 @@ type FetchAppointment = {
     name: string | null;
     firstName: string | null;
     companyName: string | null;
-    phone: string;
+    phonePrefix: string;
+    phoneNumber: string;
     typeClient: string;
   };
   vehicule: {
@@ -122,7 +125,8 @@ export default function CalendarPage() {
           time: apt.time,
           date: typeof apt.date === "string" ? parseISO(apt.date) : apt.date,
           clientName,
-          clientPhone: apt.client.phone,
+          clientPhonePrefix: apt.client.phonePrefix,
+          clientPhoneNumber: apt.client.phoneNumber,
           vehicleBrand: apt.vehicule.brand,
           vehicleModel: apt.vehicule.model,
           licensePlate: apt.vehicule.licensePlate,
@@ -365,7 +369,10 @@ export default function CalendarPage() {
                         <div className="flex items-center gap-2">
                           <Phone className="text-muted-foreground h-3 w-3" />
                           <span className="font-medium">
-                            {selectedAppointment.clientPhone}
+                            {formatFullPhoneNumber(
+                              selectedAppointment.clientPhonePrefix,
+                              selectedAppointment.clientPhoneNumber,
+                            )}
                           </span>
                         </div>
                       </div>

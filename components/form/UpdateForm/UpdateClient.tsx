@@ -39,8 +39,10 @@ export default function UpdateClient({
     contactName: string | null;
 
     email: string;
-    phone: string;
-    phone2: string | null;
+    phonePrefix: string;
+    phoneNumber: string;
+    phone2Prefix: string | null;
+    phone2Number: string | null;
     address: string | null;
     postalCode: string | null;
     city: string | null;

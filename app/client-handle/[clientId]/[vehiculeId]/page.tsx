@@ -40,7 +40,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import UpdateClient from "@/components/form/UpdateForm/UpdateClient";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { formatPhoneNumber } from "@/lib/utils";
+import { formatPhoneNumber, formatFullPhoneNumber } from "@/lib/utils";
 import { useEffect } from "react";
 
 type FetchClientAndVehicule = {
@@ -70,17 +70,19 @@ type FetchClientAndVehicule = {
   client: {
     id: number;
     typeClient: TypeClient;
-    companyName: null;
+    companyName: string | null;
     name: string | null;
     firstName: string | null;
-    phone: string;
-    phone2: string | null;
+    phonePrefix: string;
+    phoneNumber: string;
+    phone2Prefix: string | null;
+    phone2Number: string | null;
     email: string;
     address: string | null;
     city: string | null;
     postalCode: string | null;
-    contactFirstName: null;
-    contactName: null;
+    contactFirstName: string | null;
+    contactName: string | null;
   };
   hasInterventionToday: boolean;
   todayIntervention: {
@@ -380,12 +382,18 @@ export default function VisitPage() {
                       <Item label="E-mail" value={data.client.email} />{" "}
                       <Item
                         label="Téléphone"
-                        value={formatPhoneNumber(data.client.phone)}
+                        value={formatFullPhoneNumber(
+                          data.client.phonePrefix,
+                          data.client.phoneNumber,
+                        )}
                       />
-                      {data.client.phone2 && (
+                      {data.client.phone2Prefix && data.client.phone2Number && (
                         <Item
                           label="Téléphone 2"
-                          value={formatPhoneNumber(data.client.phone2)}
+                          value={formatFullPhoneNumber(
+                            data.client.phone2Prefix,
+                            data.client.phone2Number,
+                          )}
                         />
                       )}
                       <Item

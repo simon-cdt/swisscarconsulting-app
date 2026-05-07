@@ -28,11 +28,13 @@ model User {
 }
 
 model Client {
-  id         Int        @id @default(autoincrement())
-  typeClient TypeClient
-  email      String
-  phone      String
-  phone2     String?
+  id           Int        @id @default(autoincrement())
+  typeClient   TypeClient
+  email        String
+  phonePrefix  String
+  phoneNumber  String
+  phone2Prefix String?
+  phone2Number String?
 
   address    String?
   postalCode Int?
@@ -140,7 +142,7 @@ model EstimateItem {
 }
 
 model EstimateRefusal {
-  id         String @id @default(cuid())
+  id         String   @id @default(cuid())
   estimateId String
   reason     String
   refusedAt  DateTime @default(now())
@@ -172,7 +174,8 @@ model Invoice {
   name        String
   firstName   String
   email       String
-  phone       String
+  phonePrefix String
+  phoneNumber String
   companyName String?
   address     String?
   postalCode  Int?
