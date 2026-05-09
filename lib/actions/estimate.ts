@@ -358,6 +358,7 @@ export const updateEstimateItems = async ({
     unitPrice: number;
     quantity: number | null;
     position: number;
+    calculateByTime?: boolean | null;
   }>;
 }): Promise<
   | { success: false; message: string }
@@ -384,6 +385,7 @@ export const updateEstimateItems = async ({
           unitPrice: item.unitPrice,
           quantity: item.quantity,
           position: item.position,
+          calculateByTime: item.calculateByTime,
         },
       });
     }
@@ -548,17 +550,29 @@ export const refuseEstimate = async ({
 
     const estimate = await db.estimate.findUnique({
       where: { id: estimateId },
-      select: { id: true },
+      select: {
+        id: true,
+        items: true,
+        discount: true,
+        type: true,
+        claimNumber: true,
+      },
     });
     if (!estimate) {
       return { success: false, message: "Devis introuvable" };
     }
 
-    // Créer un nouvel enregistrement de refus
+    // Créer un nouvel enregistrement de refus avec les items en JSON
     await db.estimateRefusal.create({
       data: {
         estimateId: estimateId,
         reason: reason,
+        items: {
+          items: estimate.items,
+          discount: estimate.discount,
+          type: estimate.type,
+          claimNumber: estimate.claimNumber,
+        },
         refusedAt: new Date(),
       },
     });

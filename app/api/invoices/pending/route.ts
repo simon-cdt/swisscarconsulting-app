@@ -34,7 +34,8 @@ export async function GET() {
       firstName: true,
       companyName: true,
       typeClient: true,
-      phone: true,
+      phonePrefix: true,
+      phoneNumber: true,
       pdfUrl: true,
     },
     orderBy: {

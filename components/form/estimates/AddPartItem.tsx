@@ -147,7 +147,6 @@ export default function AddPartItem({
       const response = await updateEstimateItems({
         items: updatedItems.map((item) => ({
           ...item,
-          type: "PART",
         })),
         estimateId: estimateId,
       });

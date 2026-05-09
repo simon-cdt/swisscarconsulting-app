@@ -28,6 +28,7 @@ export async function GET(
           id: true,
           reason: true,
           refusedAt: true,
+          items: true,
         },
         orderBy: {
           refusedAt: "desc",
@@ -88,7 +89,8 @@ export async function GET(
                   address: true,
                   postalCode: true,
                   city: true,
-                  phone: true,
+                  phonePrefix: true,
+                  phoneNumber: true,
                 },
               },
             },

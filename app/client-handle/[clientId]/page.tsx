@@ -18,6 +18,7 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatFullPhoneNumber } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle } from "lucide-react";
+import { FILE_SERVER_URL } from "@/lib/config";
 
 type FetchAllVehiculesOfClient = {
   vehicules: {
@@ -57,6 +58,8 @@ type FetchAllVehiculesOfClient = {
         date: Date;
         description: string;
         isFinished: boolean;
+        estimateId: string | null;
+        estimateStatus: string | null;
       }[];
     }[];
   };
@@ -144,6 +147,26 @@ export default function ClientVehiculePage() {
         vehicule.year.toString().includes(query)
       );
     });
+
+  const handleInterventionClick = async (interventionId: string) => {
+    try {
+      const response = await fetch(
+        `/api/interventions/${interventionId}/details`,
+      );
+      const data = await response.json();
+
+      if (data.action === "openPdf") {
+        window.open(`${FILE_SERVER_URL}/uploads/${data.url}`, "_blank");
+      } else if (data.action === "openEstimate") {
+        router.push(`/dashboard/estimates/${data.estimateId}`);
+      } else if (data.action === "openInterventionsList") {
+        router.push(`/dashboard/interventions?id=${data.interventionId}`);
+      }
+    } catch (error) {
+      console.error("Erreur lors du clic sur l'intervention:", error);
+      router.push(`/dashboard/interventions?id=${interventionId}`);
+    }
+  };
 
   return (
     <>
@@ -401,11 +424,14 @@ export default function ClientVehiculePage() {
                         {filteredInterventions.map((intervention) => (
                           <Card
                             key={intervention.id}
-                            className={
-                              intervention.isFinished
-                                ? "border-green-100 bg-green-50/50"
-                                : "border-purple-100 bg-purple-50/50"
+                            onClick={() =>
+                              handleInterventionClick(intervention.id)
                             }
+                            className={`${
+                              intervention.isFinished
+                                ? "border-green-100 bg-green-50/50 hover:bg-green-100/50"
+                                : "border-purple-100 bg-purple-50/50 hover:bg-purple-100/50"
+                            } cursor-pointer transition-colors`}
                           >
                             <CardContent>
                               <div className="flex items-center justify-between">

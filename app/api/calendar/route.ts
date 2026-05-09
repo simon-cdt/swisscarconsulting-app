@@ -35,6 +35,8 @@ export async function GET() {
           select: {
             id: true,
             claimNumber: true,
+            status: true,
+            type: true,
           },
         },
       },

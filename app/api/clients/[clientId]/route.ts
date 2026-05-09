@@ -83,6 +83,13 @@ export async function GET(
               id: true,
               date: true,
               description: true,
+              estimates: {
+                select: {
+                  id: true,
+                  status: true,
+                },
+                take: 1,
+              },
             },
           },
         },
@@ -100,6 +107,8 @@ export async function GET(
             date: intervention.date,
             description: intervention.description,
             isFinished: finishedInterventionIds.has(intervention.id),
+            estimateId: intervention.estimates[0]?.id || null,
+            estimateStatus: intervention.estimates[0]?.status || null,
           })),
         })),
       }

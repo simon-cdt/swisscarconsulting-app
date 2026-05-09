@@ -145,6 +145,7 @@ model EstimateRefusal {
   id         String   @id @default(cuid())
   estimateId String
   reason     String
+  items      Json?
   refusedAt  DateTime @default(now())
   createdAt  DateTime @default(now())
 

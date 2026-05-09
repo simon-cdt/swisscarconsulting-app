@@ -8,6 +8,7 @@ import { Search } from "lucide-react";
 import { Input } from "./ui/input";
 import { GeistMono } from "geist/font/mono";
 import Invoice from "@/components/Invoice";
+import { formatFullPhoneNumber } from "@/lib/utils";
 
 export default function InvoicesList({
   invoices,
@@ -37,7 +38,10 @@ export default function InvoicesList({
 
       const vehiculeName = `${invoice.brand} ${invoice.model}`.toLowerCase();
       const licensePlate = invoice.licensePlate.toLowerCase();
-      const phone = invoice.phone.toLowerCase();
+      const phone = formatFullPhoneNumber(
+        invoice.phonePrefix,
+        invoice.phoneNumber,
+      ).toLowerCase();
 
       return (
         clientName.includes(searchLower) ||

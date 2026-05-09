@@ -42,8 +42,13 @@ import {
 } from "date-fns";
 import { fr } from "date-fns/locale";
 import CreateAppointmentDialog from "@/components/form/CreateAppointmentDialog";
+import EstimateStatusActions from "@/components/EstimateStatusActions";
 import { useQuery } from "@tanstack/react-query";
-import { AppointmentType } from "@/generated/prisma/enums";
+import {
+  AppointmentType,
+  EstimateStatus,
+  TypeEstimate,
+} from "@/generated/prisma/enums";
 import Link from "next/link";
 import { formatFullPhoneNumber } from "@/lib/utils";
 
@@ -54,12 +59,18 @@ interface Appointment {
   time: string;
   date: Date;
   clientName: string;
+  clientId: number;
   clientPhonePrefix: string;
   clientPhoneNumber: string;
+  vehicleId: string;
   vehicleBrand: string;
   vehicleModel: string;
   licensePlate: string;
   estimateId?: string;
+  estimate?: {
+    status: string;
+    type: string;
+  } | null;
   notes?: string;
 }
 
@@ -87,6 +98,8 @@ type FetchAppointment = {
   estimate: {
     id: string;
     claimNumber: string | null;
+    status: string;
+    type: string;
   } | null;
 };
 
@@ -125,12 +138,20 @@ export default function CalendarPage() {
           time: apt.time,
           date: typeof apt.date === "string" ? parseISO(apt.date) : apt.date,
           clientName,
+          clientId: apt.client.id,
           clientPhonePrefix: apt.client.phonePrefix,
           clientPhoneNumber: apt.client.phoneNumber,
+          vehicleId: apt.vehicule.id,
           vehicleBrand: apt.vehicule.brand,
           vehicleModel: apt.vehicule.model,
           licensePlate: apt.vehicule.licensePlate,
           estimateId: apt.estimate?.id,
+          estimate: apt.estimate
+            ? {
+                status: apt.estimate.status,
+                type: apt.estimate.type,
+              }
+            : null,
           notes: apt.notes || undefined,
         };
       })
@@ -177,16 +198,6 @@ export default function CalendarPage() {
           <p className="text-muted-foreground">
             Gestion des rendez-vous d&apos;apport et de récupération
           </p>
-        </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="outline" className="gap-1 px-3 py-1.5">
-            <div className="h-2 w-2 rounded-full bg-amber-500" />
-            Apport
-          </Badge>
-          <Badge variant="outline" className="gap-1 px-3 py-1.5">
-            <div className="h-2 w-2 rounded-full bg-blue-500" />
-            Récupération
-          </Badge>
         </div>
       </div>
 
@@ -293,22 +304,46 @@ export default function CalendarPage() {
                         {format(day, "d")}
                       </div>
                       <div className="space-y-1">
-                        {dayAppointments.map((apt) => (
-                          <button
-                            key={apt.id}
-                            onClick={() => setSelectedAppointment(apt)}
-                            className={`w-full rounded px-1.5 py-1 text-left text-xs transition-colors hover:opacity-80 ${
-                              apt.type === AppointmentType.DROPOFF
-                                ? "bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-100"
-                                : "bg-blue-100 text-blue-900 dark:bg-blue-900/30 dark:text-blue-100"
-                            }`}
-                          >
-                            <div className="font-medium">{apt.time}</div>
-                            <div className="truncate text-[10px]">
-                              {apt.clientName}
-                            </div>
-                          </button>
-                        ))}
+                        {dayAppointments.map((apt) => {
+                          // Déterminer la classe de couleur basée sur le type du devis
+                          let estimateColorClass =
+                            "bg-gray-100 text-gray-900 dark:bg-gray-900/30 dark:text-gray-100";
+                          if (apt.estimate) {
+                            if (apt.estimate.type === "INSURANCE") {
+                              estimateColorClass =
+                                "bg-purple-100 text-purple-900 dark:bg-purple-900/30 dark:text-purple-100";
+                            } else if (apt.estimate.type === "INDIVIDUAL") {
+                              estimateColorClass =
+                                "bg-sky-100 text-sky-900 dark:bg-sky-900/30 dark:text-sky-100";
+                            } else {
+                              estimateColorClass =
+                                "bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-100";
+                            }
+                          }
+
+                          const appointmentTypeLabel =
+                            apt.type === AppointmentType.DROPOFF
+                              ? "Apport"
+                              : "Récup.";
+
+                          return (
+                            <button
+                              key={apt.id}
+                              onClick={() => setSelectedAppointment(apt)}
+                              className={`w-full rounded px-1.5 py-1 text-left text-xs transition-colors hover:opacity-80 ${estimateColorClass}`}
+                            >
+                              <div className="flex items-center justify-between font-medium">
+                                <span>{apt.time}</span>
+                                <span className="text-[9px] opacity-75">
+                                  {appointmentTypeLabel}
+                                </span>
+                              </div>
+                              <div className="truncate text-[10px]">
+                                {apt.clientName}
+                              </div>
+                            </button>
+                          );
+                        })}
                       </div>
                     </div>
                   );
@@ -413,17 +448,26 @@ export default function CalendarPage() {
                         <FileText className="h-4 w-4" />
                         Devis
                       </h3>
-                      <div>
+                      <div className="space-y-2">
                         <Badge variant="secondary">
                           {selectedAppointment.estimateId}
                         </Badge>
-                        <Link
-                          href={`/dashboard/estimates/${selectedAppointment.estimateId}`}
-                        >
-                          <Button variant={"link"} size={"sm"}>
-                            <p className="text-xs">Consulter le devis</p>
-                          </Button>
-                        </Link>
+                        <EstimateStatusActions
+                          estimateId={selectedAppointment.estimateId}
+                          status={
+                            selectedAppointment.estimate
+                              ?.status as EstimateStatus
+                          }
+                          type={
+                            selectedAppointment.estimate?.type as TypeEstimate
+                          }
+                          clientId={selectedAppointment.clientId}
+                          vehiculeId={selectedAppointment.vehicleId}
+                          refetch={() => {
+                            refetch();
+                            setSelectedAppointment(null);
+                          }}
+                        />
                       </div>
                     </div>
                   )}

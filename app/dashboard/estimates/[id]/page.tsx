@@ -75,6 +75,8 @@ type FetchEstimate = {
     id: string;
     reason: string;
     refusedAt: Date;
+    // eslint-disable-next-line
+    items?: any;
   }>;
   discount: number | null;
   intervention: {
@@ -145,6 +147,14 @@ export default function QuoteGeneratorPage() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+  const [refusedEstimatePdfs, setRefusedEstimatePdfs] = useState<
+    Record<string, string>
+  >({});
+  const [loadingRefusedPdf, setLoadingRefusedPdf] = useState<string | null>(
+    null,
+  );
+  // eslint-disable-next-line
+  const [selectedRefusal, setSelectedRefusal] = useState<any | null>(null);
 
   const handleRemoveItem = async (id: string) => {
     // Trouver l'item à supprimer pour récupérer sa position
@@ -216,6 +226,81 @@ export default function QuoteGeneratorPage() {
     const discount = estimate?.discount || 0;
     return subtotal * (1 - discount / 100);
   };
+  // eslint-disable-next-line
+  const generateRefusedEstimatePdf = async (refusal: any) => {
+    if (estimate) {
+      try {
+        setLoadingRefusedPdf(refusal.id);
+
+        const itemsData =
+          typeof refusal.items === "string"
+            ? JSON.parse(refusal.items)
+            : refusal.items;
+
+        const pdfData = {
+          id: estimate.id,
+          type: itemsData.type,
+          status: "TOFINISH",
+          claimNumber: itemsData.claimNumber,
+          discount: itemsData.discount,
+          // eslint-disable-next-line
+          items: itemsData.items.map((item: any) => ({
+            id: item.id,
+            type: item.type,
+            designation: item.designation,
+            description: item.description,
+            unitPrice: item.unitPrice,
+            quantity: item.quantity,
+            calculateByTime: item.calculateByTime,
+            position: item.position,
+          })),
+          intervention: {
+            vehicule: {
+              brand: estimate.intervention.vehicule.brand,
+              model: estimate.intervention.vehicule.model,
+              year: estimate.intervention.vehicule.year,
+              licensePlate: estimate.intervention.vehicule.licensePlate,
+              client: {
+                id: estimate.intervention.vehicule.client.id,
+                typeClient: estimate.intervention.vehicule.client.typeClient,
+                firstName: estimate.intervention.vehicule.client.firstName,
+                name: estimate.intervention.vehicule.client.name,
+                companyName: estimate.intervention.vehicule.client.companyName,
+                address: estimate.intervention.vehicule.client.address,
+                city: estimate.intervention.vehicule.client.city,
+                postalCode: estimate.intervention.vehicule.client.postalCode,
+              },
+            },
+          },
+        };
+
+        const response = await fetch("/api/pdf", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ data: pdfData }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Erreur lors de la génération du PDF");
+        }
+
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+
+        setRefusedEstimatePdfs((prev) => ({
+          ...prev,
+          [refusal.id]: url,
+        }));
+      } catch (error) {
+        console.error("Erreur lors de la génération du PDF refusé:", error);
+        toast.error("Erreur lors de la génération du PDF");
+      } finally {
+        setLoadingRefusedPdf(null);
+      }
+    }
+  };
 
   useEffect(() => {
     if (estimate?.items && !loadingItems.current) {
@@ -229,11 +314,7 @@ export default function QuoteGeneratorPage() {
     const generatePreview = async () => {
       if (!estimate) return;
 
-      setUpdateDisable(
-        estimate.status === "ACCEPTED" ||
-          estimate.status === "PENDING" ||
-          estimate.status === "SENT_TO_GARAGE",
-      );
+      setUpdateDisable(estimate.status !== "TOFINISH");
 
       try {
         const pdfData = {
@@ -631,15 +712,70 @@ export default function QuoteGeneratorPage() {
                             key={refusal.id}
                             className="rounded-lg border border-red-200 bg-white p-3"
                           >
-                            <p className="text-sm font-semibold text-red-600">
-                              {format(refusal.refusedAt, "PPP 'à' HH:mm", {
-                                locale: fr,
-                              })}
-                            </p>
-                            <div className="bg-muted/30 mt-2 max-h-24 overflow-y-auto rounded-md border border-red-100 p-3">
-                              <p className="text-sm leading-relaxed whitespace-pre-wrap text-red-700">
-                                {refusal.reason}
-                              </p>
+                            <div className="flex items-center justify-between gap-2">
+                              <div className="flex-1">
+                                <p className="text-sm font-semibold text-red-600">
+                                  {format(refusal.refusedAt, "PPP 'à' HH:mm", {
+                                    locale: fr,
+                                  })}
+                                </p>
+                                <div className="bg-muted/30 mt-2 max-h-24 overflow-y-auto rounded-md border border-red-100 p-3">
+                                  <p className="text-sm leading-relaxed whitespace-pre-wrap text-red-700">
+                                    {refusal.reason}
+                                  </p>
+                                </div>
+                              </div>
+                              {refusal.items && (
+                                <Dialog>
+                                  <DialogTrigger asChild>
+                                    <Button
+                                      variant="link"
+                                      size="sm"
+                                      className="mt-0 shrink-0"
+                                      onClick={async () => {
+                                        setSelectedRefusal(refusal);
+                                        if (!refusedEstimatePdfs[refusal.id]) {
+                                          await generateRefusedEstimatePdf(
+                                            refusal,
+                                          );
+                                        }
+                                      }}
+                                      disabled={
+                                        loadingRefusedPdf === refusal.id
+                                      }
+                                    >
+                                      {loadingRefusedPdf === refusal.id
+                                        ? "Génération..."
+                                        : "Voir le devis"}
+                                    </Button>
+                                  </DialogTrigger>
+                                  <DialogContent className="max-h-[95vh] max-w-[95vw] overflow-hidden p-0">
+                                    <DialogHeader className="px-6 pt-6">
+                                      <DialogTitle>
+                                        Devis refusé -{" "}
+                                        {format(refusal.refusedAt, "PPP", {
+                                          locale: fr,
+                                        })}
+                                      </DialogTitle>
+                                    </DialogHeader>
+                                    <div className="flex justify-center">
+                                      {refusedEstimatePdfs[refusal.id] ? (
+                                        <iframe
+                                          src={`${refusedEstimatePdfs[refusal.id]}#zoom=page-width`}
+                                          className="h-[85vh] w-full border-0"
+                                          title="Devis refusé"
+                                        />
+                                      ) : (
+                                        <div className="flex h-[85vh] w-full items-center justify-center bg-gray-50">
+                                          <p className="text-gray-500">
+                                            Chargement du PDF...
+                                          </p>
+                                        </div>
+                                      )}
+                                    </div>
+                                  </DialogContent>
+                                </Dialog>
+                              )}
                             </div>
                           </div>
                         ))}

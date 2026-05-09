@@ -77,19 +77,30 @@ export async function GET(
     },
   });
 
-  // Chercher s'il existe une intervention en cours (avec devis non terminé)
+  // Chercher s'il existe une intervention en cours (avec devis non terminé OU sans devis du tout)
   const interventionInProgress = await db.intervention.findFirst({
     where: {
       vehiculeId,
       deleted: false,
-      estimates: {
-        some: {
-          deleted: false,
-          status: {
-            not: "FINISHED",
+      OR: [
+        {
+          // Cas 1: intervention avec au moins un devis non terminé
+          estimates: {
+            some: {
+              deleted: false,
+              status: {
+                not: "FINISHED",
+              },
+            },
           },
         },
-      },
+        {
+          // Cas 2: intervention sans aucun devis
+          estimates: {
+            none: {},
+          },
+        },
+      ],
     },
     select: {
       id: true,

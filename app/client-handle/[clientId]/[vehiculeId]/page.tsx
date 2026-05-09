@@ -40,7 +40,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import UpdateClient from "@/components/form/UpdateForm/UpdateClient";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { formatPhoneNumber, formatFullPhoneNumber } from "@/lib/utils";
+import { formatFullPhoneNumber } from "@/lib/utils";
 import { useEffect } from "react";
 
 type FetchClientAndVehicule = {
@@ -126,14 +126,8 @@ export default function VisitPage() {
   });
 
   const [isSubmitted, setIsSubmitted] = useState(false);
-  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [showInterventionTodayDialog, setShowInterventionTodayDialog] =
     useState(false);
-  const [pendingFormData, setPendingFormData] = useState<{
-    description: string;
-    images?: File[];
-    uploadedUrls: string[];
-  } | null>(null);
 
   useEffect(() => {
     if (data?.todayIntervention) {
@@ -217,8 +211,6 @@ export default function VisitPage() {
           formData.append("files", file);
         });
 
-        console.log(process.env.FILE_SERVER_URL);
-
         const res = await fetch(`${FILE_SERVER_URL}/upload`, {
           method: "POST",
           body: formData,
@@ -236,58 +228,17 @@ export default function VisitPage() {
           description: capitalizeDescription(data.description),
           medias: uploadedUrls.join(","),
         },
-        forceCreate: false,
       });
 
       if (response.success) {
         toast.success("Fichiers envoyés et rendez-vous créé !");
         setIsSubmitted(true);
         setTimeout(() => router.push(`/client-handle`), 3000);
-      } else if (
-        "needsConfirmation" in response &&
-        response.needsConfirmation
-      ) {
-        // Sauvegarder les données pour la confirmation
-        setPendingFormData({
-          description: capitalizeDescription(data.description),
-          images: data.images,
-          uploadedUrls,
-        });
-        setShowConfirmDialog(true);
       } else {
         toast.error(response.message);
       }
     } catch (err) {
       console.log(err);
-      console.error(err);
-      toast.error("Une erreur est survenue lors de l'envoi du formulaire.");
-    }
-  };
-
-  const handleConfirmSubmit = async () => {
-    if (!pendingFormData) return;
-
-    setShowConfirmDialog(false);
-
-    try {
-      const response = await addIntervention({
-        data: {
-          vehiculeId: vehiculeId as string,
-          description: pendingFormData.description,
-          medias: pendingFormData.uploadedUrls.join(","),
-        },
-        forceCreate: true,
-      });
-
-      if (response.success) {
-        toast.success("Fichiers envoyés et rendez-vous créé !");
-        setIsSubmitted(true);
-        setPendingFormData(null);
-        setTimeout(() => router.push(`/client-handle`), 3000);
-      } else {
-        toast.error(response.message);
-      }
-    } catch (err) {
       console.error(err);
       toast.error("Une erreur est survenue lors de l'envoi du formulaire.");
     }
@@ -514,14 +465,34 @@ export default function VisitPage() {
                     {data.vehicule.interventions.length > 0 ? (
                       <div className="space-y-3 pr-4">
                         {data.vehicule.interventions.map((intervention) => {
-                          const handleInterventionClick = () => {
-                            if (intervention.estimateId) {
-                              // Aller au devis (qui peut contenir la facture)
-                              router.push(
-                                `/dashboard/estimates/${intervention.estimateId}`,
+                          const handleInterventionClick = async () => {
+                            try {
+                              const response = await fetch(
+                                `/api/interventions/${intervention.id}/details`,
                               );
-                            } else {
-                              // Aller à l'intervention
+                              const data = await response.json();
+
+                              if (data.action === "openPdf") {
+                                window.open(
+                                  `${FILE_SERVER_URL}/uploads/${data.url}`,
+                                  "_blank",
+                                );
+                              } else if (data.action === "openEstimate") {
+                                router.push(
+                                  `/dashboard/estimates/${data.estimateId}`,
+                                );
+                              } else if (
+                                data.action === "openInterventionsList"
+                              ) {
+                                router.push(
+                                  `/dashboard/interventions?id=${data.interventionId}`,
+                                );
+                              }
+                            } catch (error) {
+                              console.error(
+                                "Erreur lors du clic sur l'intervention:",
+                                error,
+                              );
                               router.push(
                                 `/dashboard/interventions?id=${intervention.id}`,
                               );
@@ -633,25 +604,6 @@ export default function VisitPage() {
           </div>
         )
       )}
-      <AlertDialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-        <AlertDialogContent>
-          <AlertDialogHeader>
-            <AlertDialogTitle>Intervention en cours</AlertDialogTitle>
-            <AlertDialogDescription>
-              Une intervention est actuellement en cours pour ce véhicule.
-              Voulez-vous quand même créer une nouvelle intervention ?
-            </AlertDialogDescription>
-          </AlertDialogHeader>
-          <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setPendingFormData(null)}>
-              Annuler
-            </AlertDialogCancel>
-            <AlertDialogAction onClick={handleConfirmSubmit}>
-              Continuer
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
 
       <AlertDialog
         open={showInterventionTodayDialog}

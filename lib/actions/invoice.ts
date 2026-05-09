@@ -41,6 +41,7 @@ export const createInvoice = async ({
             unitPrice: true,
             quantity: true,
             position: true,
+            calculateByTime: true,
           },
         },
         intervention: {

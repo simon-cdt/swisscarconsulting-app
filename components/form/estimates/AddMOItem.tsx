@@ -118,7 +118,6 @@ export default function AddMOItem({
       const response = await updateEstimateItems({
         items: updatedItems.map((item) => ({
           ...item,
-          type: "LABOR",
         })),
         estimateId: estimateId,
       });

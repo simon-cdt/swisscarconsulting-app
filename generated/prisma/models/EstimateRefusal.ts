@@ -44,6 +44,7 @@ export type EstimateRefusalCountAggregateOutputType = {
   id: number
   estimateId: number
   reason: number
+  items: number
   refusedAt: number
   createdAt: number
   _all: number
@@ -70,6 +71,7 @@ export type EstimateRefusalCountAggregateInputType = {
   id?: true
   estimateId?: true
   reason?: true
+  items?: true
   refusedAt?: true
   createdAt?: true
   _all?: true
@@ -151,6 +153,7 @@ export type EstimateRefusalGroupByOutputType = {
   id: string
   estimateId: string
   reason: string
+  items: runtime.JsonValue | null
   refusedAt: Date
   createdAt: Date
   _count: EstimateRefusalCountAggregateOutputType | null
@@ -180,6 +183,7 @@ export type EstimateRefusalWhereInput = {
   id?: Prisma.StringFilter<"EstimateRefusal"> | string
   estimateId?: Prisma.StringFilter<"EstimateRefusal"> | string
   reason?: Prisma.StringFilter<"EstimateRefusal"> | string
+  items?: Prisma.JsonNullableFilter<"EstimateRefusal">
   refusedAt?: Prisma.DateTimeFilter<"EstimateRefusal"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"EstimateRefusal"> | Date | string
   estimate?: Prisma.XOR<Prisma.EstimateScalarRelationFilter, Prisma.EstimateWhereInput>
@@ -189,6 +193,7 @@ export type EstimateRefusalOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   estimateId?: Prisma.SortOrder
   reason?: Prisma.SortOrder
+  items?: Prisma.SortOrderInput | Prisma.SortOrder
   refusedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   estimate?: Prisma.EstimateOrderByWithRelationInput
@@ -202,6 +207,7 @@ export type EstimateRefusalWhereUniqueInput = Prisma.AtLeast<{
   NOT?: Prisma.EstimateRefusalWhereInput | Prisma.EstimateRefusalWhereInput[]
   estimateId?: Prisma.StringFilter<"EstimateRefusal"> | string
   reason?: Prisma.StringFilter<"EstimateRefusal"> | string
+  items?: Prisma.JsonNullableFilter<"EstimateRefusal">
   refusedAt?: Prisma.DateTimeFilter<"EstimateRefusal"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"EstimateRefusal"> | Date | string
   estimate?: Prisma.XOR<Prisma.EstimateScalarRelationFilter, Prisma.EstimateWhereInput>
@@ -211,6 +217,7 @@ export type EstimateRefusalOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   estimateId?: Prisma.SortOrder
   reason?: Prisma.SortOrder
+  items?: Prisma.SortOrderInput | Prisma.SortOrder
   refusedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   _count?: Prisma.EstimateRefusalCountOrderByAggregateInput
@@ -225,6 +232,7 @@ export type EstimateRefusalScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"EstimateRefusal"> | string
   estimateId?: Prisma.StringWithAggregatesFilter<"EstimateRefusal"> | string
   reason?: Prisma.StringWithAggregatesFilter<"EstimateRefusal"> | string
+  items?: Prisma.JsonNullableWithAggregatesFilter<"EstimateRefusal">
   refusedAt?: Prisma.DateTimeWithAggregatesFilter<"EstimateRefusal"> | Date | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"EstimateRefusal"> | Date | string
 }
@@ -232,6 +240,7 @@ export type EstimateRefusalScalarWhereWithAggregatesInput = {
 export type EstimateRefusalCreateInput = {
   id?: string
   reason: string
+  items?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   refusedAt?: Date | string
   createdAt?: Date | string
   estimate: Prisma.EstimateCreateNestedOneWithoutRefusalsInput
@@ -241,6 +250,7 @@ export type EstimateRefusalUncheckedCreateInput = {
   id?: string
   estimateId: string
   reason: string
+  items?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   refusedAt?: Date | string
   createdAt?: Date | string
 }
@@ -248,6 +258,7 @@ export type EstimateRefusalUncheckedCreateInput = {
 export type EstimateRefusalUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reason?: Prisma.StringFieldUpdateOperationsInput | string
+  items?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   refusedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   estimate?: Prisma.EstimateUpdateOneRequiredWithoutRefusalsNestedInput
@@ -257,6 +268,7 @@ export type EstimateRefusalUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   estimateId?: Prisma.StringFieldUpdateOperationsInput | string
   reason?: Prisma.StringFieldUpdateOperationsInput | string
+  items?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   refusedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -265,6 +277,7 @@ export type EstimateRefusalCreateManyInput = {
   id?: string
   estimateId: string
   reason: string
+  items?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   refusedAt?: Date | string
   createdAt?: Date | string
 }
@@ -272,6 +285,7 @@ export type EstimateRefusalCreateManyInput = {
 export type EstimateRefusalUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reason?: Prisma.StringFieldUpdateOperationsInput | string
+  items?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   refusedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -280,6 +294,7 @@ export type EstimateRefusalUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   estimateId?: Prisma.StringFieldUpdateOperationsInput | string
   reason?: Prisma.StringFieldUpdateOperationsInput | string
+  items?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   refusedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -304,6 +319,7 @@ export type EstimateRefusalCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   estimateId?: Prisma.SortOrder
   reason?: Prisma.SortOrder
+  items?: Prisma.SortOrder
   refusedAt?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
 }
@@ -369,6 +385,7 @@ export type EstimateRefusalUncheckedUpdateManyWithoutEstimateNestedInput = {
 export type EstimateRefusalCreateWithoutEstimateInput = {
   id?: string
   reason: string
+  items?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   refusedAt?: Date | string
   createdAt?: Date | string
 }
@@ -376,6 +393,7 @@ export type EstimateRefusalCreateWithoutEstimateInput = {
 export type EstimateRefusalUncheckedCreateWithoutEstimateInput = {
   id?: string
   reason: string
+  items?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   refusedAt?: Date | string
   createdAt?: Date | string
 }
@@ -413,6 +431,7 @@ export type EstimateRefusalScalarWhereInput = {
   id?: Prisma.StringFilter<"EstimateRefusal"> | string
   estimateId?: Prisma.StringFilter<"EstimateRefusal"> | string
   reason?: Prisma.StringFilter<"EstimateRefusal"> | string
+  items?: Prisma.JsonNullableFilter<"EstimateRefusal">
   refusedAt?: Prisma.DateTimeFilter<"EstimateRefusal"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"EstimateRefusal"> | Date | string
 }
@@ -420,6 +439,7 @@ export type EstimateRefusalScalarWhereInput = {
 export type EstimateRefusalCreateManyEstimateInput = {
   id?: string
   reason: string
+  items?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   refusedAt?: Date | string
   createdAt?: Date | string
 }
@@ -427,6 +447,7 @@ export type EstimateRefusalCreateManyEstimateInput = {
 export type EstimateRefusalUpdateWithoutEstimateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reason?: Prisma.StringFieldUpdateOperationsInput | string
+  items?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   refusedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -434,6 +455,7 @@ export type EstimateRefusalUpdateWithoutEstimateInput = {
 export type EstimateRefusalUncheckedUpdateWithoutEstimateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reason?: Prisma.StringFieldUpdateOperationsInput | string
+  items?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   refusedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -441,6 +463,7 @@ export type EstimateRefusalUncheckedUpdateWithoutEstimateInput = {
 export type EstimateRefusalUncheckedUpdateManyWithoutEstimateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   reason?: Prisma.StringFieldUpdateOperationsInput | string
+  items?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   refusedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -451,6 +474,7 @@ export type EstimateRefusalSelect<ExtArgs extends runtime.Types.Extensions.Inter
   id?: boolean
   estimateId?: boolean
   reason?: boolean
+  items?: boolean
   refusedAt?: boolean
   createdAt?: boolean
   estimate?: boolean | Prisma.EstimateDefaultArgs<ExtArgs>
@@ -462,11 +486,12 @@ export type EstimateRefusalSelectScalar = {
   id?: boolean
   estimateId?: boolean
   reason?: boolean
+  items?: boolean
   refusedAt?: boolean
   createdAt?: boolean
 }
 
-export type EstimateRefusalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "estimateId" | "reason" | "refusedAt" | "createdAt", ExtArgs["result"]["estimateRefusal"]>
+export type EstimateRefusalOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "estimateId" | "reason" | "items" | "refusedAt" | "createdAt", ExtArgs["result"]["estimateRefusal"]>
 export type EstimateRefusalInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   estimate?: boolean | Prisma.EstimateDefaultArgs<ExtArgs>
 }
@@ -480,6 +505,7 @@ export type $EstimateRefusalPayload<ExtArgs extends runtime.Types.Extensions.Int
     id: string
     estimateId: string
     reason: string
+    items: runtime.JsonValue | null
     refusedAt: Date
     createdAt: Date
   }, ExtArgs["result"]["estimateRefusal"]>
@@ -855,6 +881,7 @@ export interface EstimateRefusalFieldRefs {
   readonly id: Prisma.FieldRef<"EstimateRefusal", 'String'>
   readonly estimateId: Prisma.FieldRef<"EstimateRefusal", 'String'>
   readonly reason: Prisma.FieldRef<"EstimateRefusal", 'String'>
+  readonly items: Prisma.FieldRef<"EstimateRefusal", 'Json'>
   readonly refusedAt: Prisma.FieldRef<"EstimateRefusal", 'DateTime'>
   readonly createdAt: Prisma.FieldRef<"EstimateRefusal", 'DateTime'>
 }

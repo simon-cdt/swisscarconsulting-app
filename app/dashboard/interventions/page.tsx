@@ -361,7 +361,7 @@ export default function InterventionsPage() {
                                   <Button
                                     size="sm"
                                     variant="default"
-                                    className="bg-chart-4 hover:bg-chart-4/90 w-full gap-2"
+                                    className="insurance-btn w-full gap-2"
                                   >
                                     <ShieldIcon className="size-4" />
                                     Assurance
@@ -383,7 +383,7 @@ export default function InterventionsPage() {
                                       Annuler
                                     </AlertDialogCancel>
                                     <AlertDialogAction
-                                      className="bg-chart-4 hover:bg-chart-4/90 gap-2"
+                                      className="insurance-btn gap-2"
                                       onClick={() =>
                                         createEstimateInsurance({
                                           interventionId: intervention.id,

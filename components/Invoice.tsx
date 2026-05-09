@@ -6,7 +6,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { Button } from "./ui/button";
 import { GeistMono } from "geist/font/mono";
-import { formatPhoneNumber } from "@/lib/utils";
+import { formatFullPhoneNumber } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -24,6 +24,7 @@ import Link from "next/link";
 import { FILE_SERVER_URL } from "@/lib/config";
 import { updateInvoiceStatus } from "@/lib/actions/invoice";
 import { useRouter } from "next/navigation";
+import { TypeClient } from "@/generated/prisma/enums";
 
 export default function Invoice({
   invoice,
@@ -40,17 +41,20 @@ export default function Invoice({
     name: string;
     firstName: string;
     companyName: string | null;
+    typeClient: TypeClient;
   }) => {
-    if (client.companyName) {
+    if (client.companyName && client.typeClient === "company") {
       return client.companyName;
     }
     return `${client.firstName || ""} ${client.name || ""}`.trim();
   };
 
+  console.log(invoice);
+
   return (
     <Card
       key={invoice.id}
-      className={`${isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 w-115 p-6 transition-colors`}
+      className={`${invoice.typeEstimate === "INSURANCE" ? "insurance-card" : isIndividual ? "individual-card" : "company-card"} hover:border-primary/50 w-115 p-6 transition-colors`}
     >
       <div className="flex w-full flex-col gap-1">
         <div className="flex w-full flex-row items-center justify-between">
@@ -74,7 +78,10 @@ export default function Invoice({
                   {`${getClientDisplayName(invoice)}`}
                 </h3>
                 <h3 className="text-foreground w-full text-lg font-semibold">
-                  {formatPhoneNumber(invoice.phone)}
+                  {formatFullPhoneNumber(
+                    invoice.phonePrefix,
+                    invoice.phoneNumber,
+                  )}
                 </h3>
               </div>
 
