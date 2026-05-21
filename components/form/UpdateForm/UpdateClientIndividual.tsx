@@ -49,7 +49,10 @@ export function UpdateClientIndividual({
         /^[\d\s\-()]+$/,
         "Le numéro ne doit contenir que des chiffres et espaces",
       )
-      .min(6, "Le numéro doit contenir au moins 6 chiffres"),
+      .refine((val) => {
+        const digitCount = val.replace(/\D/g, "").length;
+        return digitCount >= 6 && digitCount <= 10;
+      }, "Le numéro doit contenir entre 6 et 10 chiffres"),
     phone2Prefix: z
       .string()
       .optional()
@@ -60,10 +63,11 @@ export function UpdateClientIndividual({
     phone2Number: z
       .string()
       .optional()
-      .refine(
-        (val) => !val || (/^[\d\s\-()]+$/.test(val) && val.length >= 6),
-        "Le numéro doit contenir au moins 6 chiffres et des caractères valides",
-      ),
+      .refine((val) => {
+        if (!val) return true;
+        const digitCount = val.replace(/\D/g, "").length;
+        return digitCount >= 6 && digitCount <= 10;
+      }, "Le numéro doit contenir entre 6 et 10 chiffres et des caractères valides"),
     address: z
       .string()
       .optional()

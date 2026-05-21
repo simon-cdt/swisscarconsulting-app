@@ -301,6 +301,10 @@ export function AddVehicule({
                 register={register}
                 type="text"
                 error={errors.receptionType}
+                onChange={(e) => {
+                  const formatted = e.target.value.toUpperCase();
+                  setValue("receptionType", formatted);
+                }}
               />
             </div>
             <div className="col-span-2">
