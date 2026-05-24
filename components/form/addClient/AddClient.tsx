@@ -8,11 +8,14 @@ import { PhoneInputField } from "@/components/form/PhoneInputField";
 import { Button } from "../../ui/button";
 import { Spinner } from "@/components/ui/spinner";
 import { Mail } from "lucide-react";
-import { addClientIndividual } from "@/lib/actions/client";
+import {
+  addClientIndividual,
+  checkClientIndividualExists,
+} from "@/lib/actions/client";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { SharedFormData } from "./CustomTabs";
-import { useEffect } from "react";
+import { useEffect, forwardRef, useImperativeHandle } from "react";
 import { formatAddress, toCamelCase } from "@/lib/utils";
 
 type AddClientProps = {
@@ -20,10 +23,10 @@ type AddClientProps = {
   setSharedData: (data: SharedFormData) => void;
 };
 
-export default function AddClient({
-  sharedData,
-  setSharedData,
-}: AddClientProps) {
+export default forwardRef(function AddClient(
+  { sharedData, setSharedData }: AddClientProps,
+  ref,
+) {
   const router = useRouter();
 
   const zodFormSchema = z.object({
@@ -87,8 +90,8 @@ export default function AddClient({
     register,
     handleSubmit,
     formState: { errors, isSubmitting },
-    watch,
     setValue,
+    getValues,
   } = useForm<FormSchema>({
     resolver: zodResolver(zodFormSchema),
     defaultValues: {
@@ -105,89 +108,44 @@ export default function AddClient({
     },
   });
 
-  //eslint-disable-next-line
-  const watchedFirstName = watch("firstName");
-  const watchedName = watch("name");
-  const watchedEmail = watch("email");
-  const watchedPhonePrefix = watch("phonePrefix");
-  const watchedPhoneNumber = watch("phoneNumber");
-  const watchedPhone2Prefix = watch("phone2Prefix");
-  const watchedPhone2Number = watch("phone2Number");
-  const watchedAddress = watch("address");
-  const watchedPostalCode = watch("postalCode");
-  const watchedCity = watch("city");
+  useImperativeHandle(ref, () => ({
+    getSyncData: () => {
+      const formValues = getValues();
+      return {
+        firstName: formValues.firstName || "",
+        name: formValues.name || "",
+        email: formValues.email || "",
+        phonePrefix: formValues.phonePrefix || "",
+        phoneNumber: formValues.phoneNumber || "",
+        phone2Prefix: formValues.phone2Prefix || "",
+        phone2Number: formValues.phone2Number || "",
+        address: formValues.address || "",
+        postalCode: formValues.postalCode,
+        city: formValues.city || "",
+      };
+    },
+  }));
 
+  // Charger les données quand sharedData change
   useEffect(() => {
-    setSharedData({
-      firstName: watchedFirstName || "",
-      name: watchedName || "",
-      email: watchedEmail || "",
-      phonePrefix: watchedPhonePrefix || "",
-      phoneNumber: watchedPhoneNumber || "",
-      phone2Prefix: watchedPhone2Prefix || "",
-      phone2Number: watchedPhone2Number || "",
-      address: watchedAddress || "",
-      postalCode: watchedPostalCode,
-      city: watchedCity || "",
-    });
-  }, [
-    watchedFirstName,
-    watchedName,
-    watchedEmail,
-    watchedPhonePrefix,
-    watchedPhoneNumber,
-    watchedPhone2Prefix,
-    watchedPhone2Number,
-    watchedAddress,
-    watchedPostalCode,
-    watchedCity,
-  ]);
-
-  // Mettre à jour les valeurs du formulaire quand sharedData change (depuis l'autre formulaire)
-  useEffect(() => {
-    setValue("firstName", sharedData.firstName, {
-      shouldValidate: false,
-      shouldDirty: false,
-    });
-    setValue("name", sharedData.name, {
-      shouldValidate: false,
-      shouldDirty: false,
-    });
-    setValue("email", sharedData.email, {
-      shouldValidate: false,
-      shouldDirty: false,
-    });
-    setValue("phonePrefix", sharedData.phonePrefix, {
-      shouldValidate: false,
-      shouldDirty: false,
-    });
-    setValue("phoneNumber", sharedData.phoneNumber, {
-      shouldValidate: false,
-      shouldDirty: false,
-    });
-    setValue("phone2Prefix", sharedData.phone2Prefix, {
-      shouldValidate: false,
-      shouldDirty: false,
-    });
-    setValue("phone2Number", sharedData.phone2Number, {
-      shouldValidate: false,
-      shouldDirty: false,
-    });
-    setValue("address", sharedData.address, {
-      shouldValidate: false,
-      shouldDirty: false,
-    });
-    setValue("postalCode", sharedData.postalCode, {
-      shouldValidate: false,
-      shouldDirty: false,
-    });
-    setValue("city", sharedData.city, {
-      shouldValidate: false,
-      shouldDirty: false,
-    });
-  }, [sharedData, setValue]);
+    // Rien à faire ici maintenant, les données sont chargées au montage et on synchronise au changement de tab
+  }, []);
 
   const handleSubmitForm = async (data: FormSchema) => {
+    // Vérifier si le client existe déjà
+    const checkResult = await checkClientIndividualExists({
+      firstName: data.firstName,
+      name: data.name,
+      phonePrefix: data.phonePrefix,
+      phoneNumber: data.phoneNumber,
+      email: data.email,
+    });
+
+    if (checkResult.exists) {
+      toast.error(checkResult.message);
+      return;
+    }
+
     const response = await addClientIndividual({ data });
     if (response.success) {
       toast.success(response.message);
@@ -304,7 +262,7 @@ export default function AddClient({
       </Button>
     </form>
   );
-}
+});
 
 // type AddClientProps = {
 //   sharedData: SharedFormData;

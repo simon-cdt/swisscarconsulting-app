@@ -4,7 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import AddClient from "./AddClient";
 import AddCompany from "./AddCompany";
 import { Building, User2 } from "lucide-react";
-import { useState } from "react";
+import { useState, useRef } from "react";
 
 export type SharedFormData = {
   firstName: string;
@@ -32,9 +32,28 @@ export default function CustomTabs() {
     postalCode: undefined,
     city: "",
   });
+  const [activeTab, setActiveTab] = useState("individual");
+  const addClientRef = useRef<{ getSyncData: () => SharedFormData } | null>(
+    null,
+  );
+  const addCompanyRef = useRef<{ getSyncData: () => SharedFormData } | null>(
+    null,
+  );
+
+  const handleTabChange = (tabValue: string) => {
+    // Synchroniser les données du tab actuel avant de changer
+    if (activeTab === "individual" && addClientRef.current) {
+      const data = addClientRef.current.getSyncData();
+      setSharedData(data);
+    } else if (activeTab === "company" && addCompanyRef.current) {
+      const data = addCompanyRef.current.getSyncData();
+      setSharedData(data);
+    }
+    setActiveTab(tabValue);
+  };
 
   return (
-    <Tabs defaultValue="individual">
+    <Tabs defaultValue="individual" onValueChange={handleTabChange}>
       <TabsList className="before:bg-border relative mb-4 h-auto w-full gap-0.5 bg-transparent p-0 before:absolute before:inset-x-0 before:bottom-0 before:h-px">
         <TabsTrigger
           value="individual"
@@ -56,10 +75,18 @@ export default function CustomTabs() {
         </TabsTrigger>
       </TabsList>
       <TabsContent value="individual">
-        <AddClient sharedData={sharedData} setSharedData={setSharedData} />
+        <AddClient
+          ref={addClientRef}
+          sharedData={sharedData}
+          setSharedData={setSharedData}
+        />
       </TabsContent>
       <TabsContent value="company">
-        <AddCompany sharedData={sharedData} setSharedData={setSharedData} />
+        <AddCompany
+          ref={addCompanyRef}
+          sharedData={sharedData}
+          setSharedData={setSharedData}
+        />
       </TabsContent>
     </Tabs>
   );

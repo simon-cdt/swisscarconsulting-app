@@ -19,7 +19,6 @@ import { Textarea } from "@/components/ui/textarea";
 import SelectField from "./SelectField";
 import SelectSearch from "./SelectSearch";
 import { DatePicker } from "./DatePicker";
-import { Clock } from "lucide-react";
 import { createAppointment } from "@/lib/actions/calendar";
 import toast from "react-hot-toast";
 import { Spinner } from "../ui/spinner";
@@ -209,13 +208,13 @@ export default function CreateAppointmentDialog({
     onOpenChange(false);
   };
 
-  // Générer les créneaux horaires (de 08:00 à 18:00 par pas de 1 minute)
+  // Générer les créneaux horaires (de 08:00 à 18:00 par pas de 15 min)
   const generateTimeSlots = () => {
     const slots = [];
     for (let hour = 8; hour <= 18; hour++) {
-      for (let minute = 0; minute < 60; minute++) {
+      for (let minute = 0; minute < 60; minute += 15) {
         const time = `${hour.toString().padStart(2, "0")}:${minute.toString().padStart(2, "0")}`;
-        slots.push(time);
+        slots.push({ label: time, value: time });
       }
     }
     return slots;
@@ -305,32 +304,17 @@ export default function CreateAppointmentDialog({
             />
 
             {/* Heure */}
-            <div className="space-y-2">
-              <Label htmlFor="time">
-                Heure<span className="text-red-500">*</span>
-              </Label>
-              <div className="relative">
-                <Input
-                  id="time"
-                  type="time"
-                  {...register("time")}
-                  step="60"
-                  min="08:00"
-                  max="18:00"
-                  className="pl-10"
-                  list="time-slots"
-                />
-                <Clock className="text-muted-foreground pointer-events-none absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
-                <datalist id="time-slots">
-                  {generateTimeSlots().map((slot) => (
-                    <option key={slot} value={slot} />
-                  ))}
-                </datalist>
-              </div>
-              {errors.time && (
-                <p className="text-sm text-red-500">{errors.time.message}</p>
-              )}
-            </div>
+            <SelectSearch
+              label="Heure"
+              placeholder="Sélectionnez une heure"
+              content={generateTimeSlots()}
+              setValue={setValue}
+              name="time"
+              research="Rechercher une heure..."
+              noFound="Aucun créneau trouvé"
+              error={errors.time}
+              nonempty
+            />
           </div>
 
           {/* Devis (optionnel) */}

@@ -1122,15 +1122,22 @@ export default function QuoteGeneratorPage() {
                   <AlertDialogTrigger asChild>
                     <Button
                       className={`absolute top-5 right-5 ${estimate.status === "ACCEPTED" || estimate.status === "PENDING" ? "cursor-not-allowed bg-gray-400" : "bg-emerald-600 hover:bg-emerald-700"}`}
-                      disabled={updateDisable}
+                      disabled={updateDisable || selectedItems.length === 0}
+                      title={
+                        selectedItems.length === 0
+                          ? "Veuillez ajouter au moins un item au devis"
+                          : ""
+                      }
                     >
-                      {estimate.status === "PENDING"
-                        ? "Devis en attente"
-                        : estimate.status === "ACCEPTED"
-                          ? "Devis accepté"
-                          : estimate.status === "SENT_TO_GARAGE"
-                            ? "Voiture au garage"
-                            : "Valider le PDF"}
+                      {selectedItems.length === 0
+                        ? "Ajouter des items au devis"
+                        : estimate.status === "PENDING"
+                          ? "Devis en attente"
+                          : estimate.status === "ACCEPTED"
+                            ? "Devis accepté"
+                            : estimate.status === "SENT_TO_GARAGE"
+                              ? "Voiture au garage"
+                              : "Valider le PDF"}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>

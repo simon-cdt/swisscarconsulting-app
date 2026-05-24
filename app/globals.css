@@ -9,24 +9,24 @@
   transition: all 0.25s ease-in-out;
 }
 .company-btn {
-  @apply bg-amber-600 hover:bg-amber-700;
+  @apply bg-red-700 hover:bg-red-800;
 }
 .company-card {
-  @apply border-amber-100 bg-amber-50;
+  @apply border-red-400 bg-red-100;
 }
 
 .individual-btn {
-  @apply bg-sky-600 hover:bg-sky-700;
+  @apply bg-blue-700 hover:bg-blue-800;
 }
 .individual-card {
-  @apply border-sky-100 bg-sky-50;
+  @apply border-blue-400 bg-blue-100;
 }
 
 .insurance-btn {
-  @apply bg-purple-600 hover:bg-purple-700;
+  @apply bg-pink-700 hover:bg-pink-800;
 }
 .insurance-card {
-  @apply border-purple-100 bg-purple-50;
+  @apply border-pink-400 bg-pink-100;
 }
 
 @custom-variant dark (&:is(.dark *));
