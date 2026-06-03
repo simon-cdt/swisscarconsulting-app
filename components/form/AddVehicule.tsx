@@ -10,6 +10,15 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { TypeClient } from "@/generated/prisma/enums";
 import { Plus } from "lucide-react";
@@ -20,7 +29,10 @@ import { FormField } from "./FormField";
 import { format } from "date-fns";
 import { Spinner } from "../ui/spinner";
 import { DatePicker } from "./DatePicker";
-import { addClientVehicule } from "@/lib/actions/vehicule";
+import {
+  addClientVehicule,
+  checkLicensePlateExists,
+} from "@/lib/actions/vehicule";
 import UploadImage from "./UploadImage";
 import { useState } from "react";
 import { FILE_SERVER_URL } from "@/lib/config";
@@ -55,6 +67,10 @@ export function AddVehicule({
   const { data: insurances, isLoading, isError } = useInsurances();
 
   const [open, setOpen] = useState(false);
+  const [showPlateConfirmDialog, setShowPlateConfirmDialog] = useState(false);
+  const [pendingFormData, setPendingFormData] = useState<FormSchema | null>(
+    null,
+  );
 
   const zodFormSchema = z
     .object({
@@ -73,13 +89,16 @@ export function AddVehicule({
         .nonempty("La plaque d'immatriculation est requise.")
         .refine(
           (value) => {
-            // Vérifier qu'il y a au moins 2 lettres au début
-            const regex = /^[A-Z]{2,}/;
-            return regex.test(value.replace(/[\s-]/g, ""));
+            const cleaned = value.replace(/[\s-]/g, "").toUpperCase();
+            // Plaque suisse: 2 lettres + 1 à 6 chiffres (ex: GE123456)
+            const swissPlate = /^[A-Z]{2}\d{1,6}$/;
+            // Plaque EU: 2 lettres + 3 chiffres + 2 lettres (ex: GE123AB)
+            const euPlate = /^[A-Z]{2}\d{3}[A-Z]{2}$/;
+            return swissPlate.test(cleaned) || euPlate.test(cleaned);
           },
           {
             message:
-              "La plaque doit commencer par au moins 2 lettres (ex: GE, VD).",
+              "Format invalide. Acceptés: plaque suisse (2 lettres + 1-6 chiffres) ou EU (2 lettres + 3 chiffres + 2 lettres)",
           },
         ),
       insuranceId: z.string().optional(),
@@ -188,6 +207,22 @@ export function AddVehicule({
       toast.error("Une erreur est survenue lors de l'ajout du véhicule.");
       console.error(error);
       setOpen(false);
+    }
+  };
+
+  const handleCheckAndSubmit = async (data: FormSchema) => {
+    // Vérifier si la plaque existe déjà
+    const plateExists = await checkLicensePlateExists({
+      licensePlate: data.licensePlate,
+    });
+
+    if (plateExists) {
+      // Afficher le dialog de confirmation
+      setPendingFormData(data);
+      setShowPlateConfirmDialog(true);
+    } else {
+      // Soumettre directement si la plaque n'existe pas
+      await handleSubmitForm(data);
     }
   };
   return (
@@ -322,13 +357,47 @@ export function AddVehicule({
               type="submit"
               disabled={isSubmitting}
               className={`${typeClient === "individual" ? "individual-btn" : "company-btn"}`}
-              onClick={handleSubmit(handleSubmitForm)}
+              onClick={handleSubmit(handleCheckAndSubmit)}
             >
               {isSubmitting ? <Spinner /> : "Enregistrer la voiture"}
             </Button>
           </DialogFooter>
         </DialogContent>
       </form>
+
+      <AlertDialog
+        open={showPlateConfirmDialog}
+        onOpenChange={setShowPlateConfirmDialog}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Plaque d&apos;immatriculation existante
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              Un véhicule avec la plaque{" "}
+              <strong>{pendingFormData?.licensePlate}</strong> existe déjà.
+              Voulez-vous continuer et ajouter un autre véhicule avec cette même
+              plaque ?
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="flex justify-end gap-2">
+            <AlertDialogCancel onClick={() => setShowPlateConfirmDialog(false)}>
+              Annuler
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                setShowPlateConfirmDialog(false);
+                if (pendingFormData) {
+                  handleSubmitForm(pendingFormData);
+                }
+              }}
+            >
+              Continuer
+            </AlertDialogAction>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
     </Dialog>
   );
 }

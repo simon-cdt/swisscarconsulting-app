@@ -5,9 +5,9 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { FormField } from "@/components/form/FormField";
 import { PhoneInputField } from "@/components/form/PhoneInputField";
+import EmailInputField from "@/components/form/EmailInputField";
 import { Button } from "../../ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { Mail } from "lucide-react";
 import { addClientCompany, checkCompanyExists } from "@/lib/actions/client";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
@@ -168,18 +168,14 @@ export default forwardRef(function AddCompany(
             setValue("companyName", formatted);
           }}
         />
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
-            label="E-mail"
-            name="email"
-            type="email"
-            register={register}
-            error={errors.email}
-            nonempty
-            icon={<Mail className="size-4" />}
-            placeholder="exemple@mail.com"
-          />
-        </div>
+        <EmailInputField
+          label="E-mail"
+          name="email"
+          register={register}
+          setValue={setValue}
+          error={errors.email}
+          placeholder="exemple@mail.com"
+        />
         <PhoneInputField
           prefixName="phonePrefix"
           numberName="phoneNumber"

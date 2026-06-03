@@ -322,6 +322,9 @@ export type VehiculeOrderByWithRelationInput = {
 
 export type VehiculeWhereUniqueInput = Prisma.AtLeast<{
   id?: string
+  chassisNumber?: string
+  registrationNumber?: string
+  receptionType?: string
   AND?: Prisma.VehiculeWhereInput | Prisma.VehiculeWhereInput[]
   OR?: Prisma.VehiculeWhereInput[]
   NOT?: Prisma.VehiculeWhereInput | Prisma.VehiculeWhereInput[]
@@ -331,18 +334,15 @@ export type VehiculeWhereUniqueInput = Prisma.AtLeast<{
   year?: Prisma.IntFilter<"Vehicule"> | number
   licensePlate?: Prisma.StringFilter<"Vehicule"> | string
   insuranceId?: Prisma.StringNullableFilter<"Vehicule"> | string | null
-  chassisNumber?: Prisma.StringNullableFilter<"Vehicule"> | string | null
-  registrationNumber?: Prisma.StringNullableFilter<"Vehicule"> | string | null
   lastExpertise?: Prisma.DateTimeNullableFilter<"Vehicule"> | Date | string | null
   certificateImage?: Prisma.StringNullableFilter<"Vehicule"> | string | null
-  receptionType?: Prisma.StringNullableFilter<"Vehicule"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Vehicule"> | Date | string
   updatedAt?: Prisma.DateTimeNullableFilter<"Vehicule"> | Date | string | null
   client?: Prisma.XOR<Prisma.ClientScalarRelationFilter, Prisma.ClientWhereInput>
   interventions?: Prisma.InterventionListRelationFilter
   insurance?: Prisma.XOR<Prisma.InsuranceNullableScalarRelationFilter, Prisma.InsuranceWhereInput> | null
   appointments?: Prisma.AppointmentListRelationFilter
-}, "id">
+}, "id" | "chassisNumber" | "registrationNumber" | "receptionType">
 
 export type VehiculeOrderByWithAggregationInput = {
   id?: Prisma.SortOrder

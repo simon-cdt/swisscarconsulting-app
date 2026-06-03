@@ -64,11 +64,11 @@ model Vehicule {
 
   insuranceId String?
 
-  chassisNumber      String?
-  registrationNumber String?
+  chassisNumber      String?   @unique
+  registrationNumber String?   @unique
   lastExpertise      DateTime?
   certificateImage   String?
-  receptionType      String?
+  receptionType      String?   @unique
 
   createdAt DateTime  @default(now())
   updatedAt DateTime? @updatedAt

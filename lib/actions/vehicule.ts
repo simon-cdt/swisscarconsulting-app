@@ -4,6 +4,24 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
 import { db } from "../db";
 
+export const checkLicensePlateExists = async ({
+  licensePlate,
+}: {
+  licensePlate: string;
+}): Promise<boolean> => {
+  try {
+    const vehicule = await db.vehicule.findFirst({
+      where: {
+        licensePlate: licensePlate.toUpperCase(),
+      },
+    });
+    return !!vehicule;
+  } catch (error) {
+    console.error(error);
+    return false;
+  }
+};
+
 export const addClientVehicule = async ({
   data,
 }: {
@@ -32,6 +50,48 @@ export const addClientVehicule = async ({
     const session = await getServerSession(authOptions);
     if (!session || !session.user.id) {
       return { success: false, message: "Vous n'êtes pas connecté" };
+    }
+
+    if (
+      data.registrationNumber &&
+      (await db.vehicule.findFirst({
+        where: {
+          registrationNumber: data.registrationNumber.toUpperCase(),
+        },
+      }))
+    ) {
+      return {
+        success: false,
+        message: "Ce numéro de matricule existe déjà.",
+      };
+    }
+
+    if (
+      data.chassisNumber &&
+      (await db.vehicule.findFirst({
+        where: {
+          chassisNumber: data.chassisNumber.toUpperCase(),
+        },
+      }))
+    ) {
+      return {
+        success: false,
+        message: "Ce numéro de chassis existe déjà.",
+      };
+    }
+
+    if (
+      data.receptionType &&
+      (await db.vehicule.findFirst({
+        where: {
+          receptionType: data.receptionType,
+        },
+      }))
+    ) {
+      return {
+        success: false,
+        message: "Ce type de réception existe déjà.",
+      };
     }
 
     const lastVehicule = await db.vehicule.findFirst({
@@ -86,7 +146,8 @@ export const addClientVehicule = async ({
       message: "La voiture a bien été ajoutée.",
       vehiculeId: vehicule.id,
     };
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     console.error(error);
     return { success: false, message: "Une erreur est survenue" };
   }
@@ -151,8 +212,33 @@ export const updateVehicule = async ({
       success: true,
       message: "Le véhicule a bien été mis à jour.",
     };
-  } catch (error) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  } catch (error: any) {
     console.error(error);
+
+    // Gestion des contraintes uniques
+    if (error.code === "P2002") {
+      const target = error.meta?.target?.[0];
+      if (target === "chassisNumber") {
+        return {
+          success: false,
+          message: "Ce numéro de chassis existe déjà.",
+        };
+      }
+      if (target === "registrationNumber") {
+        return {
+          success: false,
+          message: "Ce numéro d'immatriculation existe déjà.",
+        };
+      }
+      if (target === "receptionType") {
+        return {
+          success: false,
+          message: "Ce type de réception existe déjà.",
+        };
+      }
+    }
+
     return { success: false, message: "Une erreur est survenue" };
   }
 };

@@ -10,7 +10,15 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Car, FileText, ImageIcon, Plus, X } from "lucide-react";
+import {
+  Car,
+  FileText,
+  ImageIcon,
+  Plus,
+  X,
+  RotateCcw,
+  RotateCw,
+} from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -155,6 +163,7 @@ export default function QuoteGeneratorPage() {
   );
   // eslint-disable-next-line
   const [selectedRefusal, setSelectedRefusal] = useState<any | null>(null);
+  const [certificateRotation, setCertificateRotation] = useState(0);
 
   const handleRemoveItem = async (id: string) => {
     // Trouver l'item à supprimer pour récupérer sa position
@@ -533,14 +542,46 @@ export default function QuoteGeneratorPage() {
                                   Voir la carte grise
                                 </Button>
                               </DialogTrigger>
-                              <DialogContent className="sm:max-w-150">
-                                <DialogTitle />
-                                {/* eslint-disable-next-line */}
-                                <img
-                                  src={`${FILE_SERVER_URL}/uploads/${estimate.intervention.vehicule.certificateImage}`}
-                                  alt="Carte grise du véhicule"
-                                  className="w-full"
-                                />
+                              <DialogContent className="max-h-[90vh] overflow-y-auto sm:max-w-150">
+                                <DialogTitle>
+                                  Carte grise du véhicule
+                                </DialogTitle>
+                                <div className="flex flex-col gap-4">
+                                  <div className="flex justify-end gap-2">
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        setCertificateRotation(
+                                          (prev) => (prev - 90) % 360,
+                                        )
+                                      }
+                                    >
+                                      <RotateCcw className="h-4 w-4" />
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() =>
+                                        setCertificateRotation(
+                                          (prev) => (prev + 90) % 360,
+                                        )
+                                      }
+                                    >
+                                      <RotateCw className="h-4 w-4" />
+                                    </Button>
+                                  </div>
+                                  {/* eslint-disable-next-line */}
+                                  <img
+                                    src={`${FILE_SERVER_URL}/uploads/${estimate.intervention.vehicule.certificateImage}`}
+                                    alt="Carte grise du véhicule"
+                                    className="w-full"
+                                    style={{
+                                      transform: `rotate(${certificateRotation}deg)`,
+                                      transition: "transform 0.2s ease-in-out",
+                                    }}
+                                  />
+                                </div>
                               </DialogContent>
                             </Dialog>
                           ) : (

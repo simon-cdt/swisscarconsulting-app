@@ -5,9 +5,9 @@ import { useForm } from "react-hook-form";
 import z from "zod";
 import { FormField } from "@/components/form/FormField";
 import { PhoneInputField } from "@/components/form/PhoneInputField";
+import EmailInputField from "@/components/form/EmailInputField";
 import { Button } from "../../ui/button";
 import { Spinner } from "@/components/ui/spinner";
-import { Mail } from "lucide-react";
 import {
   addClientIndividual,
   checkClientIndividualExists,
@@ -182,14 +182,12 @@ export default forwardRef(function AddClient(
             setValue("name", formatted);
           }}
         />
-        <FormField
+        <EmailInputField
           label="E-mail"
           name="email"
-          type="email"
           register={register}
+          setValue={setValue}
           error={errors.email}
-          nonempty
-          icon={<Mail className="size-4" />}
           placeholder="exemple@mail.com"
         />
       </div>
