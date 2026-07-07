@@ -51,6 +51,7 @@ import {
   updateEstimateItems,
   validateEstimate,
 } from "@/lib/actions/estimate";
+import { sendEmailEstimate } from "@/lib/actions/emails";
 import AddMedias from "@/components/form/AddMedias";
 import InformationsDialog from "@/components/InformationsDialog";
 import {
@@ -573,7 +574,7 @@ export default function QuoteGeneratorPage() {
                                   </div>
                                   {/* eslint-disable-next-line */}
                                   <img
-                                    src={`${FILE_SERVER_URL}/uploads/${estimate.intervention.vehicule.certificateImage}`}
+                                    src={`/api/images/${estimate.intervention.vehicule.certificateImage}`}
                                     alt="Carte grise du véhicule"
                                     className="w-full"
                                     style={{
@@ -1171,7 +1172,7 @@ export default function QuoteGeneratorPage() {
                       }
                     >
                       {selectedItems.length === 0
-                        ? "Ajouter des items au devis"
+                        ? "Il n'y a aucun item dans le devis"
                         : estimate.status === "PENDING"
                           ? "Devis en attente"
                           : estimate.status === "ACCEPTED"
@@ -1201,7 +1202,21 @@ export default function QuoteGeneratorPage() {
                           });
 
                           if (response.success) {
-                            toast.success(response.message);
+                            const emailResponse = await sendEmailEstimate({
+                              estimateId: estimate.id,
+                            });
+
+                            if (!emailResponse.success) {
+                              toast.error(
+                                emailResponse.error ||
+                                  "Impossible d'envoyer l'email",
+                              );
+                            } else {
+                              toast.success(
+                                `${response.message} Le devis a aussi été envoyé par email avec le PDF en pièce jointe.`,
+                              );
+                            }
+
                             router.push(
                               `/dashboard/estimates/${estimate.type === "INDIVIDUAL" ? "individual/pending" : "insurance/pending"}`,
                             );

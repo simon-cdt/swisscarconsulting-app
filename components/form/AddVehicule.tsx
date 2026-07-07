@@ -35,7 +35,6 @@ import {
 } from "@/lib/actions/vehicule";
 import UploadImage from "./UploadImage";
 import { useState } from "react";
-import { FILE_SERVER_URL } from "@/lib/config";
 import SelectSearch from "@/components/form/SelectSearch";
 import { useQuery } from "@tanstack/react-query";
 import { formatLicensePlate, formatRegistrationNumber } from "@/lib/utils";
@@ -158,20 +157,18 @@ export function AddVehicule({
 
   const handleSubmitForm = async (data: FormSchema) => {
     try {
-      let uploadedUrl: string[] = [];
+      let uploadedUrl: string | null = null;
+
       if (data.certificateImage) {
         const formData = new FormData();
-        formData.append("files", data.certificateImage);
+        formData.append("image", data.certificateImage as Blob);
 
-        const res = await fetch(`${FILE_SERVER_URL}/upload`, {
+        const res = await fetch("/api/upload/image", {
           method: "POST",
           body: formData,
         });
-
-        if (!res.ok) throw new Error("Erreur lors de l'envoi de l'image");
-
-        const json = await res.json();
-        uploadedUrl = json.files.map((url: string) => `${url}`);
+        const uploadedData = await res.json();
+        uploadedUrl = uploadedData.filename;
       }
 
       // Convertir la date d'expertise en objet Date si elle existe
@@ -191,7 +188,7 @@ export function AddVehicule({
         registrationNumber: data.registrationNumber,
         lastExpertise: expertiseDate,
         receptionType: data.receptionType,
-        certificateImage: uploadedUrl[0],
+        certificateImage: uploadedUrl,
       };
 
       const response = await addClientVehicule({ data: newData });

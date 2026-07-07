@@ -5,7 +5,6 @@ import { AlertCircleIcon, ImageIcon, UploadIcon, XIcon } from "lucide-react";
 import { useFileUpload } from "@/hooks/use-file-upload";
 import { Button } from "@/components/ui/button";
 import { useEffect, useState } from "react";
-import { FILE_SERVER_URL } from "@/lib/config";
 
 export default function UploadImage({
   setValue,
@@ -59,10 +58,7 @@ export default function UploadImage({
 
     if (defaultImg && !defaultLoaded) {
       (async () => {
-        const file = await toFile(
-          `${FILE_SERVER_URL}/uploads/${defaultImg}`,
-          defaultImg,
-        );
+        const file = await toFile(`/api/images/${defaultImg}`, defaultImg);
         addFiles([file]);
         setDefaultLoaded(true);
       })();

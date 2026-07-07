@@ -22,15 +22,9 @@ import toast from "react-hot-toast";
 import { useState } from "react";
 import { updateVehicule } from "@/lib/actions/vehicule";
 import UploadImage from "../UploadImage";
-import { FILE_SERVER_URL } from "@/lib/config";
 import SelectSearch from "../SelectSearch";
 import { useQuery } from "@tanstack/react-query";
-import {
-  formatExpertiseDate,
-  formatLicensePlate,
-  formatRegistrationNumber,
-} from "@/lib/utils";
-import { format } from "date-fns";
+import { formatLicensePlate, formatRegistrationNumber } from "@/lib/utils";
 
 type FetchInsurances = {
   id: string;
@@ -159,25 +153,22 @@ export function UpdateVehicule({
 
   const handleSubmitForm = async (data: FormSchema) => {
     try {
-      let uploadedUrl: string[] = [];
+      let uploadedUrl = null;
 
-      await fetch(`${FILE_SERVER_URL}/files/${vehicule.certificateImage}`, {
+      await fetch(`/api/images/${vehicule.certificateImage}`, {
         method: "DELETE",
       });
 
       if (data.certificateImage) {
         const formData = new FormData();
-        formData.append("files", data.certificateImage);
+        formData.append("image", data.certificateImage as Blob);
 
-        const res = await fetch(`${FILE_SERVER_URL}/upload`, {
+        const res = await fetch("/api/upload/image", {
           method: "POST",
           body: formData,
         });
-
-        if (!res.ok) throw new Error("Erreur lors de l'envoi de l'image");
-
-        const json = await res.json();
-        uploadedUrl = json.files.map((url: string) => `${url}`);
+        const uploadedData = await res.json();
+        uploadedUrl = uploadedData.filename;
       }
 
       // Convertir la date d'expertise en objet Date si elle existe
@@ -193,7 +184,7 @@ export function UpdateVehicule({
           model: data.model,
           year: data.year,
           licensePlate: data.licensePlate,
-          certificateImage: uploadedUrl.length === 0 ? null : uploadedUrl[0],
+          certificateImage: uploadedUrl ?? null,
           insuranceId: data.insuranceId,
           chassisNumber: data.chassisNumber,
           lastExpertise: expertiseDate,

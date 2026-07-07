@@ -49,22 +49,28 @@ export default function AddMedias({
     try {
       let uploadedUrls: string[] = [];
 
-      const formData = new FormData();
-      data.images.forEach((file) => {
-        formData.append("files", file);
-      });
+      if (data.images && data.images.length > 0) {
+        const formData = new FormData();
+        data.images.forEach((file) => {
+          formData.append("files", file);
+        });
 
-      console.log(process.env.FILE_SERVER_URL);
+        const res = await fetch(`/api/upload/medias`, {
+          method: "POST",
+          body: formData,
+        });
 
-      const res = await fetch(`${FILE_SERVER_URL}/upload`, {
-        method: "POST",
-        body: formData,
-      });
+        if (!res.ok) throw new Error("Erreur lors de l'envoi des fichiers");
 
-      if (!res.ok) throw new Error("Erreur lors de l'envoi des fichiers");
+        const json = await res.json();
+        if (!json.success) {
+          throw new Error(json.error || "Erreur lors de l'envoi des fichiers");
+        }
 
-      const json = await res.json();
-      uploadedUrls = json.files.map((url: string) => `${url}`);
+        uploadedUrls = (json.results || [])
+          .filter((file: { status: string }) => file.status === "ok")
+          .map((file: { filename: string }) => file.filename);
+      }
 
       const response = await addMediasIntervention({
         data: {

@@ -213,7 +213,7 @@ export default function VisitPage() {
           formData.append("files", file);
         });
 
-        const res = await fetch(`${FILE_SERVER_URL}/upload`, {
+        const res = await fetch(`/api/upload/medias`, {
           method: "POST",
           body: formData,
         });
@@ -221,7 +221,13 @@ export default function VisitPage() {
         if (!res.ok) throw new Error("Erreur lors de l'envoi des fichiers");
 
         const json = await res.json();
-        uploadedUrls = json.files.map((url: string) => `${url}`);
+        if (!json.success) {
+          throw new Error(json.error || "Erreur lors de l'envoi des fichiers");
+        }
+
+        uploadedUrls = (json.results || [])
+          .filter((file: { status: string }) => file.status === "ok")
+          .map((file: { filename: string }) => file.filename);
       }
 
       const response = await addIntervention({
@@ -455,7 +461,7 @@ export default function VisitPage() {
                                 </div>
                                 {/* eslint-disable-next-line */}
                                 <img
-                                  src={`${FILE_SERVER_URL}/uploads/${data.vehicule.certificateImage}`}
+                                  src={`/api/images/${data.vehicule.certificateImage}`}
                                   alt="Carte grise du véhicule"
                                   className="w-full"
                                   style={{

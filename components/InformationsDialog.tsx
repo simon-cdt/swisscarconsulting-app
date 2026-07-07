@@ -75,7 +75,7 @@ export default function InformationsDialog({
 
   const handleDelete = async ({ fileName }: { fileName: string }) => {
     try {
-      const response = await fetch(`${FILE_SERVER_URL}/files/${fileName}`, {
+      const response = await fetch(`/api/images/${fileName}`, {
         method: "DELETE",
       });
 
@@ -238,11 +238,11 @@ export default function InformationsDialog({
                     <video
                       controls
                       className="h-full w-full object-contain"
-                      src={`${FILE_SERVER_URL}/uploads/${fileName}`}
+                      src={`/api/videos/${fileName}`}
                     >
                       Votre navigateur ne supporte pas la lecture de vidéos.
                     </video>
-                    <div className="absolute top-2 right-2">
+                    <div className="absolute top-2 right-2 flex gap-2">
                       <button
                         onClick={() => handleDownload({ fileName })}
                         className="cursor-pointer rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
@@ -250,12 +250,38 @@ export default function InformationsDialog({
                       >
                         <Download className="h-4 w-4" />
                       </button>
-                      <button
-                        className="cursor-pointer rounded-full bg-black/50 p-2 text-white transition-colors hover:bg-black/70"
-                        title="Supprimer"
-                      >
-                        <Trash className="h-4 w-4" />
-                      </button>
+
+                      <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                          <button
+                            className="trans cursor-pointer rounded-full bg-red-200 p-2 transition-colors hover:bg-red-300"
+                            title="Supprimer"
+                          >
+                            <Trash className="h-4 w-4 text-red-600" />
+                          </button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                          <AlertDialogHeader>
+                            <AlertDialogTitle>
+                              Êtes-vous sûr de vouloir supprimer ce média ?
+                            </AlertDialogTitle>
+                            <AlertDialogDescription>
+                              Cette action est irréversible. Le média sera
+                              définitivement supprimé et ne pourra pas être
+                              récupéré.
+                            </AlertDialogDescription>
+                          </AlertDialogHeader>
+                          <AlertDialogFooter>
+                            <AlertDialogCancel>Annuler</AlertDialogCancel>
+                            <AlertDialogAction
+                              className="bg-red-500 hover:bg-red-600"
+                              onClick={() => handleDelete({ fileName })}
+                            >
+                              Supprimer
+                            </AlertDialogAction>
+                          </AlertDialogFooter>
+                        </AlertDialogContent>
+                      </AlertDialog>
                     </div>
                   </div>
                 );
@@ -269,7 +295,7 @@ export default function InformationsDialog({
                   >
                     {/* eslint-disable-next-line */}
                     <img
-                      src={`${FILE_SERVER_URL}/uploads/${fileName}`}
+                      src={`/api/images/${fileName}`}
                       alt={`Image ${index + 1}`}
                       className="h-full w-full object-contain"
                     />

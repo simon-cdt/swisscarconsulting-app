@@ -400,8 +400,10 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
               Numéro client : <Text style={styles.bold}>{client.id}</Text>
             </Text>
             <Text>
-              {data.status === "SENT_TO_GARAGE" || data.status === "FINISHED" ? "Numéro facture" : "Numéro devis"} :{" "}
-              <Text style={styles.bold}>{data.id}</Text>
+              {data.status === "SENT_TO_GARAGE" || data.status === "FINISHED"
+                ? "Numéro facture"
+                : "Numéro devis"}{" "}
+              : <Text style={styles.bold}>{data.id}</Text>
             </Text>
           </View>
         </View>
@@ -647,7 +649,7 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
               {paymentDate.toLocaleDateString("fr-CH")}
             </Text>
             <Text style={[styles.bold, { marginTop: 8 }]}>IBAN :</Text>
-            <Text>CH00 0000 0000 0000 0000 0</Text>
+            <Text>CH74 0900 0000 1526 4800 5</Text>
           </View>
           <View style={styles.totalInfo}>
             <View style={styles.totalRow}>

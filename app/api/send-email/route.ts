@@ -1,9 +1,12 @@
 import { sendEmailEstimate } from "@/lib/actions/emails";
 import { NextResponse } from "next/server";
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
-    const result = await sendEmailEstimate();
+    const url = new URL(request.url);
+    const estimateId = url.searchParams.get("estimateId") ?? undefined;
+
+    const result = await sendEmailEstimate({ estimateId });
 
     return NextResponse.json(result, {
       status: result.success ? 200 : 500,
