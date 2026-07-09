@@ -45,6 +45,8 @@ import UpdatePartItem from "@/components/form/estimates/UpdatePartItem";
 import UpdateMOItem from "@/components/form/estimates/UpdateMOItem";
 import AddUpcomingItem from "@/components/form/estimates/AddUpcomingItem";
 import UpdateUpcomingItem from "@/components/form/estimates/UpdateUpcomingItem";
+import { UpdateClientIndividual } from "@/components/form/UpdateForm/UpdateClientIndividual";
+import { UpdateClientCompany } from "@/components/form/UpdateForm/UpdateClientCompany";
 import {
   convertIndividualToInsurance,
   convertInsuranceToIndividual,
@@ -66,13 +68,16 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { UpdateVehicule } from "@/components/form/UpdateForm/UpdateVehicule";
-import { FILE_SERVER_URL } from "@/lib/config";
 import UpdateClaimNumber from "@/components/form/UpdateForm/UpdateClaimNumber";
 import UpdateDiscount from "@/components/form/UpdateForm/UpdateDiscount";
 import { GeistMono } from "geist/font/mono";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import { capitalizeFirstLetterInHtml } from "@/lib/utils";
+import {
+  capitalizeFirstLetterInHtml,
+  convertTtcToHt,
+  VAT_RATE,
+} from "@/lib/utils";
 
 type FetchEstimate = {
   id: string;
@@ -113,16 +118,20 @@ type FetchEstimate = {
         name: string;
       } | null;
       client: {
-        id: string;
+        id: number;
         firstName: string | null;
         name: string | null;
         companyName: string | null;
         typeClient: TypeClient;
         email: string;
-        phone: string;
+        phonePrefix: string;
+        phoneNumber: string;
+        phone2Prefix: string | null;
+        phone2Number: string | null;
         address: string | null;
         postalCode: number | null;
         city: string | null;
+        country: string | null;
       };
     };
   };
@@ -156,6 +165,7 @@ export default function QuoteGeneratorPage() {
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
+  const [clientEditOpen, setClientEditOpen] = useState(false);
   const [refusedEstimatePdfs, setRefusedEstimatePdfs] = useState<
     Record<string, string>
   >({});
@@ -236,6 +246,37 @@ export default function QuoteGeneratorPage() {
     const discount = estimate?.discount || 0;
     return subtotal * (1 - discount / 100);
   };
+
+  const calculateHt = () => {
+    return convertTtcToHt(calculateTotal());
+  };
+
+  const calculateVatAmount = () => {
+    return calculateTotal() - calculateHt();
+  };
+
+  const editableClient = estimate?.intervention.vehicule.client
+    ? {
+        id: estimate.intervention.vehicule.client.id,
+        name: estimate.intervention.vehicule.client.name,
+        firstName: estimate.intervention.vehicule.client.firstName,
+        companyName: estimate.intervention.vehicule.client.companyName,
+        contactFirstName: null,
+        contactName: null,
+        email: estimate.intervention.vehicule.client.email,
+        phonePrefix: estimate.intervention.vehicule.client.phonePrefix,
+        phoneNumber: estimate.intervention.vehicule.client.phoneNumber,
+        phone2Prefix: estimate.intervention.vehicule.client.phone2Prefix,
+        phone2Number: estimate.intervention.vehicule.client.phone2Number,
+        address: estimate.intervention.vehicule.client.address,
+        postalCode:
+          estimate.intervention.vehicule.client.postalCode !== null
+            ? String(estimate.intervention.vehicule.client.postalCode)
+            : null,
+        city: estimate.intervention.vehicule.client.city,
+        country: estimate.intervention.vehicule.client.country,
+      }
+    : null;
   // eslint-disable-next-line
   const generateRefusedEstimatePdf = async (refusal: any) => {
     if (estimate) {
@@ -279,6 +320,7 @@ export default function QuoteGeneratorPage() {
                 address: estimate.intervention.vehicule.client.address,
                 city: estimate.intervention.vehicule.client.city,
                 postalCode: estimate.intervention.vehicule.client.postalCode,
+                country: estimate.intervention.vehicule.client.country,
               },
             },
           },
@@ -358,6 +400,7 @@ export default function QuoteGeneratorPage() {
                 address: estimate.intervention.vehicule.client.address,
                 city: estimate.intervention.vehicule.client.city,
                 postalCode: estimate.intervention.vehicule.client.postalCode,
+                country: estimate.intervention.vehicule.client.country,
               },
             },
           },
@@ -597,6 +640,48 @@ export default function QuoteGeneratorPage() {
                             </div>
                           )}
                         </div>
+                        <div className="col-span-2 flex w-full justify-start">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() =>
+                              setClientEditOpen((current) => !current)
+                            }
+                          >
+                            {clientEditOpen
+                              ? "Masquer la modification client"
+                              : "Modifier le client"}
+                          </Button>
+                        </div>
+                        {clientEditOpen && editableClient && (
+                          <div className="col-span-2">
+                            <Card className="w-full shadow-none">
+                              <CardHeader>
+                                <CardTitle>Modifier le client</CardTitle>
+                                <CardDescription>
+                                  Le formulaire s&apos;ouvre directement sur la
+                                  page du devis.
+                                </CardDescription>
+                              </CardHeader>
+                              <CardContent>
+                                {estimate.intervention.vehicule.client
+                                  .typeClient === "company" ? (
+                                  <UpdateClientCompany
+                                    client={editableClient}
+                                    refetch={refetch}
+                                    setIsOpen={setClientEditOpen}
+                                  />
+                                ) : (
+                                  <UpdateClientIndividual
+                                    client={editableClient}
+                                    refetch={refetch}
+                                    setIsOpen={setClientEditOpen}
+                                  />
+                                )}
+                              </CardContent>
+                            </Card>
+                          </div>
+                        )}
                       </div>
                     </CardContent>
                   </Card>
@@ -1076,11 +1161,19 @@ export default function QuoteGeneratorPage() {
                     )}
                   </CardContent>
                   <CardFooter className="flex flex-col items-start gap-2">
+                    <div className="flex w-full justify-between text-sm">
+                      <span>Total HT :</span>
+                      <span>{calculateHt().toFixed(2)}&nbsp;CHF</span>
+                    </div>
+                    <div className="flex w-full justify-between text-sm">
+                      <span>TVA ({(VAT_RATE * 100).toFixed(1)}%) :</span>
+                      <span>{calculateVatAmount().toFixed(2)}&nbsp;CHF</span>
+                    </div>
                     {estimate.discount !== undefined &&
                       estimate.discount !== null &&
                       estimate.discount > 0 && (
                         <div className="text-muted-foreground flex w-full justify-between text-sm">
-                          <span>Sous-total :</span>
+                          <span>Sous-total TTC :</span>
                           <span>
                             {selectedItems
                               .reduce((sum, item) => {
@@ -1135,23 +1228,14 @@ export default function QuoteGeneratorPage() {
                     <div className="flex w-full flex-col gap-2">
                       <div className="flex w-full items-center justify-between">
                         <p>
-                          Total HT
+                          Total TTC
                           {estimate.discount && estimate.discount > 0
-                            ? " après réduction"
-                            : ""}
-                          &nbsp;
-                          <span className="font-semibold">
-                            {calculateTotal().toFixed(2)}&nbsp;CHF
-                          </span>
+                            ? " après réduction :"
+                            : " :"}
                         </p>
-                      </div>
-                      <div className="flex w-full items-center justify-between border-t pt-2">
-                        <p className="text-primary font-semibold">
-                          Total TTC (TVA 10%) &nbsp;
-                          <span>
-                            {(calculateTotal() * 1.1).toFixed(2)}&nbsp;CHF
-                          </span>
-                        </p>
+                        <span className="font-semibold">
+                          {calculateTotal().toFixed(2)}&nbsp;CHF
+                        </span>
                       </div>
                     </div>
                   </CardFooter>

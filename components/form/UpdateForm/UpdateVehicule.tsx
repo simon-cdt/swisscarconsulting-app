@@ -68,6 +68,7 @@ export function UpdateVehicule({
   const { data: insurances, isLoading, isError } = useInsurances();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [showManualInsurance, setShowManualInsurance] = useState(false);
 
   const zodFormSchema = z
     .object({
@@ -96,6 +97,11 @@ export function UpdateVehicule({
           },
         ),
       insuranceId: z.string().optional(),
+      insuranceName: z.string().optional(),
+      insuranceEmail: z
+        .email("L'e-mail de l'assurance est invalide.")
+        .optional(),
+      insurancePhone: z.string().optional(),
       chassisNumber: z.string().optional(),
       registrationNumber: z
         .string()
@@ -128,6 +134,25 @@ export function UpdateVehicule({
       receptionType: z.string().optional(),
       certificateImage: z.instanceof(File).optional(),
     })
+    .refine(
+      (data) => {
+        const hasManualInsurance =
+          !!data.insuranceName ||
+          !!data.insuranceEmail ||
+          !!data.insurancePhone;
+
+        if (!hasManualInsurance) return true;
+
+        return (
+          !!data.insuranceName && !!data.insuranceEmail && !!data.insurancePhone
+        );
+      },
+      {
+        message:
+          "Merci de renseigner le nom, l'e-mail et le téléphone de l'assurance.",
+        path: ["insuranceName"],
+      },
+    )
     .refine(
       (data) => {
         if (!data.lastExpertise || !data.year) return true;
@@ -186,6 +211,9 @@ export function UpdateVehicule({
           licensePlate: data.licensePlate,
           certificateImage: uploadedUrl ?? null,
           insuranceId: data.insuranceId,
+          insuranceName: data.insuranceName,
+          insuranceEmail: data.insuranceEmail,
+          insurancePhone: data.insurancePhone,
           chassisNumber: data.chassisNumber,
           lastExpertise: expertiseDate,
           registrationNumber: data.registrationNumber,
@@ -279,6 +307,46 @@ export function UpdateVehicule({
               error={errors.insuranceId}
               defaultValue={vehicule.insurance?.id || undefined}
             />
+            <div className="col-span-2 flex justify-start">
+              <Button
+                type="button"
+                variant="ghost"
+                className="px-0 text-sm"
+                onClick={() => setShowManualInsurance((current) => !current)}
+              >
+                {showManualInsurance
+                  ? "Masquer l'assurance manuelle"
+                  : "Ajouter une autre assurance"}
+              </Button>
+            </div>
+            {showManualInsurance && (
+              <div className="col-span-2 grid gap-4 md:grid-cols-3">
+                <FormField
+                  label="Nom de l'assurance"
+                  name="insuranceName"
+                  register={register}
+                  type="text"
+                  error={errors.insuranceName}
+                  placeholder="Assura"
+                />
+                <FormField
+                  label="E-mail de l'assurance"
+                  name="insuranceEmail"
+                  register={register}
+                  type="email"
+                  error={errors.insuranceEmail}
+                  placeholder="contact@assura.ch"
+                />
+                <FormField
+                  label="Téléphone de l'assurance"
+                  name="insurancePhone"
+                  register={register}
+                  type="text"
+                  error={errors.insurancePhone}
+                  placeholder="+41 21 123 45 67"
+                />
+              </div>
+            )}
             <FormField
               label="Numéro de chassis"
               name="chassisNumber"

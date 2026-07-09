@@ -40,7 +40,7 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import UpdateClient from "@/components/form/UpdateForm/UpdateClient";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { formatFullPhoneNumber } from "@/lib/utils";
+import { formatClientAddress, formatFullPhoneNumber } from "@/lib/utils";
 import { useEffect } from "react";
 import { RotateCcw, RotateCw } from "lucide-react";
 
@@ -82,6 +82,7 @@ type FetchClientAndVehicule = {
     address: string | null;
     city: string | null;
     postalCode: string | null;
+    country: string | null;
     contactFirstName: string | null;
     contactName: string | null;
   };
@@ -357,13 +358,12 @@ export default function VisitPage() {
                       )}
                       <Item
                         label="Adresse"
-                        value={
-                          data.client.address &&
-                          data.client.postalCode &&
-                          data.client.city
-                            ? `${data.client.address}, ${data.client.postalCode} ${data.client.city}`
-                            : null
-                        }
+                        value={formatClientAddress(
+                          data.client.address,
+                          data.client.postalCode,
+                          data.client.city,
+                          data.client.country,
+                        )}
                         oneLine
                       />
                     </div>

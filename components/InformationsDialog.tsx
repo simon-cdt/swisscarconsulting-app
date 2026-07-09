@@ -30,6 +30,7 @@ import {
 import toast from "react-hot-toast";
 import { Textarea } from "./ui/textarea";
 import { Spinner } from "./ui/spinner";
+import AddMedias from "./form/AddMedias";
 
 export default function InformationsDialog({
   estimate,
@@ -161,57 +162,63 @@ export default function InformationsDialog({
             estimate.intervention.description !== "" && (
               <div className="flex flex-col gap-2">
                 {allowEdit && !onlyMedias && (
-                  <Dialog open={editOpen} onOpenChange={setEditOpen}>
-                    <DialogTrigger asChild>
-                      <Button variant="outline" size="sm" className="gap-2">
-                        <Edit className="size-4" />
-                        Modifier
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="sm:max-w-xl">
-                      <DialogHeader>
-                        <DialogTitle>Modifier la description</DialogTitle>
-                      </DialogHeader>
-                      <div className="flex flex-col gap-4">
-                        <Textarea
-                          value={description}
-                          onChange={(e) => setDescription(e.target.value)}
-                          placeholder="Description de l'intervention"
-                          className="min-h-40"
-                        />
-                        <div className="flex justify-end gap-2">
-                          <DialogClose asChild>
-                            <Button variant="outline">Annuler</Button>
-                          </DialogClose>
-                          <Button
-                            disabled={isSaving || description.trim() === ""}
-                            onClick={async () => {
-                              try {
-                                setIsSaving(true);
-                                const response =
-                                  await updateInterventionDescription({
-                                    interventionId: estimate.intervention.id,
-                                    description: description.trim(),
-                                  });
+                  <div className="flex w-full justify-start gap-5">
+                    <Dialog open={editOpen} onOpenChange={setEditOpen}>
+                      <DialogTrigger asChild>
+                        <Button variant="outline" size="sm" className="gap-2">
+                          <Edit className="size-4" />
+                          Modifier
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-xl">
+                        <DialogHeader>
+                          <DialogTitle>Modifier la description</DialogTitle>
+                        </DialogHeader>
+                        <div className="flex flex-col gap-4">
+                          <Textarea
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
+                            placeholder="Description de l'intervention"
+                            className="min-h-40"
+                          />
+                          <div className="flex justify-end gap-2">
+                            <DialogClose asChild>
+                              <Button variant="outline">Annuler</Button>
+                            </DialogClose>
+                            <Button
+                              disabled={isSaving || description.trim() === ""}
+                              onClick={async () => {
+                                try {
+                                  setIsSaving(true);
+                                  const response =
+                                    await updateInterventionDescription({
+                                      interventionId: estimate.intervention.id,
+                                      description: description.trim(),
+                                    });
 
-                                if (response.success) {
-                                  toast.success(response.message);
-                                  setEditOpen(false);
-                                  refetch();
-                                } else {
-                                  toast.error(response.message);
+                                  if (response.success) {
+                                    toast.success(response.message);
+                                    setEditOpen(false);
+                                    refetch();
+                                  } else {
+                                    toast.error(response.message);
+                                  }
+                                } finally {
+                                  setIsSaving(false);
                                 }
-                              } finally {
-                                setIsSaving(false);
-                              }
-                            }}
-                          >
-                            {isSaving ? <Spinner /> : "Enregistrer"}
-                          </Button>
+                              }}
+                            >
+                              {isSaving ? <Spinner /> : "Enregistrer"}
+                            </Button>
+                          </div>
                         </div>
-                      </div>
-                    </DialogContent>
-                  </Dialog>
+                      </DialogContent>
+                    </Dialog>
+                    <AddMedias
+                      refetch={refetch}
+                      interventionId={estimate.intervention.id}
+                    />
+                  </div>
                 )}
                 <div className="bg-muted/30 max-h-64 overflow-y-auto rounded-md border p-4">
                   <div className="flex items-start justify-between gap-3">

@@ -72,6 +72,7 @@ export async function GET(
       address: true,
       city: true,
       postalCode: true,
+      country: true,
       contactFirstName: true,
       contactName: true,
     },

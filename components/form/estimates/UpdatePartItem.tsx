@@ -221,7 +221,7 @@ export default function UpdatePartItem({
               />
             </div>
             <FormField
-              label="Prix unique"
+              label="Prix unique TTC"
               name="unitPrice"
               register={register}
               type="number"

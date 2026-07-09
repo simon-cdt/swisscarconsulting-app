@@ -70,6 +70,7 @@ export async function GET(
       address: true,
       city: true,
       postalCode: true,
+      country: true,
       vehicules: {
         select: {
           brand: true,

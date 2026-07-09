@@ -17,6 +17,7 @@ export type SharedFormData = {
   address: string;
   postalCode: number | undefined;
   city: string;
+  country: string;
 };
 
 export default function CustomTabs() {
@@ -31,6 +32,7 @@ export default function CustomTabs() {
     address: "",
     postalCode: undefined,
     city: "",
+    country: "",
   });
   const [activeTab, setActiveTab] = useState("individual");
   const addClientRef = useRef<{ getSyncData: () => SharedFormData } | null>(

@@ -124,6 +124,41 @@ export const formatAddress = (str: string): string => {
   return capitalize(formatted);
 };
 
+export const formatClientAddress = (
+  address?: string | null,
+  postalCode?: number | string | null,
+  city?: string | null,
+  country?: string | null,
+): string | null => {
+  const locationParts: string[] = [];
+
+  if (postalCode || city) {
+    const postalCity = [postalCode ?? "", city ?? ""].filter(Boolean).join(" ");
+
+    if (postalCity) {
+      locationParts.push(postalCity);
+    }
+  }
+
+  if (country) {
+    locationParts.push(country);
+  }
+
+  const parts = [address, ...locationParts].filter(Boolean);
+
+  return parts.length > 0 ? parts.join(", ") : null;
+};
+
+export const VAT_RATE = 0.081;
+
+export const convertTtcToHt = (amountTtc: number) => {
+  return amountTtc / (1 + VAT_RATE);
+};
+
+export const convertHtToTtc = (amountHt: number) => {
+  return amountHt * (1 + VAT_RATE);
+};
+
 export const formatFullPhoneNumber = (
   prefix: string,
   number: string,

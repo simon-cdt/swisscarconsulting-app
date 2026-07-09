@@ -150,7 +150,7 @@ export default function AddMOItem({
           />
         </div>
         <FormField
-          label="Prix unique"
+          label="Prix unique TTC"
           name="unitPrice"
           register={register}
           type="number"
@@ -207,7 +207,7 @@ export default function AddMOItem({
               className="h-4 w-4 rounded border-gray-300"
             />
             <label htmlFor="calculateByTime" className="text-sm">
-              Calculer le prix selon le temps (heures × prix/h)
+              Calculer le prix selon le temps (heures × prix/h TTC)
             </label>
           </div>
         )}
@@ -223,7 +223,7 @@ export default function AddMOItem({
             </div>
           )}
           <div className="flex items-center justify-between">
-            <span className="text-sm text-gray-700">Prix total:</span>
+            <span className="text-sm text-gray-700">Prix total TTC:</span>
             <span className="text-xl font-bold text-green-600">
               {calculateByTime && (hours !== undefined || minutes !== undefined)
                 ? (

@@ -19,10 +19,10 @@ export async function POST(request: NextRequest) {
       ...data,
       logoBase64,
     };
-
     // Générer le PDF avec React PDF
     const buffer = await renderToBuffer(
       // @ts-expect-error ça fonctionne quand meme
+
       React.createElement(EstimatePDF, { data: dataWithLogo }),
     );
 

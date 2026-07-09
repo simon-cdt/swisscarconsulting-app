@@ -30,6 +30,7 @@ export function UpdateClientIndividual({
     address: string | null;
     postalCode: string | null;
     city: string | null;
+    country: string | null;
   };
   refetch: () => void;
   setIsOpen: (isOpen: boolean) => void;
@@ -88,6 +89,13 @@ export function UpdateClientIndividual({
         (val) => !val || /^[a-zA-ZÀ-ÿ\s\-']+$/.test(val),
         "La ville ne doit contenir que des lettres",
       ),
+    country: z
+      .string()
+      .optional()
+      .refine(
+        (val) => !val || /^[a-zA-ZÀ-ÿ\s\-']+$/.test(val),
+        "Le pays ne doit contenir que des lettres",
+      ),
   });
   type FormSchema = z.infer<typeof zodFormSchema>;
 
@@ -108,6 +116,7 @@ export function UpdateClientIndividual({
       address: client.address || "",
       postalCode: client.postalCode ? parseInt(client.postalCode) : undefined,
       city: client.city || "",
+      country: client.country || "",
     },
   });
 
@@ -125,6 +134,7 @@ export function UpdateClientIndividual({
         address: data.address,
         postalCode: data.postalCode,
         city: data.city,
+        country: data.country,
       },
     });
     if (response.success) {
@@ -198,21 +208,31 @@ export function UpdateClientIndividual({
             register={register}
           />
         </div>
-        <FormField
-          label="Code Postal"
-          name="postalCode"
-          type="number"
-          error={errors.postalCode}
-          register={register}
-          step="1"
-        />
-        <FormField
-          label="Ville"
-          name="city"
-          type="text"
-          error={errors.city}
-          register={register}
-        />
+        <div className="col-span-2 grid gap-4 md:grid-cols-3">
+          <FormField
+            label="Ville"
+            name="city"
+            type="text"
+            error={errors.city}
+            register={register}
+          />
+          <FormField
+            label="Code Postal"
+            name="postalCode"
+            type="number"
+            error={errors.postalCode}
+            register={register}
+            step="1"
+          />
+          <FormField
+            label="Pays"
+            name="country"
+            type="text"
+            error={errors.country}
+            register={register}
+            placeholder="Suisse"
+          />
+        </div>
         <div className="col-span-2 flex w-full justify-end gap-4">
           <Button
             variant="outline"

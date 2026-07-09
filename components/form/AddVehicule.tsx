@@ -67,6 +67,7 @@ export function AddVehicule({
 
   const [open, setOpen] = useState(false);
   const [showPlateConfirmDialog, setShowPlateConfirmDialog] = useState(false);
+  const [showManualInsurance, setShowManualInsurance] = useState(false);
   const [pendingFormData, setPendingFormData] = useState<FormSchema | null>(
     null,
   );
@@ -101,6 +102,11 @@ export function AddVehicule({
           },
         ),
       insuranceId: z.string().optional(),
+      insuranceName: z.string().optional(),
+      insuranceEmail: z
+        .email("L'e-mail de l'assurance est invalide.")
+        .optional(),
+      insurancePhone: z.string().optional(),
       chassisNumber: z.string().optional(),
       registrationNumber: z
         .string()
@@ -132,6 +138,25 @@ export function AddVehicule({
       receptionType: z.string().optional(),
       certificateImage: z.instanceof(File).optional(),
     })
+    .refine(
+      (data) => {
+        const hasManualInsurance =
+          !!data.insuranceName ||
+          !!data.insuranceEmail ||
+          !!data.insurancePhone;
+
+        if (!hasManualInsurance) return true;
+
+        return (
+          !!data.insuranceName && !!data.insuranceEmail && !!data.insurancePhone
+        );
+      },
+      {
+        message:
+          "Merci de renseigner le nom, l'e-mail et le téléphone de l'assurance.",
+        path: ["insuranceName"],
+      },
+    )
     .refine(
       (data) => {
         if (!data.lastExpertise || !data.year) return true;
@@ -184,6 +209,9 @@ export function AddVehicule({
         year: data.year,
         licensePlate: data.licensePlate,
         insuranceId: data.insuranceId,
+        insuranceName: data.insuranceName,
+        insuranceEmail: data.insuranceEmail,
+        insurancePhone: data.insurancePhone,
         chassisNumber: data.chassisNumber,
         registrationNumber: data.registrationNumber,
         lastExpertise: expertiseDate,
@@ -302,6 +330,46 @@ export function AddVehicule({
               noFound="Aucune assurance trouvée"
               error={errors.insuranceId}
             />
+            <div className="col-span-2 flex justify-start">
+              <Button
+                type="button"
+                variant="ghost"
+                className="px-0 text-sm"
+                onClick={() => setShowManualInsurance((current) => !current)}
+              >
+                {showManualInsurance
+                  ? "Masquer l'assurance manuelle"
+                  : "Ajouter une autre assurance"}
+              </Button>
+            </div>
+            {showManualInsurance && (
+              <div className="col-span-2 grid gap-4 md:grid-cols-3">
+                <FormField
+                  label="Nom de l'assurance"
+                  name="insuranceName"
+                  register={register}
+                  type="text"
+                  error={errors.insuranceName}
+                  placeholder="Assura"
+                />
+                <FormField
+                  label="E-mail de l'assurance"
+                  name="insuranceEmail"
+                  register={register}
+                  type="email"
+                  error={errors.insuranceEmail}
+                  placeholder="contact@assura.ch"
+                />
+                <FormField
+                  label="Téléphone de l'assurance"
+                  name="insurancePhone"
+                  register={register}
+                  type="text"
+                  error={errors.insurancePhone}
+                  placeholder="+41 21 123 45 67"
+                />
+              </div>
+            )}
             <FormField
               label="Numéro de chassis"
               name="chassisNumber"

@@ -72,6 +72,7 @@ export const createInvoice = async ({
                     address: true,
                     postalCode: true,
                     city: true,
+                    country: true,
                   },
                 },
               },

@@ -46,6 +46,7 @@ export default function UpdateClient({
     address: string | null;
     postalCode: string | null;
     city: string | null;
+    country: string | null;
   };
   refetch: () => void;
 }) {

@@ -39,6 +39,7 @@ model Client {
   address    String?
   postalCode Int?
   city       String?
+  country    String?
 
   firstName String?
   name      String?
@@ -85,7 +86,7 @@ model Intervention {
   vehiculeId  String
   date        DateTime @default(now())
   description String?
-  medias      String?
+  medias      String?  @db.Text
   deleted     Boolean  @default(false)
 
   createdAt DateTime  @default(now())
@@ -162,7 +163,7 @@ model Invoice {
   interventionId   String
   interventionDate DateTime
   description      String?
-  medias           String?
+  medias           String?  @db.Text
 
   vehiculeId   String
   brand        String

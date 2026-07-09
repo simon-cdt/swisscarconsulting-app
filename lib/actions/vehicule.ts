@@ -32,6 +32,9 @@ export const addClientVehicule = async ({
     licensePlate: string;
     clientId: number;
     insuranceId: string | undefined;
+    insuranceName?: string;
+    insuranceEmail?: string;
+    insurancePhone?: string;
     chassisNumber: string | undefined;
     registrationNumber: string | undefined;
     lastExpertise: Date | undefined;
@@ -128,13 +131,22 @@ export const addClientVehicule = async ({
             id: data.clientId,
           },
         },
-        insurance: data.insuranceId
-          ? {
-              connect: {
-                id: data.insuranceId,
-              },
-            }
-          : undefined,
+        insurance:
+          data.insuranceName && data.insuranceEmail && data.insurancePhone
+            ? data.insuranceName && data.insuranceEmail && data.insurancePhone
+              ? {
+                  create: {
+                    name: data.insuranceName,
+                    email: data.insuranceEmail,
+                    phone: data.insurancePhone,
+                  },
+                }
+              : {
+                  connect: {
+                    id: data.insuranceId,
+                  },
+                }
+            : undefined,
       },
       select: {
         id: true,
@@ -164,6 +176,9 @@ export const updateVehicule = async ({
     year: number;
     licensePlate: string;
     insuranceId: string | undefined;
+    insuranceName?: string;
+    insuranceEmail?: string;
+    insurancePhone?: string;
     chassisNumber: string | undefined;
     registrationNumber: string | undefined;
     lastExpertise: Date | undefined;
@@ -202,9 +217,17 @@ export const updateVehicule = async ({
                 id: data.insuranceId,
               },
             }
-          : {
-              disconnect: true,
-            },
+          : data.insuranceName && data.insuranceEmail && data.insurancePhone
+            ? {
+                create: {
+                  name: data.insuranceName,
+                  email: data.insuranceEmail,
+                  phone: data.insurancePhone,
+                },
+              }
+            : {
+                disconnect: true,
+              },
       },
     });
 

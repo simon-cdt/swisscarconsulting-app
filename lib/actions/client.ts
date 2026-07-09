@@ -219,6 +219,7 @@ export const addClientIndividual = async ({
     address?: string;
     postalCode?: number;
     city?: string;
+    country?: string;
   };
 }): Promise<
   | { success: false; message: string }
@@ -256,6 +257,7 @@ export const addClientIndividual = async ({
         address: data.address,
         postalCode: data.postalCode,
         city: data.city,
+        country: data.country,
       },
       select: { id: true },
     });
@@ -290,6 +292,7 @@ export const addClientCompany = async ({
     address?: string;
     postalCode?: number;
     city?: string;
+    country?: string;
   };
 }): Promise<
   | { success: false; message: string }
@@ -327,6 +330,7 @@ export const addClientCompany = async ({
         address: data.address,
         postalCode: data.postalCode,
         city: data.city,
+        country: data.country,
       },
       select: { id: true },
     });
@@ -364,6 +368,7 @@ export const updateClientIndividual = async ({
     address?: string;
     postalCode?: number;
     city?: string;
+    country?: string;
   };
 }): Promise<
   | { success: false; message: string }
@@ -388,6 +393,7 @@ export const updateClientIndividual = async ({
         address: data.address,
         postalCode: data.postalCode === undefined ? null : data.postalCode,
         city: data.city,
+        country: data.country,
         typeClient: "individual",
       },
     });
@@ -419,6 +425,7 @@ export const updateClientCompany = async ({
     address?: string;
     postalCode?: number;
     city?: string;
+    country?: string;
   };
 }): Promise<
   | { success: false; message: string }
@@ -444,6 +451,7 @@ export const updateClientCompany = async ({
         address: data.address,
         postalCode: data.postalCode === undefined ? null : data.postalCode,
         city: data.city,
+        country: data.country,
         typeClient: "company",
       },
     });

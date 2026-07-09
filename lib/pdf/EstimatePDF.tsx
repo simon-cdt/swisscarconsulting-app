@@ -8,7 +8,12 @@ import {
   Image,
   Font,
 } from "@react-pdf/renderer";
-import { capitalizeFirstLetterInHtml } from "@/lib/utils";
+import {
+  capitalizeFirstLetterInHtml,
+  convertTtcToHt,
+  formatClientAddress,
+  VAT_RATE,
+} from "@/lib/utils";
 
 // Enregistrer les polices (vous pouvez utiliser des polices système ou hébergées)
 Font.register({
@@ -272,6 +277,7 @@ type EstimateData = {
         address?: string | null;
         city?: string | null;
         postalCode?: string | null;
+        country?: string | null;
       };
     };
   };
@@ -369,6 +375,14 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
     return subtotal * (1 - discount / 100);
   };
 
+  const calculateHt = () => {
+    return convertTtcToHt(calculateTotal());
+  };
+
+  const calculateVatAmount = () => {
+    return calculateTotal() - calculateHt();
+  };
+
   const currentDate = new Date();
   const paymentDate = new Date();
   paymentDate.setMonth(paymentDate.getMonth() + 1);
@@ -414,6 +428,7 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
             <Text style={styles.bold}>Swiss Car Consulting SA</Text>
             <Text>Route des Jeunes, 13</Text>
             <Text>1227, Carouge</Text>
+            <Text>Suisse</Text>
             <Text>Tel: +41 79 123 45 67</Text>
             <Text>Mail: contact@swisscarconsulting.ch</Text>
           </View>
@@ -426,12 +441,17 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
               })}
             </Text>
             <Text style={styles.bold}>{clientName}</Text>
-            {client.address && client.city && client.postalCode && (
+            {formatClientAddress(
+              client.address,
+              client.postalCode,
+              client.city,
+            ) && (
               <>
                 <Text>{client.address}</Text>
                 <Text>
                   {client.postalCode}, {client.city}
                 </Text>
+                {client.country && <Text>{client.country}</Text>}
               </>
             )}
           </View>
@@ -653,7 +673,21 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
           </View>
           <View style={styles.totalInfo}>
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Sous-total HT :</Text>
+              <Text style={styles.totalLabel}>Total HT :</Text>
+              <Text style={styles.totalValue}>
+                {calculateHt().toFixed(2)} CHF
+              </Text>
+            </View>
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>
+                TVA ({(VAT_RATE * 100).toFixed(1)}%) :
+              </Text>
+              <Text style={styles.totalValue}>
+                {calculateVatAmount().toFixed(2)} CHF
+              </Text>
+            </View>
+            <View style={styles.totalRow}>
+              <Text style={styles.totalLabel}>Sous-total TTC :</Text>
               <Text style={styles.totalValue}>
                 {calculateSubtotal().toFixed(2)} CHF
               </Text>
@@ -669,22 +703,10 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
                 </Text>
               </View>
             )}
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total HT :</Text>
-              <Text style={styles.totalValue}>
-                {calculateTotal().toFixed(2)} CHF
-              </Text>
-            </View>
-            <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>TVA (10%) :</Text>
-              <Text style={styles.totalValue}>
-                {(calculateTotal() * 0.1).toFixed(2)} CHF
-              </Text>
-            </View>
             <View style={styles.totalRowFinal}>
               <Text style={styles.totalLabelFinal}>Total TTC :</Text>
               <Text style={styles.totalValueFinal}>
-                {(calculateTotal() * 1.1).toFixed(2)} CHF
+                {calculateTotal().toFixed(2)} CHF
               </Text>
             </View>
           </View>

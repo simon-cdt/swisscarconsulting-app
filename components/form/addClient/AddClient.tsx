@@ -24,7 +24,7 @@ type AddClientProps = {
 };
 
 export default forwardRef(function AddClient(
-  { sharedData, setSharedData }: AddClientProps,
+  { sharedData }: AddClientProps,
   ref,
 ) {
   const router = useRouter();
@@ -83,6 +83,13 @@ export default forwardRef(function AddClient(
         (val) => !val || /^[a-zA-ZÀ-ÿ\s\-']+$/.test(val),
         "La ville ne doit contenir que des lettres",
       ),
+    country: z
+      .string()
+      .optional()
+      .refine(
+        (val) => !val || /^[a-zA-ZÀ-ÿ\s\-']+$/.test(val),
+        "Le pays ne doit contenir que des lettres",
+      ),
   });
   type FormSchema = z.infer<typeof zodFormSchema>;
 
@@ -105,6 +112,7 @@ export default forwardRef(function AddClient(
       address: sharedData.address,
       postalCode: sharedData.postalCode,
       city: sharedData.city,
+      country: sharedData.country,
     },
   });
 
@@ -122,6 +130,7 @@ export default forwardRef(function AddClient(
         address: formValues.address || "",
         postalCode: formValues.postalCode,
         city: formValues.city || "",
+        country: formValues.country || "",
       };
     },
   }));
@@ -227,7 +236,7 @@ export default forwardRef(function AddClient(
             setValue("address", formatted);
           }}
         />
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4 md:grid-cols-3">
           <FormField
             label="Ville"
             name="city"
@@ -248,6 +257,18 @@ export default forwardRef(function AddClient(
             error={errors.postalCode}
             step="1"
             placeholder="1204"
+          />
+          <FormField
+            label="Pays"
+            name="country"
+            type="text"
+            register={register}
+            error={errors.country}
+            placeholder="Suisse"
+            onChange={(e) => {
+              const formatted = toCamelCase(e.target.value);
+              setValue("country", formatted);
+            }}
           />
         </div>
       </div>

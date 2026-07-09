@@ -49,6 +49,7 @@ type FetchAllVehiculesOfClient = {
     address: string | null;
     city: string | null;
     postalCode: string | null;
+    country: string | null;
     vehicules: {
       brand: string;
       model: string;
@@ -279,15 +280,17 @@ export default function ClientVehiculePage() {
                           className={`${
                             data.client.address &&
                             data.client.postalCode &&
-                            data.client.city
+                            data.client.city &&
+                            data.client.country
                               ? "text-foreground"
                               : "text-red-500"
                           } text-base font-medium`}
                         >
                           {data.client.address &&
                           data.client.postalCode &&
-                          data.client.city
-                            ? `${data.client.address}, ${data.client.postalCode} ${data.client.city}`
+                          data.client.city &&
+                          data.client.country
+                            ? `${data.client.address}, ${data.client.postalCode} ${data.client.city} (${data.client.country})`
                             : "Non renseigné"}
                         </p>
                       </div>
