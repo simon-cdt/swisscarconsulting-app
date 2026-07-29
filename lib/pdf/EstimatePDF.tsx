@@ -385,7 +385,7 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
 
   const currentDate = new Date();
   const paymentDate = new Date();
-  paymentDate.setMonth(paymentDate.getMonth() + 1);
+  paymentDate.setDate(currentDate.getDate() + 15);
 
   const parts = data.items.filter((item) => item.type === "PART");
   const labor = data.items.filter((item) => item.type === "LABOR");
@@ -662,7 +662,7 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
           <View style={styles.paymentInfo}>
             <Text style={styles.bold}>Conditions de paiement :</Text>
             <Text style={{ marginTop: 4 }}>
-              Paiement à effectuer dans un délai de 30 jours
+              Paiement à effectuer dans un délai de 15 jours
             </Text>
             <Text style={{ marginTop: 2 }}>
               Devis valable jusqu&apos;au :{" "}

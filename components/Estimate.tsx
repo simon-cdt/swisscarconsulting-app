@@ -49,6 +49,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Spinner } from "./ui/spinner";
 import { createInvoice } from "@/lib/actions/invoice";
 import CreateAppointmentDialog from "./form/CreateAppointmentDialog";
+import { sendEmailInvoice } from "@/lib/actions/emails";
 
 export default function Estimate({
   estimate,
@@ -538,15 +539,21 @@ export default function Estimate({
                         <AlertDialogAction
                           className="bg-pink-700 hover:bg-pink-800"
                           onClick={async () => {
-                            const response = await createInvoice({
+                            const response = await sendEmailInvoice({
                               estimateId: estimate.id,
                             });
 
                             if (response.success) {
-                              toast.success(response.message);
+                              toast.success(
+                                response.message ||
+                                  "La facture a été envoyée avec succès.",
+                              );
                               router.push(`/dashboard/mechanical`);
                             } else {
-                              toast.error(response.message);
+                              toast.error(
+                                response.message ||
+                                  "Une erreur est survenue lors de l'envoi de la facture.",
+                              );
                             }
                           }}
                         >

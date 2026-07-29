@@ -99,7 +99,7 @@ export default function Invoice({
 
           <div className="flex h-full flex-col justify-center gap-2">
             <Link
-              href={`${FILE_SERVER_URL}/uploads/${invoice.pdfUrl}`}
+              href={`/dashboard/invoices/${invoice.pdfUrl}`}
               target="_blank"
             >
               <Button className="w-full" variant={"outline"}>
