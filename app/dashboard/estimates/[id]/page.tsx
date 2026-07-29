@@ -73,11 +73,7 @@ import UpdateDiscount from "@/components/form/UpdateForm/UpdateDiscount";
 import { GeistMono } from "geist/font/mono";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
-import {
-  capitalizeFirstLetterInHtml,
-  convertTtcToHt,
-  VAT_RATE,
-} from "@/lib/utils";
+import { capitalizeFirstLetterInHtml, VAT_RATE } from "@/lib/utils";
 
 type FetchEstimate = {
   id: string;
@@ -223,8 +219,8 @@ export default function QuoteGeneratorPage() {
     }
   };
 
-  const calculateTotal = () => {
-    const subtotal = selectedItems.reduce((sum, item) => {
+  const calculateHt = () => {
+    const subtotalHt = selectedItems.reduce((sum, item) => {
       let itemTotal: number;
 
       if (item.type === "LABOR") {
@@ -244,11 +240,13 @@ export default function QuoteGeneratorPage() {
 
     // Appliquer la réduction si elle existe
     const discount = estimate?.discount || 0;
-    return subtotal * (1 - discount / 100);
+    return subtotalHt * (1 - discount / 100);
   };
 
-  const calculateHt = () => {
-    return convertTtcToHt(calculateTotal());
+  const calculateTotal = () => {
+    // Les prix sont maintenant en HT, on applique la TVA pour obtenir le TTC
+    const ht = calculateHt();
+    return ht * (1 + VAT_RATE);
   };
 
   const calculateVatAmount = () => {
@@ -313,6 +311,7 @@ export default function QuoteGeneratorPage() {
               licensePlate: estimate.intervention.vehicule.licensePlate,
               client: {
                 id: estimate.intervention.vehicule.client.id,
+                email: estimate.intervention.vehicule.client.email,
                 typeClient: estimate.intervention.vehicule.client.typeClient,
                 firstName: estimate.intervention.vehicule.client.firstName,
                 name: estimate.intervention.vehicule.client.name,
@@ -393,6 +392,7 @@ export default function QuoteGeneratorPage() {
               licensePlate: estimate.intervention.vehicule.licensePlate,
               client: {
                 id: estimate.intervention.vehicule.client.id,
+                email: estimate.intervention.vehicule.client.email,
                 typeClient: estimate.intervention.vehicule.client.typeClient,
                 firstName: estimate.intervention.vehicule.client.firstName,
                 name: estimate.intervention.vehicule.client.name,
@@ -574,7 +574,20 @@ export default function QuoteGeneratorPage() {
                               "Non renseigné"}
                           </p>
                         </div>
-                        <div className="col-span-2 mt-2 flex w-full justify-end">
+                        <div className="col-span-2 mt-2 flex w-full justify-between">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="border-teal-200 text-teal-600 hover:bg-teal-50 hover:text-teal-600"
+                            onClick={() =>
+                              setClientEditOpen((current) => !current)
+                            }
+                          >
+                            {clientEditOpen
+                              ? "Masquer la modification client"
+                              : "Modifier le client"}
+                          </Button>
                           {estimate.intervention.vehicule.certificateImage ? (
                             <Dialog>
                               <DialogTrigger asChild>
@@ -639,19 +652,6 @@ export default function QuoteGeneratorPage() {
                               </Button>
                             </div>
                           )}
-                        </div>
-                        <div className="col-span-2 flex w-full justify-start">
-                          <Button
-                            type="button"
-                            variant="outline"
-                            onClick={() =>
-                              setClientEditOpen((current) => !current)
-                            }
-                          >
-                            {clientEditOpen
-                              ? "Masquer la modification client"
-                              : "Modifier le client"}
-                          </Button>
                         </div>
                         {clientEditOpen && editableClient && (
                           <div className="col-span-2">

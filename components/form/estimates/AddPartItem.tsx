@@ -253,7 +253,7 @@ export default function AddPartItem({
           />
         </div>
         <FormField
-          label="Prix unique TTC"
+          label="Prix unique HT"
           name="unitPrice"
           register={register}
           type="number"

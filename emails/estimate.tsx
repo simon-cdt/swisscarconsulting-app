@@ -50,7 +50,7 @@ export default function QuoteReadyEmail() {
                 margin: 0,
               }}
             >
-              SwissCarConsulting
+              SwissCarConsulting SA
             </Heading>
 
             <Text

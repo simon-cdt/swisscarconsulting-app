@@ -271,6 +271,7 @@ type EstimateData = {
       client: {
         id: string;
         typeClient: "individual" | "company";
+        email: string;
         firstName?: string | null;
         name?: string | null;
         companyName?: string | null;
@@ -454,6 +455,8 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
                 {client.country && <Text>{client.country}</Text>}
               </>
             )}
+            <br />
+            <Text>Mail: {client.email}</Text>
           </View>
         </View>
 
