@@ -128,6 +128,8 @@ type FetchEstimate = {
         postalCode: number | null;
         city: string | null;
         country: string | null;
+        contactFirstName: string | null;
+        contactName: string | null;
       };
     };
   };
@@ -259,8 +261,9 @@ export default function QuoteGeneratorPage() {
         name: estimate.intervention.vehicule.client.name,
         firstName: estimate.intervention.vehicule.client.firstName,
         companyName: estimate.intervention.vehicule.client.companyName,
-        contactFirstName: null,
-        contactName: null,
+        contactFirstName:
+          estimate.intervention.vehicule.client.contactFirstName,
+        contactName: estimate.intervention.vehicule.client.contactName,
         email: estimate.intervention.vehicule.client.email,
         phonePrefix: estimate.intervention.vehicule.client.phonePrefix,
         phoneNumber: estimate.intervention.vehicule.client.phoneNumber,
@@ -690,26 +693,27 @@ export default function QuoteGeneratorPage() {
                       <CardContent>
                         <div className="flex flex-col gap-3">
                           <p className="font-semibold">Informations devis</p>
-                          {estimate.type === "INSURANCE" && (
-                            <div className="flex w-full items-center justify-between">
-                              <p className="text-sm">
-                                Numéro de sinistre :{" "}
-                                <span
-                                  className={`${estimate.claimNumber ? "text-black" : "text-red-500"} font-semibold`}
-                                >
-                                  {estimate.claimNumber || "NON RENSEIGNÉ"}
-                                </span>
-                              </p>
-                              <div>
-                                <UpdateClaimNumber
-                                  estimateId={estimate.id}
-                                  claimNumber={estimate.claimNumber}
-                                  refetch={refetch}
-                                  updateDisable={updateDisable}
-                                />
+                          {estimate.type === "INSURANCE" &&
+                            estimate.intervention.vehicule.insurance?.id && (
+                              <div className="flex w-full items-center justify-between">
+                                <p className="text-sm">
+                                  Numéro de sinistre :{" "}
+                                  <span
+                                    className={`${estimate.claimNumber ? "text-black" : "text-red-500"} font-semibold`}
+                                  >
+                                    {estimate.claimNumber || "NON RENSEIGNÉ"}
+                                  </span>
+                                </p>
+                                <div>
+                                  <UpdateClaimNumber
+                                    estimateId={estimate.id}
+                                    claimNumber={estimate.claimNumber}
+                                    refetch={refetch}
+                                    updateDisable={updateDisable}
+                                  />
+                                </div>
                               </div>
-                            </div>
-                          )}
+                            )}
                           <div className="flex items-center justify-between">
                             <p className="text-sm">
                               Type de devis :{" "}

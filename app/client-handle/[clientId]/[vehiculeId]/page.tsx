@@ -512,7 +512,7 @@ export default function VisitPage() {
 
                               if (data.action === "openPdf") {
                                 window.open(
-                                  `${FILE_SERVER_URL}/uploads/${data.url}`,
+                                  `/dashboard/invoices/${data.url}`,
                                   "_blank",
                                 );
                               } else if (data.action === "openEstimate") {

@@ -54,6 +54,7 @@ type FetchAllInterventions = {
     brand: string;
     model: string;
     licensePlate: string;
+    insuranceId: string | null;
     client: {
       name: string | null;
       firstName: string | null;
@@ -356,50 +357,52 @@ export default function InterventionsPage() {
                                 </AlertDialogContent>
                               </AlertDialog>
 
-                              <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                  <Button
-                                    size="sm"
-                                    variant="default"
-                                    className="insurance-btn w-full gap-2"
-                                  >
-                                    <ShieldIcon className="size-4" />
-                                    Assurance
-                                  </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                  <AlertDialogHeader>
-                                    <AlertDialogTitle>
-                                      Êtes-vous sûr ?
-                                    </AlertDialogTitle>
-                                    <AlertDialogDescription>
-                                      Vous allez faire de cette intervention un
-                                      devis d&apos;assurance. Vous pourrez
-                                      revenir en arrière si besoin plus tard.
-                                    </AlertDialogDescription>
-                                  </AlertDialogHeader>
-                                  <AlertDialogFooter>
-                                    <AlertDialogCancel>
-                                      Annuler
-                                    </AlertDialogCancel>
-                                    <AlertDialogAction
-                                      className="insurance-btn gap-2"
-                                      onClick={() =>
-                                        createEstimateInsurance({
-                                          interventionId: intervention.id,
-                                        })
-                                      }
-                                      disabled={isLoading}
+                              {intervention.vehicule.insuranceId && (
+                                <AlertDialog>
+                                  <AlertDialogTrigger asChild>
+                                    <Button
+                                      size="sm"
+                                      variant="default"
+                                      className="insurance-btn w-full gap-2"
                                     >
-                                      {loading ? (
-                                        <Spinner />
-                                      ) : (
-                                        "Créer un devis assurance"
-                                      )}
-                                    </AlertDialogAction>
-                                  </AlertDialogFooter>
-                                </AlertDialogContent>
-                              </AlertDialog>
+                                      <ShieldIcon className="size-4" />
+                                      Assurance
+                                    </Button>
+                                  </AlertDialogTrigger>
+                                  <AlertDialogContent>
+                                    <AlertDialogHeader>
+                                      <AlertDialogTitle>
+                                        Êtes-vous sûr ?
+                                      </AlertDialogTitle>
+                                      <AlertDialogDescription>
+                                        Vous allez faire de cette intervention
+                                        un devis d&apos;assurance. Vous pourrez
+                                        revenir en arrière si besoin plus tard.
+                                      </AlertDialogDescription>
+                                    </AlertDialogHeader>
+                                    <AlertDialogFooter>
+                                      <AlertDialogCancel>
+                                        Annuler
+                                      </AlertDialogCancel>
+                                      <AlertDialogAction
+                                        className="insurance-btn gap-2"
+                                        onClick={() =>
+                                          createEstimateInsurance({
+                                            interventionId: intervention.id,
+                                          })
+                                        }
+                                        disabled={isLoading}
+                                      >
+                                        {loading ? (
+                                          <Spinner />
+                                        ) : (
+                                          "Créer un devis assurance"
+                                        )}
+                                      </AlertDialogAction>
+                                    </AlertDialogFooter>
+                                  </AlertDialogContent>
+                                </AlertDialog>
+                              )}
                             </div>
 
                             <Button

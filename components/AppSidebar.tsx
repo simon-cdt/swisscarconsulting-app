@@ -183,7 +183,7 @@ export function AppSidebar({
     <Sidebar>
       <SidebarHeader>
         <h1 className={`${GeistMono.className} px-3 py-2 text-base font-bold`}>
-          Swiss Car Consulting
+          Swiss Car Consulting SA
         </h1>
       </SidebarHeader>
       <SidebarContent>

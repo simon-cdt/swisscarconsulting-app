@@ -49,7 +49,7 @@ export default function InvoiceEmail() {
                 margin: 0,
               }}
             >
-              SwissCarConsulting
+              Swiss Car Consulting SA
             </Heading>
 
             <Text

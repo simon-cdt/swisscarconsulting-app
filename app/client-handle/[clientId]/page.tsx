@@ -157,7 +157,7 @@ export default function ClientVehiculePage() {
       const data = await response.json();
 
       if (data.action === "openPdf") {
-        window.open(`${FILE_SERVER_URL}/uploads/${data.url}`, "_blank");
+        window.open(`/dashboard/invoices/${data.url}`, "_blank");
       } else if (data.action === "openEstimate") {
         router.push(`/dashboard/estimates/${data.estimateId}`);
       } else if (data.action === "openInterventionsList") {

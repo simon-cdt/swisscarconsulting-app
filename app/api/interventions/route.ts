@@ -39,6 +39,7 @@ export async function GET() {
           brand: true,
           model: true,
           licensePlate: true,
+          insuranceId: true,
           client: {
             select: {
               name: true,

@@ -370,14 +370,17 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
     }, 0);
   };
 
-  const calculateTotal = () => {
-    const subtotal = calculateSubtotal();
-    const discount = data.discount || 0;
-    return subtotal * (1 - discount / 100);
+  // Sous-total HT après réduction (les prix saisis sont HT)
+  const calculateHt = () => {
+    const subtotalHt = calculateSubtotal(); // reste inchangé : somme des unitPrice * quantity
+    const discount = data.discount ?? 0;
+    return subtotalHt * (1 - discount / 100);
   };
 
-  const calculateHt = () => {
-    return convertTtcToHt(calculateTotal());
+  // Total TTC = HT (après réduction) + TVA
+  const calculateTotal = () => {
+    const ht = calculateHt();
+    return ht * (1 + VAT_RATE);
   };
 
   const calculateVatAmount = () => {

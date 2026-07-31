@@ -115,7 +115,7 @@ export async function sendEmailEstimate({
     ];
 
     const { error } = await resend.emails.send({
-      from: "SwissCarConsulting <contact@swisscarconsulting.ch>",
+      from: "Swiss Car Consulting SA <contact@swisscarconsulting.ch>",
       to: [estimate?.intervention.vehicule.client.email || ""],
       subject: estimateId
         ? `Devis n°${estimateId} à valider`
@@ -258,7 +258,7 @@ export async function sendEmailInvoice({ estimateId }: { estimateId: string }) {
     ];
 
     const { error } = await resend.emails.send({
-      from: "SwissCarConsulting <contact@swisscarconsulting.ch>",
+      from: "Swiss Car Consulting SA <contact@swisscarconsulting.ch>",
       to: [estimate?.intervention.vehicule.client.email || ""],
       subject: estimateId ? `Facture n°${estimateId}` : "Facture à régler",
       react: InvoiceEmail(),

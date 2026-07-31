@@ -215,7 +215,13 @@ export const convertIndividualToInsurance = async ({
 
     const estimate = await db.estimate.findUnique({
       where: { id: estimateId },
-      select: { id: true, type: true },
+      select: {
+        id: true,
+        type: true,
+        intervention: {
+          select: { vehicule: { select: { insuranceId: true } } },
+        },
+      },
     });
 
     if (!estimate) {
@@ -226,6 +232,13 @@ export const convertIndividualToInsurance = async ({
       return {
         success: false,
         message: "Ce devis n'est pas un devis individuel.",
+      };
+    }
+
+    if (!estimate.intervention.vehicule.insuranceId) {
+      return {
+        success: false,
+        message: "Le véhicule associé à ce devis n'a pas d'assurance.",
       };
     }
 

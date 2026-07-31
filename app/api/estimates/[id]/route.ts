@@ -95,6 +95,8 @@ export async function GET(
                   country: true,
                   phonePrefix: true,
                   phoneNumber: true,
+                  contactFirstName: true,
+                  contactName: true,
                 },
               },
             },

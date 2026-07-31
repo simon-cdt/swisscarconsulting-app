@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
   try {
     const { error } = await resend.emails.send({
       from: "SwissCarConsulting <contact@swisscarconsulting.ch>",
-      to: [NOTIFICATION_EMAIL],
+      to: ["contact@swisscarconsulting.ch"],
       subject: "⚠️ Échec d'envoi d'un email",
       text: [
         "Bonjour,",
