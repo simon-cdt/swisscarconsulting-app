@@ -185,7 +185,8 @@ model Invoice {
 
   estimateItems String
 
-  pdfUrl String?
+  pdfUrl      String?
+  paymentTerm PaymentTerm @default(DAYS_15)
 
   status InvoiceStatus @default(PENDING_PAYMENT)
 
@@ -262,4 +263,10 @@ enum Role {
 enum AppointmentType {
   DROPOFF
   PICKUP
+}
+
+enum PaymentTerm {
+  NOW
+  DAYS_15
+  DAYS_30
 }

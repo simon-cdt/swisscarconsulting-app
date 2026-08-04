@@ -175,6 +175,7 @@ export function AddVehicule({
     register,
     handleSubmit,
     setValue,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<FormSchema>({
     resolver: zodResolver(zodFormSchema),
@@ -187,7 +188,6 @@ export function AddVehicule({
       if (data.certificateImage) {
         const formData = new FormData();
         formData.append("image", data.certificateImage as Blob);
-
         const res = await fetch("/api/upload/image", {
           method: "POST",
           body: formData,
@@ -196,7 +196,6 @@ export function AddVehicule({
         uploadedUrl = uploadedData.filename;
       }
 
-      // Convertir la date d'expertise en objet Date si elle existe
       let expertiseDate: Date | undefined = undefined;
       if (data.lastExpertise) {
         expertiseDate = new Date(data.lastExpertise);
@@ -220,18 +219,23 @@ export function AddVehicule({
       };
 
       const response = await addClientVehicule({ data: newData });
+
       if (response.success) {
         toast.success(response.message);
         setOpen(false);
         refetch();
       } else {
+        if (response.field) {
+          setError(response.field, {
+            type: "manual",
+            message: response.message,
+          });
+        }
         toast.error(response.message);
-        setOpen(false);
       }
     } catch (error) {
       toast.error("Une erreur est survenue lors de l'ajout du véhicule.");
       console.error(error);
-      setOpen(false);
     }
   };
 

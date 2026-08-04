@@ -1,4 +1,4 @@
-import { TypeEstimate } from "@/generated/prisma/enums";
+import { PaymentTerm, TypeEstimate } from "@/generated/prisma/enums";
 import {
   Document,
   Page,
@@ -262,6 +262,7 @@ type EstimateData = {
   discount: number | null;
   logoBase64: string;
   items: EstimateItem[];
+  paymentTerm?: PaymentTerm;
   intervention: {
     vehicule: {
       brand: string;
@@ -389,7 +390,24 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
 
   const currentDate = new Date();
   const paymentDate = new Date();
-  paymentDate.setDate(currentDate.getDate() + 15);
+  const getPaymentDaysToAdd = (term?: PaymentTerm) => {
+    if (term === "NOW") return 0;
+    if (term === "DAYS_30") return 30;
+    return 15;
+  };
+  paymentDate.setDate(
+    currentDate.getDate() + getPaymentDaysToAdd(data.paymentTerm),
+  );
+
+  const getPaymentLabel = (term?: PaymentTerm) => {
+    if (term === "NOW") {
+      return "Paiement comptant à réception de la facture";
+    }
+    if (term === "DAYS_30") {
+      return "Paiement à effectuer dans un délai de 30 jours";
+    }
+    return "Paiement à effectuer dans un délai de 15 jours";
+  };
 
   const parts = data.items.filter((item) => item.type === "PART");
   const labor = data.items.filter((item) => item.type === "LABOR");
@@ -400,6 +418,9 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
     client.typeClient === "individual"
       ? `${client.firstName} ${client.name}`
       : client.companyName;
+
+  const isInvoice =
+    data.status === "SENT_TO_GARAGE" || data.status === "FINISHED";
 
   return (
     <Document>
@@ -418,10 +439,8 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
               Numéro client : <Text style={styles.bold}>{client.id}</Text>
             </Text>
             <Text>
-              {data.status === "SENT_TO_GARAGE" || data.status === "FINISHED"
-                ? "Numéro facture"
-                : "Numéro devis"}{" "}
-              : <Text style={styles.bold}>{data.id}</Text>
+              {isInvoice ? "Numéro facture" : "Numéro devis"} :{" "}
+              <Text style={styles.bold}>{data.id}</Text>
             </Text>
           </View>
         </View>
@@ -666,15 +685,28 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
         {/* Footer */}
         <View style={styles.footer}>
           <View style={styles.paymentInfo}>
-            <Text style={styles.bold}>Conditions de paiement :</Text>
-            <Text style={{ marginTop: 4 }}>
-              Paiement à effectuer dans un délai de 15 jours
-            </Text>
-            <Text style={{ marginTop: 2 }}>
-              Devis valable jusqu&apos;au :{" "}
-              {paymentDate.toLocaleDateString("fr-CH")}
-            </Text>
-            <Text style={[styles.bold, { marginTop: 8 }]}>IBAN :</Text>
+            <Text style={styles.bold}>Conditions de paiement</Text>
+
+            {isInvoice ? (
+              <>
+                <Text style={{ marginTop: 4 }}>
+                  {getPaymentLabel(data.paymentTerm)}
+                </Text>
+                {data.paymentTerm !== "NOW" && (
+                  <Text style={{ marginTop: 2 }}>
+                    Facture payable jusqu&apos;au{" "}
+                    {paymentDate.toLocaleDateString("fr-CH")}
+                  </Text>
+                )}
+              </>
+            ) : (
+              <Text style={{ marginTop: 4 }}>
+                Les conditions de paiement seront communiquées lors de
+                l&apos;envoi de la facture.
+              </Text>
+            )}
+
+            <Text style={{ ...styles.bold, marginTop: 8 }}>IBAN</Text>
             <Text>CH74 0900 0000 1526 4800 5</Text>
           </View>
           <View style={styles.totalInfo}>

@@ -227,6 +227,7 @@ export const InvoiceScalarFieldEnum = {
   city: 'city',
   estimateItems: 'estimateItems',
   pdfUrl: 'pdfUrl',
+  paymentTerm: 'paymentTerm',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'

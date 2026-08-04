@@ -1,3 +1,4 @@
+import { PaymentTerm } from "@/generated/prisma/enums";
 import {
   Body,
   Button,
@@ -11,11 +12,29 @@ import {
   Text,
 } from "react-email";
 
-export default function InvoiceEmail() {
+const getPaymentMessage = (term: PaymentTerm) => {
+  switch (term) {
+    case "NOW":
+      return "Nous vous remercions de bien vouloir procéder au règlement dès réception de cette facture.";
+
+    case "DAYS_30":
+      return "Nous vous remercions de bien vouloir procéder au règlement dans un délai de 30 jours à compter de la date d'émission de la facture.";
+
+    case "DAYS_15":
+    default:
+      return "Nous vous remercions de bien vouloir procéder au règlement dans un délai de 15 jours à compter de la date d'émission de la facture.";
+  }
+};
+
+export default function InvoiceIndividualEmail({
+  paymentTerm = "DAYS_15",
+}: {
+  paymentTerm?: PaymentTerm;
+}) {
   return (
     <Html>
       <Head />
-      <Preview>Votre facture SwissCarConsulting est disponible.</Preview>
+      <Preview>Votre facture Swiss Car Consulting est disponible.</Preview>
 
       <Body
         style={{
@@ -112,7 +131,14 @@ export default function InvoiceEmail() {
                   lineHeight: "28px",
                 }}
               >
-                📅 <strong>Délai de paiement : 15 jours</strong>
+                📅{" "}
+                <strong>
+                  {paymentTerm === "NOW"
+                    ? "Paiement comptant"
+                    : paymentTerm === "DAYS_30"
+                      ? "Délai de paiement : 30 jours"
+                      : "Délai de paiement : 15 jours"}
+                </strong>
               </Text>
 
               <Text
@@ -123,9 +149,7 @@ export default function InvoiceEmail() {
                   lineHeight: "28px",
                 }}
               >
-                Nous vous remercions de bien vouloir procéder au règlement dans
-                un délai de 15 jours à compter de la date d’émission de la
-                facture.
+                {getPaymentMessage(paymentTerm)}
               </Text>
             </Section>
 
@@ -186,7 +210,7 @@ export default function InvoiceEmail() {
                 marginTop: "30px",
               }}
             >
-              L&apos;équipe SwissCarConsulting
+              L&apos;équipe Swiss Car Consulting
             </Text>
           </Section>
         </Container>
@@ -199,7 +223,7 @@ export default function InvoiceEmail() {
             marginTop: "20px",
           }}
         >
-          © {new Date().getFullYear()} SwissCarConsulting — Tous droits
+          © {new Date().getFullYear()} Swiss Car Consulting SA — Tous droits
           réservés.
         </Text>
       </Body>

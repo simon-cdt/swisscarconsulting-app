@@ -70,3 +70,12 @@ export const AppointmentType = {
 } as const
 
 export type AppointmentType = (typeof AppointmentType)[keyof typeof AppointmentType]
+
+
+export const PaymentTerm = {
+  NOW: 'NOW',
+  DAYS_15: 'DAYS_15',
+  DAYS_30: 'DAYS_30'
+} as const
+
+export type PaymentTerm = (typeof PaymentTerm)[keyof typeof PaymentTerm]

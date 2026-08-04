@@ -1,6 +1,5 @@
 import {
   Body,
-  Button,
   Container,
   Head,
   Heading,
@@ -11,11 +10,11 @@ import {
   Text,
 } from "react-email";
 
-export default function QuoteReadyEmail() {
+export default function EstimateIndividualEmail() {
   return (
     <Html>
       <Head />
-      <Preview>Votre devis SwissCarConsulting est prêt.</Preview>
+      <Preview>Votre devis Swiss Car Consulting est prêt.</Preview>
 
       <Body
         style={{
@@ -50,7 +49,7 @@ export default function QuoteReadyEmail() {
                 margin: 0,
               }}
             >
-              SwissCarConsulting SA
+              Swiss Car Consulting SA
             </Heading>
 
             <Text
@@ -144,28 +143,32 @@ export default function QuoteReadyEmail() {
               }}
             >
               Votre retour est essentiel afin que nous puissions poursuivre le
-              traitement de votre demande.
+              traitement de votre demande. Merci de répondre directement à cet
+              email en indiquant votre décision.
             </Text>
 
             <Section
               style={{
-                textAlign: "center",
+                backgroundColor: "#eff6ff",
+                border: "1px solid #bfdbfe",
+                borderRadius: "12px",
+                padding: "20px",
                 margin: "36px 0",
               }}
             >
-              <Button
-                href="mailto:contact@swisscarconsulting.ch"
+              <Text
                 style={{
-                  backgroundColor: "#111827",
-                  color: "#ffffff",
-                  padding: "14px 26px",
-                  borderRadius: "10px",
-                  textDecoration: "none",
-                  fontWeight: 600,
+                  margin: 0,
+                  color: "#1e3a8a",
+                  fontSize: "16px",
+                  lineHeight: "28px",
+                  textAlign: "center",
                 }}
               >
-                Répondre à cet email
-              </Button>
+                📩 <strong>Merci de répondre directement à cet email</strong>{" "}
+                afin que votre réponse soit automatiquement associée à votre
+                dossier.
+              </Text>
             </Section>
 
             <Hr
@@ -194,7 +197,7 @@ export default function QuoteReadyEmail() {
                 marginTop: "30px",
               }}
             >
-              L&apos;équipe SwissCarConsulting
+              L&apos;équipe Swiss Car Consulting
             </Text>
           </Section>
         </Container>
@@ -207,7 +210,7 @@ export default function QuoteReadyEmail() {
             marginTop: "20px",
           }}
         >
-          © {new Date().getFullYear()} SwissCarConsulting — Tous droits
+          © {new Date().getFullYear()} Swiss Car Consulting SA — Tous droits
           réservés.
         </Text>
       </Body>

@@ -1252,22 +1252,36 @@ export default function QuoteGeneratorPage() {
                   <AlertDialogTrigger asChild>
                     <Button
                       className={`absolute top-5 right-5 ${estimate.status === "ACCEPTED" || estimate.status === "PENDING" ? "cursor-not-allowed bg-gray-400" : "bg-emerald-600 hover:bg-emerald-700"}`}
-                      disabled={updateDisable || selectedItems.length === 0}
+                      disabled={
+                        updateDisable ||
+                        selectedItems.length === 0 ||
+                        (estimate.type === "INSURANCE" &&
+                          (!estimate.claimNumber ||
+                            !estimate.intervention.vehicule.insurance?.id))
+                      }
                       title={
                         selectedItems.length === 0
                           ? "Veuillez ajouter au moins un item au devis"
-                          : ""
+                          : estimate.type === "INSURANCE" &&
+                              (!estimate.claimNumber ||
+                                !estimate.intervention.vehicule.insurance?.id)
+                            ? "Veuillez renseigner le numéro de sinistre ou l'assurance du client"
+                            : ""
                       }
                     >
                       {selectedItems.length === 0
                         ? "Il n'y a aucun item dans le devis"
-                        : estimate.status === "PENDING"
-                          ? "Devis en attente"
-                          : estimate.status === "ACCEPTED"
-                            ? "Devis accepté"
-                            : estimate.status === "SENT_TO_GARAGE"
-                              ? "Voiture au garage"
-                              : "Valider le PDF"}
+                        : estimate.type === "INSURANCE" &&
+                            (!estimate.claimNumber ||
+                              !estimate.intervention.vehicule.insurance?.id)
+                          ? "Veuillez renseigner le numéro de sinistre ou l'assurance du client"
+                          : estimate.status === "PENDING"
+                            ? "Devis en attente"
+                            : estimate.status === "ACCEPTED"
+                              ? "Devis accepté"
+                              : estimate.status === "SENT_TO_GARAGE"
+                                ? "Voiture au garage"
+                                : "Valider le PDF"}
                     </Button>
                   </AlertDialogTrigger>
                   <AlertDialogContent>

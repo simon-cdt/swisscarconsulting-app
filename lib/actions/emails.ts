@@ -2,7 +2,6 @@
 
 import { db } from "../db";
 import { EstimatePDF } from "../pdf/EstimatePDF";
-import EstimateEmail from "@/emails/estimate";
 import { renderToBuffer } from "@react-pdf/renderer";
 import React from "react";
 import { readFileSync } from "fs";
@@ -10,8 +9,14 @@ import { join } from "path";
 import { Resend } from "resend";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth";
-import InvoiceEmail from "@/emails/invoice";
+import InvoiceIndividualEmail from "@/emails/individual/invoice";
 import { mkdir, writeFile } from "fs/promises";
+import { PaymentTerm } from "@/generated/prisma/enums";
+import InsuranceInvoiceEmail from "@/emails/insurance/invoice";
+import { format } from "date-fns";
+import { VAT_RATE } from "../utils";
+import EstimateIndividualEmail from "@/emails/individual/estimate";
+import EstimateInsuranceEmail from "@/emails/insurance/estimate";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 const STORAGE_DIR = join(process.cwd(), "..", "storage", "invoices");
@@ -55,6 +60,11 @@ export async function sendEmailEstimate({
                 model: true,
                 licensePlate: true,
                 year: true,
+                insurance: {
+                  select: {
+                    name: true,
+                  },
+                },
                 client: {
                   select: {
                     id: true,
@@ -114,13 +124,74 @@ export async function sendEmailEstimate({
       },
     ];
 
+    const calculateSubtotal = () => {
+      return estimate.items.reduce((sum, item) => {
+        let itemTotal: number;
+
+        if (item.type === "LABOR") {
+          // Si calculateByTime est true ET qu'il y a une quantity (temps en minutes)
+          if (item.calculateByTime && item.quantity) {
+            const hoursDecimal = item.quantity / 60;
+            itemTotal = item.unitPrice * hoursDecimal;
+          } else {
+            // Sinon, utiliser simplement le unitPrice
+            itemTotal = item.unitPrice;
+          }
+        } else {
+          itemTotal = item.unitPrice * (item.quantity ?? 0);
+        }
+
+        return sum + itemTotal;
+      }, 0);
+    };
+
+    // Sous-total HT après réduction (les prix saisis sont HT)
+    const calculateHt = () => {
+      const subtotalHt = calculateSubtotal(); // reste inchangé : somme des unitPrice * quantity
+      const discount = estimate.discount ?? 0;
+      return subtotalHt * (1 - discount / 100);
+    };
+
+    // Total TTC = HT (après réduction) + TVA
+    const calculateTotal = () => {
+      const ht = calculateHt();
+      return ht * (1 + VAT_RATE);
+    };
+
     const { error } = await resend.emails.send({
       from: "Swiss Car Consulting SA <contact@swisscarconsulting.ch>",
-      to: [estimate?.intervention.vehicule.client.email || ""],
+      to:
+        estimate.type === "INDIVIDUAL"
+          ? [estimate?.intervention.vehicule.client.email || ""]
+          : ["contact@swisscarconsulting.ch"],
       subject: estimateId
         ? `Devis n°${estimateId} à valider`
         : "Devis à valider",
-      react: EstimateEmail(),
+      react:
+        estimate.type === "INDIVIDUAL"
+          ? EstimateIndividualEmail()
+          : EstimateInsuranceEmail({
+              customerFirstName:
+                estimate.intervention.vehicule.client.contactFirstName || "",
+              customerLastName:
+                estimate.intervention.vehicule.client.contactName || "",
+              customerAddress:
+                estimate.intervention.vehicule.client.address || "",
+              customerPostalCode:
+                estimate.intervention.vehicule.client.postalCode?.toString() ||
+                "",
+              customerCity: estimate.intervention.vehicule.client.city || "",
+              quoteNumber: estimate.id,
+              quoteAmount: calculateTotal().toFixed(2),
+              claimNumber: estimate.claimNumber?.toString() || "",
+              insuranceName:
+                estimate.intervention.vehicule.insurance?.name || undefined,
+              vehicle: `${estimate.intervention.vehicule.brand} ${estimate.intervention.vehicule.model}`,
+              registration: estimate.intervention.vehicule.licensePlate,
+              clientType: estimate.intervention.vehicule.client.typeClient,
+              customerCompanyName:
+                estimate.intervention.vehicule.client.companyName || undefined,
+            }),
       attachments,
     });
 
@@ -145,7 +216,13 @@ export async function sendEmailEstimate({
   }
 }
 
-export async function sendEmailInvoice({ estimateId }: { estimateId: string }) {
+export async function sendEmailInvoice({
+  estimateId,
+  paymentTerm,
+}: {
+  estimateId: string;
+  paymentTerm?: PaymentTerm;
+}) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
@@ -185,6 +262,11 @@ export async function sendEmailInvoice({ estimateId }: { estimateId: string }) {
                 model: true,
                 licensePlate: true,
                 year: true,
+                insurance: {
+                  select: {
+                    name: true,
+                  },
+                },
                 client: {
                   select: {
                     id: true,
@@ -234,6 +316,7 @@ export async function sendEmailInvoice({ estimateId }: { estimateId: string }) {
       logoBase64,
       items: estimate.items,
       intervention: estimate.intervention,
+      paymentTerm: paymentTerm || "DAYS_15",
     };
 
     const pdfBuffer = await renderToBuffer(
@@ -257,11 +340,73 @@ export async function sendEmailInvoice({ estimateId }: { estimateId: string }) {
       },
     ];
 
+    const calculateSubtotal = () => {
+      return estimate.items.reduce((sum, item) => {
+        let itemTotal: number;
+
+        if (item.type === "LABOR") {
+          // Si calculateByTime est true ET qu'il y a une quantity (temps en minutes)
+          if (item.calculateByTime && item.quantity) {
+            const hoursDecimal = item.quantity / 60;
+            itemTotal = item.unitPrice * hoursDecimal;
+          } else {
+            // Sinon, utiliser simplement le unitPrice
+            itemTotal = item.unitPrice;
+          }
+        } else {
+          itemTotal = item.unitPrice * (item.quantity ?? 0);
+        }
+
+        return sum + itemTotal;
+      }, 0);
+    };
+
+    // Sous-total HT après réduction (les prix saisis sont HT)
+    const calculateHt = () => {
+      const subtotalHt = calculateSubtotal(); // reste inchangé : somme des unitPrice * quantity
+      const discount = estimate.discount ?? 0;
+      return subtotalHt * (1 - discount / 100);
+    };
+
+    // Total TTC = HT (après réduction) + TVA
+    const calculateTotal = () => {
+      const ht = calculateHt();
+      return ht * (1 + VAT_RATE);
+    };
+
     const { error } = await resend.emails.send({
       from: "Swiss Car Consulting SA <contact@swisscarconsulting.ch>",
-      to: [estimate?.intervention.vehicule.client.email || ""],
+      to:
+        estimate.type === "INDIVIDUAL"
+          ? [estimate?.intervention.vehicule.client.email || ""]
+          : ["contact@swisscarconsulting.ch"],
       subject: estimateId ? `Facture n°${estimateId}` : "Facture à régler",
-      react: InvoiceEmail(),
+      react:
+        estimate.type === "INDIVIDUAL"
+          ? InvoiceIndividualEmail({ paymentTerm: paymentTerm || "DAYS_15" })
+          : InsuranceInvoiceEmail({
+              customerFirstName:
+                estimate.intervention.vehicule.client.contactFirstName || "",
+              customerLastName:
+                estimate.intervention.vehicule.client.contactName || "",
+              customerAddress:
+                estimate.intervention.vehicule.client.address || "",
+              customerPostalCode:
+                estimate.intervention.vehicule.client.postalCode?.toString() ||
+                "",
+              customerCity: estimate.intervention.vehicule.client.city || "",
+              claimNumber: estimate.claimNumber?.toString() || "",
+              invoiceNumber: estimate.id,
+              invoiceDate: format(new Date(), "dd/MM/yyyy"),
+              amount: calculateTotal().toFixed(2),
+              insuranceName:
+                estimate.intervention.vehicule.insurance?.name || undefined,
+              vehicle: `${estimate.intervention.vehicule.brand} ${estimate.intervention.vehicule.model}`,
+              registration: estimate.intervention.vehicule.licensePlate,
+              clientType: estimate.intervention.vehicule.client.typeClient,
+              customerCompanyName:
+                estimate.intervention.vehicule.client.companyName || undefined,
+            }),
       attachments,
     });
 
@@ -310,7 +455,8 @@ export async function sendEmailInvoice({ estimateId }: { estimateId: string }) {
         postalCode: estimate.intervention.vehicule.client.postalCode,
         city: estimate.intervention.vehicule.client.city,
 
-        pdfUrl: pdfFilename, // nom du fichier stocké localement
+        pdfUrl: pdfFilename,
+        paymentTerm,
       },
     });
 

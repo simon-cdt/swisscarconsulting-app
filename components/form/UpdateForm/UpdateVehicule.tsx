@@ -171,6 +171,7 @@ export function UpdateVehicule({
     register,
     handleSubmit,
     setValue,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<FormSchema>({
     resolver: zodResolver(zodFormSchema),
@@ -180,14 +181,13 @@ export function UpdateVehicule({
     try {
       let uploadedUrl = null;
 
-      await fetch(`/api/images/${vehicule.certificateImage}`, {
-        method: "DELETE",
-      });
-
       if (data.certificateImage) {
+        await fetch(`/api/images/${vehicule.certificateImage}`, {
+          method: "DELETE",
+        });
+
         const formData = new FormData();
         formData.append("image", data.certificateImage as Blob);
-
         const res = await fetch("/api/upload/image", {
           method: "POST",
           body: formData,
@@ -196,7 +196,6 @@ export function UpdateVehicule({
         uploadedUrl = uploadedData.filename;
       }
 
-      // Convertir la date d'expertise en objet Date si elle existe
       let expertiseDate: Date | undefined = undefined;
       if (data.lastExpertise) {
         expertiseDate = new Date(data.lastExpertise);
@@ -220,14 +219,19 @@ export function UpdateVehicule({
           receptionType: data.receptionType,
         },
       });
+
       if (response.success) {
         toast.success(response.message);
         refetch();
         setIsOpen(false);
       } else {
+        if (response.field) {
+          setError(response.field, {
+            type: "manual",
+            message: response.message,
+          });
+        }
         toast.error(response.message);
-        refetch();
-        setIsOpen(false);
       }
     } catch (error) {
       console.error(error);

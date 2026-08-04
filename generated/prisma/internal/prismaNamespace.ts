@@ -1260,6 +1260,7 @@ export const InvoiceScalarFieldEnum = {
   city: 'city',
   estimateItems: 'estimateItems',
   pdfUrl: 'pdfUrl',
+  paymentTerm: 'paymentTerm',
   status: 'status',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -1551,6 +1552,13 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'PaymentTerm'
+ */
+export type EnumPaymentTermFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentTerm'>
     
 
 

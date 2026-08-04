@@ -50,6 +50,15 @@ import { Spinner } from "./ui/spinner";
 import { createInvoice } from "@/lib/actions/invoice";
 import CreateAppointmentDialog from "./form/CreateAppointmentDialog";
 import { sendEmailInvoice } from "@/lib/actions/emails";
+import { PaymentTerm } from "@/generated/prisma/enums";
+import { Label } from "./ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
 
 export default function Estimate({
   estimate,
@@ -63,6 +72,8 @@ export default function Estimate({
   const router = useRouter();
   const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false);
   const [appointmentCreated, setAppointmentCreated] = useState(false);
+
+  const [paymentTerm, setPaymentTerm] = useState<PaymentTerm>("DAYS_15");
 
   const truncateText = (text: string, maxLength = 27) => {
     if (text.length <= maxLength) return text;
@@ -534,6 +545,35 @@ export default function Estimate({
                           client sera terminé.
                         </AlertDialogDescription>
                       </AlertDialogHeader>
+
+                      <div className="py-2">
+                        <Label htmlFor="paymentTerm">Délai de paiement</Label>
+                        <Select
+                          value={paymentTerm}
+                          onValueChange={(value) =>
+                            setPaymentTerm(
+                              value as "NOW" | "DAYS_15" | "DAYS_30",
+                            )
+                          }
+                        >
+                          <SelectTrigger
+                            id="paymentTerm"
+                            className="mt-1 w-full"
+                          >
+                            <SelectValue placeholder="Choisir un délai" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="NOW">Comptant</SelectItem>
+                            <SelectItem value="DAYS_15">
+                              Dans 15 jours
+                            </SelectItem>
+                            <SelectItem value="DAYS_30">
+                              Dans 30 jours
+                            </SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
                       <AlertDialogFooter>
                         <AlertDialogCancel>Annuler</AlertDialogCancel>
                         <AlertDialogAction
@@ -541,6 +581,7 @@ export default function Estimate({
                           onClick={async () => {
                             const response = await sendEmailInvoice({
                               estimateId: estimate.id,
+                              paymentTerm: paymentTerm,
                             });
 
                             if (response.success) {
