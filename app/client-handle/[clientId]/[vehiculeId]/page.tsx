@@ -19,7 +19,6 @@ import toast from "react-hot-toast";
 import LoadingPage from "@/components/LoadingPage";
 import ErrorPage from "@/components/ErrorPage";
 import UploadFiles from "@/components/form/UploadFiles";
-import { FILE_SERVER_URL } from "@/lib/config";
 import {
   Dialog,
   DialogContent,

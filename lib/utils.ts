@@ -203,3 +203,9 @@ export const formatPhoneNumber = (phone: string): string => {
 
   return formattedPhone;
 };
+
+export function capitalizeName(value: string): string {
+  if (!value) return value;
+  const lower = value.toLowerCase();
+  return lower.charAt(0).toUpperCase() + lower.slice(1);
+}

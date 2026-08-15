@@ -18,7 +18,6 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { formatFullPhoneNumber } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { AlertCircle } from "lucide-react";
-import { FILE_SERVER_URL } from "@/lib/config";
 
 type FetchAllVehiculesOfClient = {
   vehicules: {

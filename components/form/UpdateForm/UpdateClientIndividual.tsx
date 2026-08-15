@@ -9,6 +9,8 @@ import { FormField } from "../FormField";
 import { PhoneInputField } from "../PhoneInputField";
 import { updateClientIndividual } from "@/lib/actions/client";
 import toast from "react-hot-toast";
+import { AddressAutocomplete } from "../AddressAutocomplete";
+import { capitalizeName } from "@/lib/utils";
 
 export function UpdateClientIndividual({
   client,
@@ -102,6 +104,7 @@ export function UpdateClientIndividual({
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FormSchema>({
     resolver: zodResolver(zodFormSchema),
@@ -157,6 +160,10 @@ export function UpdateClientIndividual({
           error={errors.name}
           register={register}
           nonempty
+          onChange={(e) => {
+            const formatted = capitalizeName(e.target.value);
+            setValue("name", formatted);
+          }}
         />
         <FormField
           label="Prénom"
@@ -165,6 +172,10 @@ export function UpdateClientIndividual({
           error={errors.firstName}
           register={register}
           nonempty
+          onChange={(e) => {
+            const formatted = capitalizeName(e.target.value);
+            setValue("firstName", formatted);
+          }}
         />
         <div className="col-span-2">
           <FormField
@@ -200,12 +211,10 @@ export function UpdateClientIndividual({
           />
         </div>
         <div className="col-span-2">
-          <FormField
-            label="Adresse"
-            name="address"
-            type="text"
-            error={errors.address}
+          <AddressAutocomplete
             register={register}
+            setValue={setValue}
+            error={errors.address}
           />
         </div>
         <div className="col-span-2 grid gap-4 md:grid-cols-3">

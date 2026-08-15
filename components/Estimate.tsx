@@ -9,7 +9,7 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { GeistMono } from "geist/font/mono";
 import InformationsDialog from "./InformationsDialog";
-import { formatPhoneNumber, formatFullPhoneNumber } from "@/lib/utils";
+import { formatFullPhoneNumber } from "@/lib/utils";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -47,7 +47,6 @@ import z from "zod";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Spinner } from "./ui/spinner";
-import { createInvoice } from "@/lib/actions/invoice";
 import CreateAppointmentDialog from "./form/CreateAppointmentDialog";
 import { sendEmailInvoice } from "@/lib/actions/emails";
 import { PaymentTerm } from "@/generated/prisma/enums";

@@ -22,6 +22,7 @@ import { DatePicker } from "./DatePicker";
 import { createAppointment } from "@/lib/actions/calendar";
 import toast from "react-hot-toast";
 import { Spinner } from "../ui/spinner";
+import { AppointmentType } from "@/generated/prisma/enums";
 
 // Schéma de validation
 const appointmentSchema = z.object({
@@ -54,6 +55,7 @@ interface CreateAppointmentDialogProps {
 const appointmentTypes = [
   { label: "Apport du véhicule", value: "0" }, // DROPOFF
   { label: "Récupération du véhicule", value: "1" }, // PICKUP
+  { label: "Rendez-vous mécanique", value: "2" }, // MECHANICAL — NOUVEAU
 ];
 
 export default function CreateAppointmentDialog({
@@ -170,9 +172,22 @@ export default function CreateAppointmentDialog({
     try {
       const appointmentDate = new Date(data.date).setHours(0, 0, 0, 0);
 
+      const getAppointmentTypeEnum = (typeValue: number): AppointmentType => {
+        switch (typeValue) {
+          case 0:
+            return "DROPOFF";
+          case 1:
+            return "PICKUP";
+          case 2:
+            return "MECHANICAL";
+          default:
+            return "DROPOFF";
+        }
+      };
+
       const response = await createAppointment({
         data: {
-          type: data.type === 0 ? "DROPOFF" : "PICKUP",
+          type: getAppointmentTypeEnum(data.type),
           clientId: data.clientId,
           vehiculeId: data.vehiculeId,
           estimateId: data.estimateId,
@@ -226,8 +241,8 @@ export default function CreateAppointmentDialog({
         <DialogHeader>
           <DialogTitle>Créer un rendez-vous</DialogTitle>
           <DialogDescription>
-            Planifiez un rendez-vous pour l&apos;apport ou la récupération
-            d&apos;un véhicule.
+            Planifiez un rendez-vous pour l&apos;apport, la récupération ou une
+            intervention mécanique.
           </DialogDescription>
         </DialogHeader>
 

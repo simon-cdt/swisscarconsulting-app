@@ -135,7 +135,7 @@ export function AddVehicule({
           },
         )
         .optional(),
-      receptionType: z.string().optional(),
+      receptionType: z.string().nonempty("Le type de réception est requis."),
       certificateImage: z.instanceof(File).optional(),
     })
     .refine(

@@ -197,7 +197,7 @@ export default function EstimateIndividualEmail() {
                 marginTop: "30px",
               }}
             >
-              L&apos;équipe Swiss Car Consulting
+              L&apos;équipe Swiss Car Consulting SA
             </Text>
           </Section>
         </Container>

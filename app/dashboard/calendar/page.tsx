@@ -25,6 +25,7 @@ import {
   FileText,
   User,
   Phone,
+  Wrench,
 } from "lucide-react";
 import {
   startOfMonth,
@@ -49,7 +50,6 @@ import {
   EstimateStatus,
   TypeEstimate,
 } from "@/generated/prisma/enums";
-import Link from "next/link";
 import { formatFullPhoneNumber } from "@/lib/utils";
 
 // Types pour les rendez-vous
@@ -115,6 +115,25 @@ function useAppointments() {
     },
   });
 }
+
+const getEstimateStatusLabel = (status: string) => {
+  switch (status) {
+    case "TOFINISH":
+      return "Devis à compléter";
+    case "PENDING":
+      return "Devis en attente client";
+    case "ACCEPTED":
+      return "Devis accepté";
+    case "SENT_TO_GARAGE":
+      return "Véhicule au garage";
+    case "WAITING_PARTS":
+      return "Attente pièces";
+    case "FINISHED":
+      return "Facturé"; // devenu une facture
+    default:
+      return status;
+  }
+};
 
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -321,10 +340,24 @@ export default function CalendarPage() {
                             }
                           }
 
-                          const appointmentTypeLabel =
-                            apt.type === AppointmentType.DROPOFF
-                              ? "Apport"
-                              : "Récup.";
+                          const getAppointmentTypeLabel = (
+                            type: AppointmentType,
+                          ) => {
+                            switch (type) {
+                              case AppointmentType.DROPOFF:
+                                return "Apport";
+                              case AppointmentType.PICKUP:
+                                return "Récup.";
+                              case AppointmentType.MECHANICAL:
+                                return "Mécanique";
+                              default:
+                                return type;
+                            }
+                          };
+
+                          const appointmentTypeLabel = getAppointmentTypeLabel(
+                            apt.type,
+                          );
 
                           return (
                             <button
@@ -332,15 +365,18 @@ export default function CalendarPage() {
                               onClick={() => setSelectedAppointment(apt)}
                               className={`w-full rounded px-1.5 py-1 text-left text-xs transition-colors hover:opacity-80 ${estimateColorClass}`}
                             >
-                              <div className="flex items-center justify-between font-medium">
-                                <span>{apt.time}</span>
-                                <span className="text-[9px] opacity-75">
-                                  {appointmentTypeLabel}
-                                </span>
+                              <div className="truncate font-medium">
+                                {apt.time}
                               </div>
-                              <div className="truncate text-[10px]">
-                                {apt.clientName}
+                              <div className="truncate">
+                                {appointmentTypeLabel}
                               </div>
+                              {apt.estimate && (
+                                <div className="truncate text-[10px] italic opacity-75">
+                                  {getEstimateStatusLabel(apt.estimate.status)}
+                                </div>
+                              )}
+                              <div className="truncate">{apt.clientName}</div>
                             </button>
                           );
                         })}
@@ -360,19 +396,27 @@ export default function CalendarPage() {
             <DialogContent className="sm:max-w-125">
               <DialogHeader>
                 <DialogTitle className="flex items-center gap-2">
-                  {selectedAppointment?.type === AppointmentType.DROPOFF ? (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-100 dark:bg-amber-900/30">
-                      <Car className="h-5 w-5 text-amber-600 dark:text-amber-400" />
-                    </div>
+                  {selectedAppointment?.type === AppointmentType.MECHANICAL ? (
+                    <Wrench className="size-5" />
                   ) : (
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100 dark:bg-blue-900/30">
-                      <Car className="h-5 w-5 text-blue-600 dark:text-blue-400" />
-                    </div>
+                    <Car className="size-5" />
                   )}
                   {selectedAppointment?.type === AppointmentType.DROPOFF
                     ? "Rendez-vous d'apport"
-                    : "Rendez-vous de récupération"}
+                    : selectedAppointment?.type === AppointmentType.PICKUP
+                      ? "Rendez-vous de récupération"
+                      : "Rendez-vous mécanique"}
                 </DialogTitle>
+
+                {/* NOUVEAU — statut du devis/facture lié, sous le type de rendez-vous */}
+                {selectedAppointment?.estimate && (
+                  <Badge variant="outline" className="w-fit">
+                    {getEstimateStatusLabel(
+                      selectedAppointment.estimate.status,
+                    )}
+                  </Badge>
+                )}
+
                 <DialogDescription>
                   {selectedAppointment &&
                     format(selectedAppointment.date, "EEEE d MMMM yyyy", {

@@ -13,7 +13,13 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { SharedFormData } from "./CustomTabs";
 import { useEffect, forwardRef, useImperativeHandle } from "react";
-import { formatAddress, toCamelCase, capitalize } from "@/lib/utils";
+import {
+  formatAddress,
+  toCamelCase,
+  capitalize,
+  capitalizeName,
+} from "@/lib/utils";
+import { AddressAutocomplete } from "../AddressAutocomplete";
 
 type AddCompanyProps = {
   sharedData: SharedFormData;
@@ -213,7 +219,7 @@ export default forwardRef(function AddCompany(
             error={errors.contactFirstName}
             nonempty
             onChange={(e) => {
-              const formatted = toCamelCase(e.target.value);
+              const formatted = capitalizeName(e.target.value); // MODIFIÉ
               setValue("contactFirstName", formatted);
             }}
           />
@@ -225,24 +231,17 @@ export default forwardRef(function AddCompany(
             error={errors.contactName}
             nonempty
             onChange={(e) => {
-              const formatted = toCamelCase(e.target.value);
+              const formatted = capitalizeName(e.target.value); // MODIFIÉ
               setValue("contactName", formatted);
             }}
           />
         </div>
       </div>
       <div className="grid gap-4">
-        <FormField
-          label="Adresse"
-          name="address"
-          type="text"
+        <AddressAutocomplete
           register={register}
+          setValue={setValue}
           error={errors.address}
-          placeholder="Rue des Marronniers 12"
-          onChange={(e) => {
-            const formatted = formatAddress(e.target.value);
-            setValue("address", formatted);
-          }}
         />
         <div className="grid gap-4 md:grid-cols-3">
           <FormField

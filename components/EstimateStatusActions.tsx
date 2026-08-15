@@ -11,7 +11,6 @@ import {
   markEstimateAsWaitingParts,
   markPartsAsArrived,
 } from "@/lib/actions/estimate";
-import { createInvoice } from "@/lib/actions/invoice";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -54,12 +53,10 @@ interface EstimateStatusActionsProps {
 export default function EstimateStatusActions({
   estimateId,
   status,
-  type,
   clientId,
   vehiculeId,
   refetch,
 }: EstimateStatusActionsProps) {
-  const router = useRouter();
   const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false);
   const [appointmentCreated, setAppointmentCreated] = useState(false);
 
@@ -283,43 +280,6 @@ export default function EstimateStatusActions({
                 className="bg-yellow-600 hover:bg-yellow-700"
                 onClick={async () => {
                   const response = await markEstimateAsWaitingParts({
-                    estimateId: estimateId,
-                  });
-
-                  if (response.success) {
-                    toast.success(response.message);
-                    refetch?.();
-                  } else {
-                    toast.error(response.message);
-                  }
-                }}
-              >
-                Confirmer
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-        <AlertDialog>
-          <AlertDialogTrigger asChild>
-            <Button className="bg-pink-700 hover:bg-pink-800">
-              Envoyer en facture
-            </Button>
-          </AlertDialogTrigger>
-          <AlertDialogContent>
-            <AlertDialogHeader>
-              <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
-              <AlertDialogDescription>
-                Le devis deviendra une facture et un e-mail sera envoyé dans la
-                boite mail du client. Cela signifie que les modifications ont
-                été faite et que le cas du client sera terminé.
-              </AlertDialogDescription>
-            </AlertDialogHeader>
-            <AlertDialogFooter>
-              <AlertDialogCancel>Annuler</AlertDialogCancel>
-              <AlertDialogAction
-                className="bg-pink-700 hover:bg-pink-800"
-                onClick={async () => {
-                  const response = await createInvoice({
                     estimateId: estimateId,
                   });
 

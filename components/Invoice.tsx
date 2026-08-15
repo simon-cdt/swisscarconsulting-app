@@ -21,7 +21,6 @@ import {
 import toast from "react-hot-toast";
 import { Invoice as InvoiceType } from "@/types/types";
 import Link from "next/link";
-import { FILE_SERVER_URL } from "@/lib/config";
 import { updateInvoiceStatus } from "@/lib/actions/invoice";
 import { useRouter } from "next/navigation";
 import { TypeClient } from "@/generated/prisma/enums";

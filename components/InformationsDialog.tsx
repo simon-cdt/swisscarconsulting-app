@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { FILE_SERVER_URL } from "@/lib/config";
 import {
   Dialog,
   DialogClose,
@@ -58,7 +57,7 @@ export default function InformationsDialog({
   // Fonction pour télécharger un média
   const handleDownload = async ({ fileName }: { fileName: string }) => {
     try {
-      const url = `${FILE_SERVER_URL}/uploads/${fileName}`;
+      const url = `/uploads/${fileName}`;
       const response = await fetch(url);
       const blob = await response.blob();
       const blobUrl = window.URL.createObjectURL(blob);

@@ -1,7 +1,6 @@
 import { PaymentTerm } from "@/generated/prisma/enums";
 import {
   Body,
-  Button,
   Container,
   Head,
   Heading,
@@ -164,26 +163,14 @@ export default function InvoiceIndividualEmail({
               volontiers à votre disposition.
             </Text>
 
-            <Section
-              style={{
-                textAlign: "center",
-                margin: "36px 0",
-              }}
+            <Text
+              style={{ color: "#4b5563", fontSize: 16, lineHeight: "26px" }}
             >
-              <Button
-                href="mailto:contact@swisscarconsulting.ch"
-                style={{
-                  backgroundColor: "#111827",
-                  color: "#ffffff",
-                  padding: "14px 26px",
-                  borderRadius: "10px",
-                  textDecoration: "none",
-                  fontWeight: 600,
-                }}
-              >
-                Nous contacter
-              </Button>
-            </Section>
+              Si vous constatez une erreur ou avez la moindre question
+              concernant cette facture, n&apos;hésitez pas à répondre
+              directement à cet e-mail — notre équipe vous recontactera dans les
+              plus brefs délais.
+            </Text>
 
             <Hr
               style={{
@@ -210,7 +197,7 @@ export default function InvoiceIndividualEmail({
                 marginTop: "30px",
               }}
             >
-              L&apos;équipe Swiss Car Consulting
+              L&apos;équipe Swiss Car Consulting SA
             </Text>
           </Section>
         </Container>

@@ -66,7 +66,8 @@ export type Role = (typeof Role)[keyof typeof Role]
 
 export const AppointmentType = {
   DROPOFF: 'DROPOFF',
-  PICKUP: 'PICKUP'
+  PICKUP: 'PICKUP',
+  MECHANICAL: 'MECHANICAL'
 } as const
 
 export type AppointmentType = (typeof AppointmentType)[keyof typeof AppointmentType]

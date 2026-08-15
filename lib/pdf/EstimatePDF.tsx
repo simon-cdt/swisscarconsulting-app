@@ -50,8 +50,8 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-end",
-    marginBottom: 16,
+    alignItems: "flex-start", // NOUVEAU — le bloc metadata remonte en haut
+    marginBottom: 20,
   },
   logo: {
     width: 150,
@@ -66,10 +66,11 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   companyInfo: {
+    width: "auto",
     fontSize: 9,
   },
   clientInfo: {
-    width: "30%",
+    width: "auto",
     fontSize: 9,
   },
   bold: {
@@ -435,12 +436,25 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
                 <Text style={styles.bold}>{data.claimNumber}</Text>
               </Text>
             )}
-            <Text>
+            <Text style={{ marginTop: 4 }}>
               Numéro client : <Text style={styles.bold}>{client.id}</Text>
             </Text>
-            <Text>
-              {isInvoice ? "Numéro facture" : "Numéro devis"} :{" "}
-              <Text style={styles.bold}>{data.id}</Text>
+            <Text style={{ marginTop: 4 }}>
+              {data.status === "SENT_TO_GARAGE" || data.status === "FINISHED"
+                ? "Numéro facture"
+                : "Numéro devis"}{" "}
+              : <Text style={styles.bold}>{data.id}</Text>
+            </Text>
+            {/* NOUVEAU — la date rejoint les métadonnées du document, en haut à droite */}
+            <Text style={{ marginTop: 4 }}>
+              Date :{" "}
+              <Text style={styles.bold}>
+                {currentDate.toLocaleDateString("fr-CH", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                })}
+              </Text>
             </Text>
           </View>
         </View>
@@ -452,33 +466,21 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
             <Text>Route des Jeunes, 13</Text>
             <Text>1227, Carouge</Text>
             <Text>Suisse</Text>
-            <Text>Tel: +41 79 123 45 67</Text>
-            <Text>Mail: contact@swisscarconsulting.ch</Text>
+            <Text>Tel : +41 79 123 45 67</Text>
+            <Text>Mail : contact@swisscarconsulting.ch</Text>
           </View>
+
           <View style={styles.clientInfo}>
-            <Text style={{ marginBottom: 8 }}>
-              {currentDate.toLocaleDateString("fr-CH", {
-                day: "numeric",
-                month: "long",
-                year: "numeric",
-              })}
-            </Text>
+            {/* NOUVEAU — la date n'est plus ici, seulement les infos client */}
             <Text style={styles.bold}>{clientName}</Text>
-            {formatClientAddress(
-              client.address,
-              client.postalCode,
-              client.city,
-            ) && (
-              <>
-                <Text>{client.address}</Text>
-                <Text>
-                  {client.postalCode}, {client.city}
-                </Text>
-                {client.country && <Text>{client.country}</Text>}
-              </>
+            {client.address && <Text>{client.address}</Text>}
+            {(client.postalCode || client.city) && (
+              <Text>
+                {client.postalCode} {client.city}
+              </Text>
             )}
-            <br />
-            <Text>Mail: {client.email}</Text>
+            {client.country && <Text>{client.country}</Text>}
+            <Text style={{ marginTop: 4 }}>Mail : {client.email}</Text>
           </View>
         </View>
 
