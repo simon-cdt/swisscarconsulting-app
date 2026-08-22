@@ -2,7 +2,19 @@
 
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/lib/auth";
+import { normalizeCountryName } from "@/lib/utils";
 import { db } from "../db";
+
+const normalizePhoneNumber = (value: string) => value.replace(/\s/g, "");
+
+const getNextClientId = async (): Promise<number> => {
+  const lastClient = await db.client.findFirst({
+    orderBy: { id: "desc" },
+    select: { id: true },
+  });
+
+  return (lastClient?.id ?? 0) + 1;
+};
 
 // ============ FONCTIONS DE VÉRIFICATION (AVANT LES AUTRES) ============
 
@@ -33,18 +45,15 @@ export const checkClientIndividualExists = async ({
     }
 > => {
   try {
-    // Normaliser le numéro de téléphone (enlever les espaces)
-    const normalizedPhoneNumber = phoneNumber.replace(/\s/g, "");
+    const normalizedPhoneNumber = normalizePhoneNumber(phoneNumber);
 
-    // Récupérer TOUS les clients individual et filtrer en JS
     const allClients = await db.client.findMany({
-      where: {
-        typeClient: "individual",
-      },
       select: {
         id: true,
+        typeClient: true,
         firstName: true,
         name: true,
+        companyName: true,
         email: true,
         phoneNumber: true,
         phonePrefix: true,
@@ -66,12 +75,11 @@ export const checkClientIndividualExists = async ({
       };
     }
 
-    // Chercher par numéro de téléphone
     existingClient =
       allClients.find(
         (client) =>
           client.phonePrefix === phonePrefix &&
-          client.phoneNumber === normalizedPhoneNumber,
+          normalizePhoneNumber(client.phoneNumber) === normalizedPhoneNumber,
       ) || null;
 
     if (existingClient) {
@@ -131,16 +139,12 @@ export const checkCompanyExists = async ({
     }
 > => {
   try {
-    // Normaliser le numéro de téléphone (enlever les espaces)
-    const normalizedPhoneNumber = phoneNumber.replace(/\s/g, "");
+    const normalizedPhoneNumber = normalizePhoneNumber(phoneNumber);
 
-    // Récupérer TOUS les clients company et filtrer en JS
-    const allCompanies = await db.client.findMany({
-      where: {
-        typeClient: "company",
-      },
+    const allClients = await db.client.findMany({
       select: {
         id: true,
+        typeClient: true,
         companyName: true,
         email: true,
         phoneNumber: true,
@@ -150,7 +154,7 @@ export const checkCompanyExists = async ({
 
     // Chercher par email (case insensitive)
     let existingClient =
-      allCompanies.find(
+      allClients.find(
         (client) => client.email?.toLowerCase() === email.toLowerCase(),
       ) || null;
 
@@ -163,16 +167,15 @@ export const checkCompanyExists = async ({
       };
     }
 
-    // Chercher par numéro de téléphone
     existingClient =
-      allCompanies.find(
+      allClients.find(
         (client) =>
           client.phonePrefix === phonePrefix &&
-          client.phoneNumber === normalizedPhoneNumber,
+          normalizePhoneNumber(client.phoneNumber) === normalizedPhoneNumber,
       ) || null;
 
     if (existingClient) {
-      const message = `Une entreprise avec le numéro de téléphone "${phonePrefix}${existingClient.phoneNumber}" existe déjà.`;
+      const message = `Un client avec le numéro de téléphone "${phonePrefix}${existingClient.phoneNumber}" existe déjà.`;
       return {
         exists: true,
         message,
@@ -182,7 +185,7 @@ export const checkCompanyExists = async ({
 
     // Chercher par nom d'entreprise (case insensitive)
     existingClient =
-      allCompanies.find(
+      allClients.find(
         (client) =>
           client.companyName?.toLowerCase() === companyName.toLowerCase(),
       ) || null;
@@ -244,8 +247,11 @@ export const addClientIndividual = async ({
       return { success: false, message: checkResult.message };
     }
 
+    const nextClientId = await getNextClientId();
+
     const client = await db.client.create({
       data: {
+        id: nextClientId,
         typeClient: "individual",
         name: data.name,
         firstName: data.firstName,
@@ -257,7 +263,7 @@ export const addClientIndividual = async ({
         address: data.address,
         postalCode: data.postalCode,
         city: data.city,
-        country: data.country,
+        country: normalizeCountryName(data.country),
       },
       select: { id: true },
     });
@@ -316,8 +322,11 @@ export const addClientCompany = async ({
       return { success: false, message: checkResult.message };
     }
 
+    const nextClientId = await getNextClientId();
+
     const client = await db.client.create({
       data: {
+        id: nextClientId,
         typeClient: "company",
         companyName: data.companyName,
         email: data.email,
@@ -330,7 +339,7 @@ export const addClientCompany = async ({
         address: data.address,
         postalCode: data.postalCode,
         city: data.city,
-        country: data.country,
+        country: normalizeCountryName(data.country),
       },
       select: { id: true },
     });
@@ -393,7 +402,7 @@ export const updateClientIndividual = async ({
         address: data.address,
         postalCode: data.postalCode === undefined ? null : data.postalCode,
         city: data.city,
-        country: data.country,
+        country: normalizeCountryName(data.country),
         typeClient: "individual",
       },
     });
@@ -451,7 +460,7 @@ export const updateClientCompany = async ({
         address: data.address,
         postalCode: data.postalCode === undefined ? null : data.postalCode,
         city: data.city,
-        country: data.country,
+        country: normalizeCountryName(data.country),
         typeClient: "company",
       },
     });

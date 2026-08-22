@@ -102,7 +102,19 @@ export function UpdateVehicule({
         .email("L'e-mail de l'assurance est invalide.")
         .optional(),
       insurancePhone: z.string().optional(),
-      chassisNumber: z.string().optional(),
+      chassisNumber: z
+        .string()
+        .refine(
+          (value) => {
+            if (!value) return true;
+            return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s-]+$/.test(value);
+          },
+          {
+            message:
+              "Le numéro de chassis doit contenir au moins une lettre et un chiffre.",
+          },
+        )
+        .optional(),
       registrationNumber: z
         .string()
         .refine(
@@ -131,7 +143,19 @@ export function UpdateVehicule({
           },
         )
         .optional(),
-      receptionType: z.string().optional(),
+      receptionType: z
+        .string()
+        .optional()
+        .refine(
+          (value) => {
+            if (!value) return true;
+            return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s-]+$/.test(value);
+          },
+          {
+            message:
+              "Le type de réception doit contenir au moins une lettre et un chiffre.",
+          },
+        ),
       certificateImage: z.instanceof(File).optional(),
     })
     .refine(

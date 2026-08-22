@@ -16,7 +16,12 @@ import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { SharedFormData } from "./CustomTabs";
 import { useEffect, forwardRef, useImperativeHandle } from "react";
-import { capitalizeName, formatAddress, toCamelCase } from "@/lib/utils";
+import {
+  capitalizeName,
+  formatAddress,
+  normalizeCountryName,
+  toCamelCase,
+} from "@/lib/utils";
 import { AddressAutocomplete } from "../AddressAutocomplete";
 
 type AddClientProps = {
@@ -260,7 +265,7 @@ export default forwardRef(function AddClient(
             error={errors.country}
             placeholder="Suisse"
             onChange={(e) => {
-              const formatted = toCamelCase(e.target.value);
+              const formatted = normalizeCountryName(e.target.value) ?? "";
               setValue("country", formatted);
             }}
           />

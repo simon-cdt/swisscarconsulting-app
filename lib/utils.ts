@@ -209,3 +209,28 @@ export function capitalizeName(value: string): string {
   const lower = value.toLowerCase();
   return lower.charAt(0).toUpperCase() + lower.slice(1);
 }
+
+export function normalizeCountryName(
+  value?: string | null,
+): string | undefined {
+  if (value === undefined || value === null) return undefined;
+
+  const trimmed = value.trim();
+  if (!trimmed) return "";
+
+  const normalized = trimmed.toLowerCase();
+
+  if (
+    normalized === "s" ||
+    normalized === "suisse" ||
+    normalized === "switzerland"
+  ) {
+    return "Suisse";
+  }
+
+  if (normalized === "f" || normalized === "fr" || normalized === "france") {
+    return "France";
+  }
+
+  return trimmed;
+}

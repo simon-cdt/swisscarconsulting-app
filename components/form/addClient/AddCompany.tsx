@@ -18,6 +18,7 @@ import {
   toCamelCase,
   capitalize,
   capitalizeName,
+  normalizeCountryName,
 } from "@/lib/utils";
 import { AddressAutocomplete } from "../AddressAutocomplete";
 
@@ -273,7 +274,7 @@ export default forwardRef(function AddCompany(
             error={errors.country}
             placeholder="Suisse"
             onChange={(e) => {
-              const formatted = toCamelCase(e.target.value);
+              const formatted = normalizeCountryName(e.target.value) ?? "";
               setValue("country", formatted);
             }}
           />
