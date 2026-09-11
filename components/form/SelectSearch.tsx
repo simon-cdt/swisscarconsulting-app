@@ -109,44 +109,36 @@ export default function SelectSearch({
           {nonempty && <span className="text-red-500">*</span>}
         </p>
       </Label>
-      <Popover onOpenChange={setOpen} open={open}>
+      <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
-            aria-expanded={open}
-            className="border-input bg-background hover:bg-background w-full justify-between px-3 font-normal outline-offset-0 outline-none focus-visible:outline-[3px]"
-            id={id}
-            role="combobox"
             variant="outline"
-            tabIndex={0}
-            type="button"
+            role="combobox"
+            aria-expanded={open}
             disabled={disabled}
+            onFocus={() => setOpen(true)}
+            className={cn(
+              "w-full justify-between font-normal",
+              !selected && "text-muted-foreground",
+            )}
           >
-            <span
-              className={cn("truncate", !selected && "text-muted-foreground")}
-            >
-              {selected
-                ? content.find((item) => item.value === selected)?.label
-                : placeholder}
-            </span>
-            <ChevronDownIcon
-              aria-hidden="true"
-              className="text-muted-foreground/80 shrink-0"
-              size={16}
-            />
+            {selected
+              ? content.find((item) => item.value === selected)?.label
+              : placeholder}
+            <ChevronDownIcon className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent
-          align="start"
-          className="border-input w-full min-w-(--radix-popper-anchor-width) p-0"
-          onWheel={(e) => {
-            const el = e.currentTarget;
-            el.scrollTop += e.deltaY;
-            e.stopPropagation();
-          }}
-        >
+
+        <PopoverContent className="w-full p-0" align="start">
           <Command>
             <CommandInput placeholder={research} />
-            <CommandList>
+            <CommandList
+              onWheel={(e) => {
+                const el = e.currentTarget;
+                el.scrollTop += e.deltaY;
+                e.stopPropagation();
+              }}
+            >
               <CommandEmpty>{noFound}</CommandEmpty>
               <CommandGroup>
                 {content.map((item) => (
@@ -161,7 +153,7 @@ export default function SelectSearch({
                   >
                     {item.label}
                     {selected === item.value && (
-                      <CheckIcon className="ml-auto" size={16} />
+                      <CheckIcon className="ml-auto h-4 w-4" />
                     )}
                   </CommandItem>
                 ))}

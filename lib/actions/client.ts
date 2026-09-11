@@ -247,11 +247,14 @@ export const addClientIndividual = async ({
       return { success: false, message: checkResult.message };
     }
 
-    const nextClientId = await getNextClientId();
+    const lastClient = await db.client.findFirst({
+      orderBy: { id: "desc" },
+      select: { id: true },
+    });
 
     const client = await db.client.create({
       data: {
-        id: nextClientId,
+        id: lastClient ? lastClient.id + 1 : 1,
         typeClient: "individual",
         name: data.name,
         firstName: data.firstName,
@@ -322,11 +325,14 @@ export const addClientCompany = async ({
       return { success: false, message: checkResult.message };
     }
 
-    const nextClientId = await getNextClientId();
+    const lastClient = await db.client.findFirst({
+      orderBy: { id: "desc" },
+      select: { id: true },
+    });
 
     const client = await db.client.create({
       data: {
-        id: nextClientId,
+        id: lastClient ? lastClient.id + 1 : 1,
         typeClient: "company",
         companyName: data.companyName,
         email: data.email,

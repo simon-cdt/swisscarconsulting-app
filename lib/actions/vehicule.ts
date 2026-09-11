@@ -28,7 +28,7 @@ export const addClientVehicule = async ({
   data: {
     brand: string;
     model: string;
-    year: number;
+    year: string;
     licensePlate: string;
     clientId: number;
     insuranceId: string | undefined;
@@ -181,7 +181,7 @@ export const updateVehicule = async ({
   data: {
     brand: string;
     model: string;
-    year: number;
+    year: string;
     licensePlate: string;
     insuranceId: string | undefined;
     insuranceName?: string;

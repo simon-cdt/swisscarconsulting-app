@@ -24,7 +24,12 @@ import { updateVehicule } from "@/lib/actions/vehicule";
 import UploadImage from "../UploadImage";
 import SelectSearch from "../SelectSearch";
 import { useQuery } from "@tanstack/react-query";
-import { formatLicensePlate, formatRegistrationNumber } from "@/lib/utils";
+import {
+  formatChassisNumber,
+  formatLicensePlate,
+  formatRegistrationNumber,
+} from "@/lib/utils";
+import { format, parse } from "date-fns";
 
 type FetchInsurances = {
   id: string;
@@ -50,7 +55,7 @@ export function UpdateVehicule({
     id: string;
     brand: string;
     model: string;
-    year: number;
+    year: string;
     licensePlate: string;
     chassisNumber: string | null;
     registrationNumber: string | null;
@@ -75,12 +80,25 @@ export function UpdateVehicule({
       brand: z.string().nonempty("La marque est requise."),
       model: z.string().nonempty("Le modèle est requis."),
       year: z
-        .number("L'année doit être un nombre.")
-        .int("L'année doit être un nombre entier.")
-        .min(1900, "L'année doit être au moins 1900.")
-        .max(
-          new Date().getFullYear(),
-          `L'année ne peut pas être supérieure à ${new Date().getFullYear()}.`,
+        .string()
+        .nonempty("La date du véhicule est requise.")
+        .refine(
+          (value) => {
+            const regex = /^\d{2}\/\d{2}\/\d{4}$/;
+            if (!regex.test(value)) return false;
+            const [day, month, yearNum] = value.split("/").map(Number);
+            const date = new Date(yearNum, month - 1, day);
+            return (
+              date.getFullYear() === yearNum &&
+              date.getMonth() === month - 1 &&
+              date.getDate() === day &&
+              date <= new Date()
+            );
+          },
+          {
+            message:
+              "La date doit être au format jj/mm/aaaa et ne peut pas être dans le futur.",
+          },
         ),
       licensePlate: z
         .string()
@@ -107,11 +125,13 @@ export function UpdateVehicule({
         .refine(
           (value) => {
             if (!value) return true;
-            return /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9\s-]+$/.test(value);
+            // Groupes de 3 caractères alphanumériques séparés par un espace
+            const regex = /^[A-Z0-9]{3}(?: [A-Z0-9]{3})*$/;
+            return regex.test(value);
           },
           {
             message:
-              "Le numéro de chassis doit contenir au moins une lettre et un chiffre.",
+              "Le format doit être XXX XXX XXX (groupes de 3 caractères séparés par un espace).",
           },
         )
         .optional(),
@@ -175,18 +195,6 @@ export function UpdateVehicule({
         message:
           "Merci de renseigner le nom, l'e-mail et le téléphone de l'assurance.",
         path: ["insuranceName"],
-      },
-    )
-    .refine(
-      (data) => {
-        if (!data.lastExpertise || !data.year) return true;
-        const expertiseDate = new Date(data.lastExpertise);
-        return expertiseDate.getFullYear() >= data.year;
-      },
-      {
-        message:
-          "La date d'expertise ne peut pas être avant l'année du véhicule.",
-        path: ["lastExpertise"],
       },
     );
   type FormSchema = z.infer<typeof zodFormSchema>;
@@ -296,14 +304,28 @@ export function UpdateVehicule({
               error={errors.model}
               register={register}
             />
-            <FormField
-              label="Année"
+            <DatePicker
+              label="Date du véhicule"
               name="year"
-              type="number"
-              defaultValue={vehicule.year}
+              setValue={(_name, date: Date) =>
+                setValue("year", format(date, "dd/MM/yyyy"))
+              }
               error={errors.year}
-              register={register}
-              step="1"
+              placeholder="Sélectionnez une date"
+              maxDate={new Date()}
+              defaultValue={
+                vehicule.year
+                  ? (() => {
+                      const parsed = parse(
+                        vehicule.year,
+                        "dd/MM/yyyy",
+                        new Date(),
+                      );
+                      parsed.setHours(12, 0, 0, 0);
+                      return parsed.toISOString();
+                    })()
+                  : undefined
+              }
             />
             <FormField
               label="Plaque d'immatriculation"
@@ -381,7 +403,8 @@ export function UpdateVehicule({
               register={register}
               type="text"
               error={errors.chassisNumber}
-              defaultValue={vehicule.chassisNumber || undefined}
+              placeholder="WVW ZZZ 1KZ AM"
+              transformValue={formatChassisNumber} // NOUVEAU
             />
             <FormField
               label="Numéro de matricule"

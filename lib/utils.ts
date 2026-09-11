@@ -234,3 +234,9 @@ export function normalizeCountryName(
 
   return trimmed;
 }
+
+export function formatChassisNumber(value: string): string {
+  const cleaned = value.replace(/[^a-zA-Z0-9]/g, "").toUpperCase();
+  const groups = cleaned.match(/.{1,3}/g) || [];
+  return groups.join(" ");
+}
