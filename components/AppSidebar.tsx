@@ -35,6 +35,40 @@ import { GeistMono } from "geist/font/mono";
 import { usePathname } from "next/navigation";
 import { Badge } from "./ui/badge";
 
+// application/components/AppSidebar.tsx
+
+// Attribue une couleur de fond distincte à chaque étape du cycle devis → facture
+const getStageColorClass = (url: string): string => {
+  switch (url) {
+    case "/estimates/individual/tofinish":
+    case "/estimates/insurance/tofinish":
+      return "bg-slate-200 hover:bg-slate-300 dark:bg-slate-900/30 dark:hover:bg-slate-800/40"; // à finir
+
+    case "/estimates/individual/pending":
+    case "/estimates/insurance/pending":
+      return "bg-yellow-100 hover:bg-yellow-200 dark:bg-yellow-900/30 dark:hover:bg-yellow-800/40"; // en attente client
+
+    case "/estimates/individual/accepted":
+    case "/estimates/insurance/accepted":
+      return "bg-lime-100 hover:bg-lime-200 dark:bg-lime-900/30 dark:hover:bg-lime-800/40"; // accepté
+
+    case "/mechanical":
+      return "bg-orange-100 hover:bg-orange-200 dark:bg-orange-900/30 dark:hover:bg-orange-800/40"; // en cours au garage
+
+    case "/mechanical/waiting-parts":
+      return "bg-red-100 hover:bg-red-200 dark:bg-red-900/30 dark:hover:bg-red-800/40"; // attente de pièces
+
+    case "/invoices/pending":
+      return "bg-violet-100 hover:bg-violet-200 dark:bg-violet-900/30 dark:hover:bg-violet-800/40"; // facture émise
+
+    case "/invoices/paid":
+      return "bg-emerald-100 hover:bg-emerald-200 dark:bg-emerald-900/30 dark:hover:bg-emerald-800/40"; // encaissée
+
+    default:
+      return "";
+  }
+};
+
 const data = {
   nav: [
     {
@@ -229,18 +263,20 @@ export function AppSidebar({
 
                     return (
                       <SidebarMenuItem key={item.title}>
-                        <SidebarMenuButton asChild isActive={isActive}>
-                          <a href={`/dashboard/${item.url}`}>
-                            <item.icon
-                              className={`size-4 ${isActive ? "text-black" : "text-black/70"}`}
-                            />
+                        <SidebarMenuButton
+                          asChild
+                          isActive={isActive}
+                          className={getStageColorClass(item.url)} // NOUVEAU — fond sur toute la ligne
+                        >
+                          <Link href={`/dashboard${item.url}`}>
+                            <item.icon />
                             <span>{item.title}</span>
                             {count !== undefined && (
-                              <Badge variant="secondary" className="ml-auto">
+                              <Badge className="bg-transparent text-black">
                                 {count}
                               </Badge>
                             )}
-                          </a>
+                          </Link>
                         </SidebarMenuButton>
                       </SidebarMenuItem>
                     );
@@ -255,7 +291,7 @@ export function AppSidebar({
       <SidebarFooter>
         {session?.user.role !== "SELLER" && (
           <Link href="/client-handle">
-            <Button variant={"ghost"} className="w-full hover:bg-gray-200">
+            <Button variant={"ghost"} className="w-full">
               Accédez au garage
             </Button>
           </Link>

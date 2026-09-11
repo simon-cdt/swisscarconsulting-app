@@ -48,7 +48,7 @@ type FetchClientAndVehicule = {
     id: string;
     brand: string;
     model: string;
-    year: number;
+    year: string;
     licensePlate: string;
     chassisNumber: string | null;
     registrationNumber: string | null;

@@ -39,7 +39,20 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Spinner } from "./ui/spinner";
 import CreateAppointmentDialog from "./form/CreateAppointmentDialog";
 import Link from "next/link";
-import { EstimateStatus, TypeEstimate } from "@/generated/prisma/enums";
+import {
+  EstimateStatus,
+  PaymentTerm,
+  TypeEstimate,
+} from "@/generated/prisma/enums";
+import { Label } from "./ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./ui/select";
+import { sendEmailInvoice } from "@/lib/actions/emails";
 
 interface EstimateStatusActionsProps {
   estimateId: string;
@@ -57,6 +70,8 @@ export default function EstimateStatusActions({
   vehiculeId,
   refetch,
 }: EstimateStatusActionsProps) {
+  const [paymentTerm, setPaymentTerm] = useState<PaymentTerm>("DAYS_15");
+
   const [appointmentDialogOpen, setAppointmentDialogOpen] = useState(false);
   const [appointmentCreated, setAppointmentCreated] = useState(false);
 
@@ -288,6 +303,69 @@ export default function EstimateStatusActions({
                     refetch?.();
                   } else {
                     toast.error(response.message);
+                  }
+                }}
+              >
+                Confirmer
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
+        <AlertDialog>
+          <AlertDialogTrigger asChild>
+            <Button className="bg-pink-700 hover:bg-pink-800">
+              Envoyer en facture
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+              <AlertDialogDescription>
+                Le devis deviendra une facture et un e-mail sera envoyé dans la
+                boite mail du client. Cela signifie que les modifications ont
+                été faite et que le cas du client sera terminé.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+
+            <div className="py-2">
+              <Label htmlFor="paymentTerm">Délai de paiement</Label>
+              <Select
+                value={paymentTerm}
+                onValueChange={(value) =>
+                  setPaymentTerm(value as "NOW" | "DAYS_15" | "DAYS_30")
+                }
+              >
+                <SelectTrigger id="paymentTerm" className="mt-1 w-full">
+                  <SelectValue placeholder="Choisir un délai" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="NOW">Comptant</SelectItem>
+                  <SelectItem value="DAYS_15">Dans 15 jours</SelectItem>
+                  <SelectItem value="DAYS_30">Dans 30 jours</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <AlertDialogFooter>
+              <AlertDialogCancel>Annuler</AlertDialogCancel>
+              <AlertDialogAction
+                className="bg-pink-700 hover:bg-pink-800"
+                onClick={async () => {
+                  const response = await sendEmailInvoice({
+                    estimateId: estimateId,
+                    paymentTerm: paymentTerm,
+                  });
+
+                  if (response.success) {
+                    toast.success(
+                      response.message ||
+                        "La facture a été envoyée avec succès.",
+                    );
+                  } else {
+                    toast.error(
+                      response.message ||
+                        "Une erreur est survenue lors de l'envoi de la facture.",
+                    );
                   }
                 }}
               >

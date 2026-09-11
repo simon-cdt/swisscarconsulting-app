@@ -50,29 +50,32 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "flex-start", // NOUVEAU — le bloc metadata remonte en haut
-    marginBottom: 20,
+    alignItems: "flex-end", // NOUVEAU — logo et bloc devis alignés en bas
+    marginBottom: 16,
+  },
+  headerRight: {
+    width: "35%",
+    fontSize: 9,
   },
   logo: {
     width: 150,
   },
-  headerRight: {
-    width: "30%",
-    fontSize: 9,
-  },
   addresses: {
     flexDirection: "row",
     justifyContent: "space-between",
+    alignItems: "flex-start",
     marginBottom: 16,
   },
   companyInfo: {
-    width: "auto",
+    width: "45%",
     fontSize: 9,
   },
   clientInfo: {
-    width: "auto",
+    width: "35%",
     fontSize: 9,
+    textAlign: "left",
   },
+
   bold: {
     fontWeight: 700,
   },
@@ -427,6 +430,8 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
     <Document>
       <Page size="A4" style={styles.page}>
         {/* Header */}
+        {/* Header : uniquement le logo, sur sa propre ligne */}
+        {/* Header : logo et infos du document alignés en bas, sur la même ligne */}
         <View style={styles.header}>
           <Image style={styles.logo} src={data.logoBase64} />
           <View style={styles.headerRight}>
@@ -436,17 +441,14 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
                 <Text style={styles.bold}>{data.claimNumber}</Text>
               </Text>
             )}
-            <Text style={{ marginTop: 4 }}>
+            <Text style={{ marginTop: 2 }}>
               Numéro client : <Text style={styles.bold}>{client.id}</Text>
             </Text>
-            <Text style={{ marginTop: 4 }}>
-              {data.status === "SENT_TO_GARAGE" || data.status === "FINISHED"
-                ? "Numéro facture"
-                : "Numéro devis"}{" "}
-              : <Text style={styles.bold}>{data.id}</Text>
+            <Text style={{ marginTop: 2 }}>
+              {isInvoice ? "Numéro facture" : "Numéro devis"} :{" "}
+              <Text style={styles.bold}>{data.id}</Text>
             </Text>
-            {/* NOUVEAU — la date rejoint les métadonnées du document, en haut à droite */}
-            <Text style={{ marginTop: 4 }}>
+            <Text style={{ marginTop: 2 }}>
               Date :{" "}
               <Text style={styles.bold}>
                 {currentDate.toLocaleDateString("fr-CH", {
@@ -459,7 +461,7 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
           </View>
         </View>
 
-        {/* Addresses */}
+        {/* Adresses : garage et client, juste en dessous, sur leur propre ligne */}
         <View style={styles.addresses}>
           <View style={styles.companyInfo}>
             <Text style={styles.bold}>Swiss Car Consulting SA</Text>
@@ -471,7 +473,6 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
           </View>
 
           <View style={styles.clientInfo}>
-            {/* NOUVEAU — la date n'est plus ici, seulement les infos client */}
             <Text style={styles.bold}>{clientName}</Text>
             {client.address && <Text>{client.address}</Text>}
             {(client.postalCode || client.city) && (

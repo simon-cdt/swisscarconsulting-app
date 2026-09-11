@@ -101,22 +101,32 @@ export default function SelectSearch({
     prevContentRef.current = content;
   }, [content, selected, disabled]);
 
+  const suppressNextFocusOpen = useRef(false);
+
   return (
-    <div className="*:not-first:mt-2">
+    <div>
       <Label htmlFor={id}>
-        <p>
-          {label}&nbsp;
-          {nonempty && <span className="text-red-500">*</span>}
-        </p>
+        {label} {nonempty && <span>*</span>}
       </Label>
+
       <Popover open={open} onOpenChange={setOpen}>
         <PopoverTrigger asChild>
           <Button
+            id={id}
             variant="outline"
             role="combobox"
             aria-expanded={open}
             disabled={disabled}
-            onFocus={() => setOpen(true)}
+            onPointerDown={() => {
+              suppressNextFocusOpen.current = true; // NOUVEAU — un clic gère déjà l'ouverture via Radix
+            }}
+            onFocus={() => {
+              if (suppressNextFocusOpen.current) {
+                suppressNextFocusOpen.current = false; // NOUVEAU — on ignore ce focus-ci
+                return;
+              }
+              setOpen(true); // s'exécute uniquement pour un vrai Tab clavier
+            }}
             className={cn(
               "w-full justify-between font-normal",
               !selected && "text-muted-foreground",
@@ -129,7 +139,13 @@ export default function SelectSearch({
           </Button>
         </PopoverTrigger>
 
-        <PopoverContent className="w-full p-0" align="start">
+        <PopoverContent
+          className="w-full p-0"
+          align="start"
+          onCloseAutoFocus={() => {
+            suppressNextFocusOpen.current = true; // NOUVEAU — évite la réouverture après sélection
+          }}
+        >
           <Command>
             <CommandInput placeholder={research} />
             <CommandList
@@ -162,7 +178,8 @@ export default function SelectSearch({
           </Command>
         </PopoverContent>
       </Popover>
-      {error && <p className="text-sm text-red-500">{error.message}</p>}
+
+      {error && <p className="text-destructive text-sm">{error.message}</p>}
     </div>
   );
 }

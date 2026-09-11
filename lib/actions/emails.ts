@@ -327,7 +327,7 @@ export async function sendEmailInvoice({
     const finalBuffer = Buffer.from(pdfBuffer);
 
     // --- Enregistrement local du PDF dans storage/invoices ---
-    const pdfFilename = `facture-${estimate.id}-${Date.now()}.pdf`;
+    const pdfFilename = `SwissCarConsulting-facture-${estimate.id}-${Date.now()}.pdf`;
     await mkdir(STORAGE_DIR, { recursive: true });
     await writeFile(join(STORAGE_DIR, pdfFilename), finalBuffer);
     // -----------------------------------------------------------

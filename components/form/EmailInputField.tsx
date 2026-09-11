@@ -55,24 +55,36 @@ export default function EmailInputField({
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setInputValue(value);
-
-    // Appeler le onChange personnalisé s'il existe
     onChange?.(e);
 
-    // Extraire la partie avant le @
     const atIndex = value.indexOf("@");
 
     if (atIndex === -1) {
-      // Pas encore de @, ne pas afficher les suggestions
       setShowSuggestions(false);
       setFilteredDomains([]);
+      return;
+    }
+
+    const beforeAt = value.substring(0, atIndex);
+    const afterAt = value.substring(atIndex + 1).toLowerCase(); // NOUVEAU — ce qui est tapé après le @
+
+    if (beforeAt.length === 0) {
+      setShowSuggestions(false);
+      setFilteredDomains([]);
+      return;
+    }
+
+    // NOUVEAU — ne garder que les domaines qui commencent par ce qui est déjà tapé
+    const matches = EMAIL_DOMAINS.filter((domain) =>
+      domain.toLowerCase().startsWith(afterAt),
+    );
+
+    if (matches.length === 0) {
+      setShowSuggestions(false); // NOUVEAU — plus aucune correspondance, on masque tout
+      setFilteredDomains([]);
     } else {
-      // Il y a un @, afficher les suggestions
-      const beforeAt = value.substring(0, atIndex);
-      if (beforeAt.length > 0) {
-        setShowSuggestions(true);
-        setFilteredDomains(EMAIL_DOMAINS);
-      }
+      setShowSuggestions(true);
+      setFilteredDomains(matches);
     }
   };
 

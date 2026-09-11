@@ -62,6 +62,7 @@ interface Appointment {
   clientId: number;
   clientPhonePrefix: string;
   clientPhoneNumber: string;
+  clientTypeClient: "individual" | "company";
   vehicleId: string;
   vehicleBrand: string;
   vehicleModel: string;
@@ -87,7 +88,7 @@ type FetchAppointment = {
     companyName: string | null;
     phonePrefix: string;
     phoneNumber: string;
-    typeClient: string;
+    typeClient: "individual" | "company";
   };
   vehicule: {
     id: string;
@@ -135,6 +136,10 @@ const getEstimateStatusLabel = (status: string) => {
   }
 };
 
+const getEstimateTypeLabel = (type: string) => {
+  return type === "INSURANCE" ? "Devis d'assurance" : "Devis privé";
+};
+
 export default function CalendarPage() {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedAppointment, setSelectedAppointment] =
@@ -160,6 +165,7 @@ export default function CalendarPage() {
           clientId: apt.client.id,
           clientPhonePrefix: apt.client.phonePrefix,
           clientPhoneNumber: apt.client.phoneNumber,
+          clientTypeClient: apt.client.typeClient as "individual" | "company",
           vehicleId: apt.vehicule.id,
           vehicleBrand: apt.vehicule.brand,
           vehicleModel: apt.vehicule.model,
@@ -205,6 +211,28 @@ export default function CalendarPage() {
   const goToToday = () => {
     setCurrentDate(new Date());
   };
+
+  const getClientColorClass = (typeClient: "individual" | "company") => {
+    return typeClient === "company"
+      ? "bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-100" // entreprise
+      : "bg-sky-100 text-sky-900 dark:bg-sky-900/30 dark:text-sky-100"; // particulier
+  };
+
+  const getAppointmentTypeLabel = (type: AppointmentType) => {
+    switch (type) {
+      case AppointmentType.DROPOFF:
+        return "Apport";
+      case AppointmentType.PICKUP:
+        return "Récup.";
+      case AppointmentType.MECHANICAL:
+        return "Mécanique";
+      default:
+        return type;
+    }
+  };
+
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
+  const MAX_VISIBLE_PER_DAY = 3;
 
   return (
     <div className="container mx-auto space-y-6 p-6">
@@ -303,6 +331,8 @@ export default function CalendarPage() {
                   const dayAppointments = getAppointmentsForDay(day);
                   const isCurrentMonth = isSameMonth(day, currentDate);
                   const isCurrentDay = isToday(day);
+                  const hiddenCount =
+                    dayAppointments.length - MAX_VISIBLE_PER_DAY; // NOUVEAU
 
                   return (
                     <div
@@ -313,32 +343,21 @@ export default function CalendarPage() {
                           : "border-border/50 bg-muted/30"
                       } ${isCurrentDay && "border-2 border-gray-300 bg-gray-200"}`}
                     >
-                      <div
-                        className={`mb-1 text-sm font-medium ${
+                      <button
+                        onClick={() => setSelectedDay(day)}
+                        className={`pointer mb-1 text-sm font-medium hover:underline ${
                           isCurrentMonth
                             ? "text-foreground"
                             : "text-muted-foreground"
                         } ${isCurrentDay ? "text-primary" : ""}`}
                       >
                         {format(day, "d")}
-                      </div>
+                      </button>
                       <div className="space-y-1">
                         {dayAppointments.map((apt) => {
-                          // Déterminer la classe de couleur basée sur le type du devis
-                          let estimateColorClass =
-                            "bg-gray-100 text-gray-900 dark:bg-gray-900/30 dark:text-gray-100";
-                          if (apt.estimate) {
-                            if (apt.estimate.type === "INSURANCE") {
-                              estimateColorClass =
-                                "bg-purple-100 text-purple-900 dark:bg-purple-900/30 dark:text-purple-100";
-                            } else if (apt.estimate.type === "INDIVIDUAL") {
-                              estimateColorClass =
-                                "bg-sky-100 text-sky-900 dark:bg-sky-900/30 dark:text-sky-100";
-                            } else {
-                              estimateColorClass =
-                                "bg-amber-100 text-amber-900 dark:bg-amber-900/30 dark:text-amber-100";
-                            }
-                          }
+                          const clientColorClass = getClientColorClass(
+                            apt.clientTypeClient,
+                          );
 
                           const getAppointmentTypeLabel = (
                             type: AppointmentType,
@@ -363,23 +382,34 @@ export default function CalendarPage() {
                             <button
                               key={apt.id}
                               onClick={() => setSelectedAppointment(apt)}
-                              className={`w-full rounded px-1.5 py-1 text-left text-xs transition-colors hover:opacity-80 ${estimateColorClass}`}
+                              className={`${clientColorClass} pointer w-full rounded-lg px-2 py-1 text-left text-xs transition-colors hover:opacity-80`}
                             >
-                              <div className="truncate font-medium">
-                                {apt.time}
+                              <div className="truncate text-[13px] font-medium">
+                                {apt.time} — {apt.clientName}
                               </div>
                               <div className="truncate">
                                 {appointmentTypeLabel}
+                                {apt.estimate &&
+                                  ` · ${getEstimateTypeLabel(apt.estimate.type)}`}{" "}
+                                {/* NOUVEAU */}
                               </div>
                               {apt.estimate && (
                                 <div className="truncate text-[10px] italic opacity-75">
                                   {getEstimateStatusLabel(apt.estimate.status)}
                                 </div>
                               )}
-                              <div className="truncate">{apt.clientName}</div>
                             </button>
                           );
                         })}
+
+                        {hiddenCount > 0 && (
+                          <button
+                            onClick={() => setSelectedDay(day)}
+                            className="text-muted-foreground w-full rounded px-1.5 py-0.5 text-left text-[10px] font-medium hover:underline"
+                          >
+                            +{hiddenCount} de plus
+                          </button>
+                        )}
                       </div>
                     </div>
                   );
@@ -540,6 +570,61 @@ export default function CalendarPage() {
           refetch();
         }}
       />
+      {/* NOUVEAU — Dialog de vue agrandie d'un jour */}
+      <Dialog
+        open={!!selectedDay}
+        onOpenChange={(open) => !open && setSelectedDay(null)}
+      >
+        <DialogContent className="max-h-[80vh] overflow-y-auto sm:max-w-2xl">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <CalendarIcon className="size-5" />
+              {selectedDay &&
+                format(selectedDay, "EEEE d MMMM yyyy", { locale: fr })}
+            </DialogTitle>
+            <DialogDescription>
+              {selectedDay && getAppointmentsForDay(selectedDay).length}{" "}
+              rendez-vous ce jour
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-2">
+            {selectedDay &&
+              getAppointmentsForDay(selectedDay).map((apt) => {
+                const clientColorClass = getClientColorClass(
+                  apt.clientTypeClient,
+                );
+                const appointmentTypeLabel = getAppointmentTypeLabel(apt.type);
+
+                return (
+                  <button
+                    key={apt.id}
+                    onClick={() => {
+                      setSelectedDay(null);
+                      setSelectedAppointment(apt);
+                    }}
+                    className={`w-full rounded-lg px-4 py-3 text-left transition-colors hover:opacity-80 ${clientColorClass}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-semibold">
+                        {apt.time} — {apt.clientName}
+                      </span>
+                      <Badge variant="outline">{appointmentTypeLabel}</Badge>
+                    </div>
+                    <div className="mt-1 text-sm opacity-80">
+                      {apt.vehicleBrand} {apt.vehicleModel} · {apt.licensePlate}
+                    </div>
+                    {apt.estimate && (
+                      <div className="mt-1 text-xs italic opacity-75">
+                        {getEstimateStatusLabel(apt.estimate.status)}
+                      </div>
+                    )}
+                  </button>
+                );
+              })}
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

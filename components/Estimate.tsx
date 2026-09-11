@@ -84,7 +84,7 @@ export default function Estimate({
     firstName: string | null;
     companyName: string | null;
   }) => {
-    if (client.companyName) {
+    if (!isIndividual) {
       return client.companyName;
     }
     return `${client.firstName || ""} ${client.name || ""}`.trim();
