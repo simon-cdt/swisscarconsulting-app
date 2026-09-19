@@ -211,31 +211,7 @@ function useSidebarCounts() {
   });
 }
 
-export function AppSidebar({
-  intervention,
-  estimateIndividualPending,
-  estimateIndividualToFinish,
-  estimateIndividualAccepted,
-  estimateInsurancePending,
-  estimateInsuranceAccepted,
-  estimateInsuranceToFinish,
-  estimateSentGarage,
-  estimateWaitingParts,
-  invoicePending,
-  invoicePaid,
-}: {
-  intervention?: number;
-  estimateIndividualPending?: number;
-  estimateIndividualToFinish?: number;
-  estimateIndividualAccepted?: number;
-  estimateInsurancePending?: number;
-  estimateInsuranceAccepted?: number;
-  estimateInsuranceToFinish?: number;
-  estimateSentGarage?: number;
-  estimateWaitingParts?: number;
-  invoicePending?: number;
-  invoicePaid?: number;
-}) {
+export function AppSidebar({}) {
   const { data: session } = useSession();
   const pathname = usePathname();
   const { data: counts, refetch } = useSidebarCounts();

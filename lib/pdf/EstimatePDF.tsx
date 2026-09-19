@@ -8,12 +8,7 @@ import {
   Image,
   Font,
 } from "@react-pdf/renderer";
-import {
-  capitalizeFirstLetterInHtml,
-  convertTtcToHt,
-  formatClientAddress,
-  VAT_RATE,
-} from "@/lib/utils";
+import { capitalizeFirstLetterInHtml, VAT_RATE } from "@/lib/utils";
 
 // Enregistrer les polices (vous pouvez utiliser des polices système ou hébergées)
 Font.register({
@@ -433,6 +428,7 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
         {/* Header : uniquement le logo, sur sa propre ligne */}
         {/* Header : logo et infos du document alignés en bas, sur la même ligne */}
         <View style={styles.header}>
+          {/* eslint-disable-next-line */}
           <Image style={styles.logo} src={data.logoBase64} />
           <View style={styles.headerRight}>
             {data.type === "INSURANCE" && data.claimNumber && (

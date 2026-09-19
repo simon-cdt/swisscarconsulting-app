@@ -7,15 +7,6 @@ import { db } from "../db";
 
 const normalizePhoneNumber = (value: string) => value.replace(/\s/g, "");
 
-const getNextClientId = async (): Promise<number> => {
-  const lastClient = await db.client.findFirst({
-    orderBy: { id: "desc" },
-    select: { id: true },
-  });
-
-  return (lastClient?.id ?? 0) + 1;
-};
-
 // ============ FONCTIONS DE VÉRIFICATION (AVANT LES AUTRES) ============
 
 export const checkClientIndividualExists = async ({
