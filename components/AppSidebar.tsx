@@ -32,8 +32,10 @@ import { Button } from "./ui/button";
 import Link from "next/link";
 import { Separator } from "./ui/separator";
 import { GeistMono } from "geist/font/mono";
-import { usePathname } from "next/navigation";
 import { Badge } from "./ui/badge";
+import { useQuery } from "@tanstack/react-query";
+import { usePathname } from "next/navigation";
+import { useEffect } from "react";
 
 // application/components/AppSidebar.tsx
 
@@ -185,6 +187,30 @@ const data = {
   ],
 };
 
+type SidebarCounts = {
+  intervention?: number;
+  estimateIndividualPending?: number;
+  estimateIndividualToFinish?: number;
+  estimateIndividualAccepted?: number;
+  estimateInsurancePending?: number;
+  estimateInsuranceAccepted?: number;
+  estimateInsuranceToFinish?: number;
+  estimateSentGarage?: number;
+  estimateWaitingParts?: number;
+  invoicePending?: number;
+  invoicePaid?: number;
+};
+
+function useSidebarCounts() {
+  return useQuery<SidebarCounts>({
+    queryKey: ["sidebar-count"],
+    queryFn: async () => {
+      const response = await fetch("/api/sidebar/count");
+      return await response.json();
+    },
+  });
+}
+
 export function AppSidebar({
   intervention,
   estimateIndividualPending,
@@ -212,6 +238,11 @@ export function AppSidebar({
 }) {
   const { data: session } = useSession();
   const pathname = usePathname();
+  const { data: counts, refetch } = useSidebarCounts();
+
+  useEffect(() => {
+    refetch();
+  }, [pathname, refetch]);
 
   return (
     <Sidebar>
@@ -238,27 +269,25 @@ export function AppSidebar({
                     // Déterminer le compteur à afficher
                     let count: number | undefined;
                     if (item.url === "/interventions") {
-                      count = intervention;
+                      count = counts?.intervention;
                     } else if (item.url === "/estimates/individual/pending") {
-                      count = estimateIndividualPending;
-                    } else if (item.url === "/estimates/individual/tofinish") {
-                      count = estimateIndividualToFinish;
+                      count = counts?.estimateIndividualToFinish;
                     } else if (item.url === "/estimates/individual/accepted") {
-                      count = estimateIndividualAccepted;
+                      count = counts?.estimateIndividualAccepted;
                     } else if (item.url === "/estimates/insurance/pending") {
-                      count = estimateInsurancePending;
+                      count = counts?.estimateInsurancePending;
                     } else if (item.url === "/estimates/insurance/tofinish") {
-                      count = estimateInsuranceToFinish;
+                      count = counts?.estimateInsuranceToFinish;
                     } else if (item.url === "/estimates/insurance/accepted") {
-                      count = estimateInsuranceAccepted;
+                      count = counts?.estimateInsuranceAccepted;
                     } else if (item.url === "/mechanical") {
-                      count = estimateSentGarage;
+                      count = counts?.estimateSentGarage;
                     } else if (item.url === "/mechanical/waiting-parts") {
-                      count = estimateWaitingParts;
+                      count = counts?.estimateWaitingParts;
                     } else if (item.url === "/invoices/pending") {
-                      count = invoicePending;
+                      count = counts?.invoicePending;
                     } else if (item.url === "/invoices/paid") {
-                      count = invoicePaid;
+                      count = counts?.invoicePaid;
                     }
 
                     return (
