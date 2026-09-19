@@ -270,8 +270,10 @@ export function AppSidebar({
                     let count: number | undefined;
                     if (item.url === "/interventions") {
                       count = counts?.intervention;
-                    } else if (item.url === "/estimates/individual/pending") {
+                    } else if (item.url === "/estimates/individual/tofinish") {
                       count = counts?.estimateIndividualToFinish;
+                    } else if (item.url === "/estimates/individual/pending") {
+                      count = counts?.estimateIndividualPending;
                     } else if (item.url === "/estimates/individual/accepted") {
                       count = counts?.estimateIndividualAccepted;
                     } else if (item.url === "/estimates/insurance/pending") {

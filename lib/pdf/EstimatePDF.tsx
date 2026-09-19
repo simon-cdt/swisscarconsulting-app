@@ -465,8 +465,8 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
         <View style={styles.addresses}>
           <View style={styles.companyInfo}>
             <Text style={styles.bold}>Swiss Car Consulting SA</Text>
-            <Text>Route des Jeunes, 13</Text>
-            <Text>1227, Carouge</Text>
+            <Text>Route des Jeunes 13</Text>
+            <Text>1227 Carouge</Text>
             <Text>Suisse</Text>
             <Text>Tel : +41 79 123 45 67</Text>
             <Text>Mail : contact@swisscarconsulting.ch</Text>
