@@ -42,6 +42,7 @@ export type EstimateMinAggregateOutputType = {
   claimNumber: string | null
   deleted: boolean | null
   discount: number | null
+  paymentTerm: $Enums.PaymentTerm | null
   sentToGarageAt: Date | null
   acceptedAt: Date | null
   paidAt: Date | null
@@ -59,6 +60,7 @@ export type EstimateMaxAggregateOutputType = {
   claimNumber: string | null
   deleted: boolean | null
   discount: number | null
+  paymentTerm: $Enums.PaymentTerm | null
   sentToGarageAt: Date | null
   acceptedAt: Date | null
   paidAt: Date | null
@@ -76,6 +78,7 @@ export type EstimateCountAggregateOutputType = {
   claimNumber: number
   deleted: number
   discount: number
+  paymentTerm: number
   sentToGarageAt: number
   acceptedAt: number
   paidAt: number
@@ -103,6 +106,7 @@ export type EstimateMinAggregateInputType = {
   claimNumber?: true
   deleted?: true
   discount?: true
+  paymentTerm?: true
   sentToGarageAt?: true
   acceptedAt?: true
   paidAt?: true
@@ -120,6 +124,7 @@ export type EstimateMaxAggregateInputType = {
   claimNumber?: true
   deleted?: true
   discount?: true
+  paymentTerm?: true
   sentToGarageAt?: true
   acceptedAt?: true
   paidAt?: true
@@ -137,6 +142,7 @@ export type EstimateCountAggregateInputType = {
   claimNumber?: true
   deleted?: true
   discount?: true
+  paymentTerm?: true
   sentToGarageAt?: true
   acceptedAt?: true
   paidAt?: true
@@ -241,6 +247,7 @@ export type EstimateGroupByOutputType = {
   claimNumber: string | null
   deleted: boolean
   discount: number | null
+  paymentTerm: $Enums.PaymentTerm
   sentToGarageAt: Date | null
   acceptedAt: Date | null
   paidAt: Date | null
@@ -281,6 +288,7 @@ export type EstimateWhereInput = {
   claimNumber?: Prisma.StringNullableFilter<"Estimate"> | string | null
   deleted?: Prisma.BoolFilter<"Estimate"> | boolean
   discount?: Prisma.FloatNullableFilter<"Estimate"> | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFilter<"Estimate"> | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
   acceptedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
@@ -302,6 +310,7 @@ export type EstimateOrderByWithRelationInput = {
   claimNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   deleted?: Prisma.SortOrder
   discount?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentTerm?: Prisma.SortOrder
   sentToGarageAt?: Prisma.SortOrderInput | Prisma.SortOrder
   acceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -327,6 +336,7 @@ export type EstimateWhereUniqueInput = Prisma.AtLeast<{
   claimNumber?: Prisma.StringNullableFilter<"Estimate"> | string | null
   deleted?: Prisma.BoolFilter<"Estimate"> | boolean
   discount?: Prisma.FloatNullableFilter<"Estimate"> | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFilter<"Estimate"> | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
   acceptedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
@@ -348,6 +358,7 @@ export type EstimateOrderByWithAggregationInput = {
   claimNumber?: Prisma.SortOrderInput | Prisma.SortOrder
   deleted?: Prisma.SortOrder
   discount?: Prisma.SortOrderInput | Prisma.SortOrder
+  paymentTerm?: Prisma.SortOrder
   sentToGarageAt?: Prisma.SortOrderInput | Prisma.SortOrder
   acceptedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   paidAt?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -373,6 +384,7 @@ export type EstimateScalarWhereWithAggregatesInput = {
   claimNumber?: Prisma.StringNullableWithAggregatesFilter<"Estimate"> | string | null
   deleted?: Prisma.BoolWithAggregatesFilter<"Estimate"> | boolean
   discount?: Prisma.FloatNullableWithAggregatesFilter<"Estimate"> | number | null
+  paymentTerm?: Prisma.EnumPaymentTermWithAggregatesFilter<"Estimate"> | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Estimate"> | Date | string | null
   acceptedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Estimate"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Estimate"> | Date | string | null
@@ -389,6 +401,7 @@ export type EstimateCreateInput = {
   claimNumber?: string | null
   deleted?: boolean
   discount?: number | null
+  paymentTerm?: $Enums.PaymentTerm
   sentToGarageAt?: Date | string | null
   acceptedAt?: Date | string | null
   paidAt?: Date | string | null
@@ -410,6 +423,7 @@ export type EstimateUncheckedCreateInput = {
   claimNumber?: string | null
   deleted?: boolean
   discount?: number | null
+  paymentTerm?: $Enums.PaymentTerm
   sentToGarageAt?: Date | string | null
   acceptedAt?: Date | string | null
   paidAt?: Date | string | null
@@ -429,6 +443,7 @@ export type EstimateUpdateInput = {
   claimNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFieldUpdateOperationsInput | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -450,6 +465,7 @@ export type EstimateUncheckedUpdateInput = {
   claimNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFieldUpdateOperationsInput | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -470,6 +486,7 @@ export type EstimateCreateManyInput = {
   claimNumber?: string | null
   deleted?: boolean
   discount?: number | null
+  paymentTerm?: $Enums.PaymentTerm
   sentToGarageAt?: Date | string | null
   acceptedAt?: Date | string | null
   paidAt?: Date | string | null
@@ -486,6 +503,7 @@ export type EstimateUpdateManyMutationInput = {
   claimNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFieldUpdateOperationsInput | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -503,6 +521,7 @@ export type EstimateUncheckedUpdateManyInput = {
   claimNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFieldUpdateOperationsInput | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -536,6 +555,7 @@ export type EstimateCountOrderByAggregateInput = {
   claimNumber?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
   discount?: Prisma.SortOrder
+  paymentTerm?: Prisma.SortOrder
   sentToGarageAt?: Prisma.SortOrder
   acceptedAt?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
@@ -557,6 +577,7 @@ export type EstimateMaxOrderByAggregateInput = {
   claimNumber?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
   discount?: Prisma.SortOrder
+  paymentTerm?: Prisma.SortOrder
   sentToGarageAt?: Prisma.SortOrder
   acceptedAt?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
@@ -574,6 +595,7 @@ export type EstimateMinOrderByAggregateInput = {
   claimNumber?: Prisma.SortOrder
   deleted?: Prisma.SortOrder
   discount?: Prisma.SortOrder
+  paymentTerm?: Prisma.SortOrder
   sentToGarageAt?: Prisma.SortOrder
   acceptedAt?: Prisma.SortOrder
   paidAt?: Prisma.SortOrder
@@ -655,6 +677,10 @@ export type NullableFloatFieldUpdateOperationsInput = {
   divide?: number
 }
 
+export type EnumPaymentTermFieldUpdateOperationsInput = {
+  set?: $Enums.PaymentTerm
+}
+
 export type EstimateCreateNestedOneWithoutItemsInput = {
   create?: Prisma.XOR<Prisma.EstimateCreateWithoutItemsInput, Prisma.EstimateUncheckedCreateWithoutItemsInput>
   connectOrCreate?: Prisma.EstimateCreateOrConnectWithoutItemsInput
@@ -706,6 +732,7 @@ export type EstimateCreateWithoutInterventionInput = {
   claimNumber?: string | null
   deleted?: boolean
   discount?: number | null
+  paymentTerm?: $Enums.PaymentTerm
   sentToGarageAt?: Date | string | null
   acceptedAt?: Date | string | null
   paidAt?: Date | string | null
@@ -725,6 +752,7 @@ export type EstimateUncheckedCreateWithoutInterventionInput = {
   claimNumber?: string | null
   deleted?: boolean
   discount?: number | null
+  paymentTerm?: $Enums.PaymentTerm
   sentToGarageAt?: Date | string | null
   acceptedAt?: Date | string | null
   paidAt?: Date | string | null
@@ -774,6 +802,7 @@ export type EstimateScalarWhereInput = {
   claimNumber?: Prisma.StringNullableFilter<"Estimate"> | string | null
   deleted?: Prisma.BoolFilter<"Estimate"> | boolean
   discount?: Prisma.FloatNullableFilter<"Estimate"> | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFilter<"Estimate"> | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
   acceptedAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
   paidAt?: Prisma.DateTimeNullableFilter<"Estimate"> | Date | string | null
@@ -790,6 +819,7 @@ export type EstimateCreateWithoutItemsInput = {
   claimNumber?: string | null
   deleted?: boolean
   discount?: number | null
+  paymentTerm?: $Enums.PaymentTerm
   sentToGarageAt?: Date | string | null
   acceptedAt?: Date | string | null
   paidAt?: Date | string | null
@@ -810,6 +840,7 @@ export type EstimateUncheckedCreateWithoutItemsInput = {
   claimNumber?: string | null
   deleted?: boolean
   discount?: number | null
+  paymentTerm?: $Enums.PaymentTerm
   sentToGarageAt?: Date | string | null
   acceptedAt?: Date | string | null
   paidAt?: Date | string | null
@@ -844,6 +875,7 @@ export type EstimateUpdateWithoutItemsInput = {
   claimNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFieldUpdateOperationsInput | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -864,6 +896,7 @@ export type EstimateUncheckedUpdateWithoutItemsInput = {
   claimNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFieldUpdateOperationsInput | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -882,6 +915,7 @@ export type EstimateCreateWithoutRefusalsInput = {
   claimNumber?: string | null
   deleted?: boolean
   discount?: number | null
+  paymentTerm?: $Enums.PaymentTerm
   sentToGarageAt?: Date | string | null
   acceptedAt?: Date | string | null
   paidAt?: Date | string | null
@@ -902,6 +936,7 @@ export type EstimateUncheckedCreateWithoutRefusalsInput = {
   claimNumber?: string | null
   deleted?: boolean
   discount?: number | null
+  paymentTerm?: $Enums.PaymentTerm
   sentToGarageAt?: Date | string | null
   acceptedAt?: Date | string | null
   paidAt?: Date | string | null
@@ -936,6 +971,7 @@ export type EstimateUpdateWithoutRefusalsInput = {
   claimNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFieldUpdateOperationsInput | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -956,6 +992,7 @@ export type EstimateUncheckedUpdateWithoutRefusalsInput = {
   claimNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFieldUpdateOperationsInput | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -974,6 +1011,7 @@ export type EstimateCreateWithoutAppointmentsInput = {
   claimNumber?: string | null
   deleted?: boolean
   discount?: number | null
+  paymentTerm?: $Enums.PaymentTerm
   sentToGarageAt?: Date | string | null
   acceptedAt?: Date | string | null
   paidAt?: Date | string | null
@@ -994,6 +1032,7 @@ export type EstimateUncheckedCreateWithoutAppointmentsInput = {
   claimNumber?: string | null
   deleted?: boolean
   discount?: number | null
+  paymentTerm?: $Enums.PaymentTerm
   sentToGarageAt?: Date | string | null
   acceptedAt?: Date | string | null
   paidAt?: Date | string | null
@@ -1028,6 +1067,7 @@ export type EstimateUpdateWithoutAppointmentsInput = {
   claimNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFieldUpdateOperationsInput | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1048,6 +1088,7 @@ export type EstimateUncheckedUpdateWithoutAppointmentsInput = {
   claimNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFieldUpdateOperationsInput | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1066,6 +1107,7 @@ export type EstimateCreateManyInterventionInput = {
   claimNumber?: string | null
   deleted?: boolean
   discount?: number | null
+  paymentTerm?: $Enums.PaymentTerm
   sentToGarageAt?: Date | string | null
   acceptedAt?: Date | string | null
   paidAt?: Date | string | null
@@ -1082,6 +1124,7 @@ export type EstimateUpdateWithoutInterventionInput = {
   claimNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFieldUpdateOperationsInput | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1101,6 +1144,7 @@ export type EstimateUncheckedUpdateWithoutInterventionInput = {
   claimNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFieldUpdateOperationsInput | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1120,6 +1164,7 @@ export type EstimateUncheckedUpdateManyWithoutInterventionInput = {
   claimNumber?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   deleted?: Prisma.BoolFieldUpdateOperationsInput | boolean
   discount?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  paymentTerm?: Prisma.EnumPaymentTermFieldUpdateOperationsInput | $Enums.PaymentTerm
   sentToGarageAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   acceptedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   paidAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -1186,6 +1231,7 @@ export type EstimateSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs
   claimNumber?: boolean
   deleted?: boolean
   discount?: boolean
+  paymentTerm?: boolean
   sentToGarageAt?: boolean
   acceptedAt?: boolean
   paidAt?: boolean
@@ -1210,6 +1256,7 @@ export type EstimateSelectScalar = {
   claimNumber?: boolean
   deleted?: boolean
   discount?: boolean
+  paymentTerm?: boolean
   sentToGarageAt?: boolean
   acceptedAt?: boolean
   paidAt?: boolean
@@ -1219,7 +1266,7 @@ export type EstimateSelectScalar = {
   updatedAt?: boolean
 }
 
-export type EstimateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "interventionId" | "status" | "type" | "claimNumber" | "deleted" | "discount" | "sentToGarageAt" | "acceptedAt" | "paidAt" | "partsOrderedAt" | "partsArrivedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["estimate"]>
+export type EstimateOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "interventionId" | "status" | "type" | "claimNumber" | "deleted" | "discount" | "paymentTerm" | "sentToGarageAt" | "acceptedAt" | "paidAt" | "partsOrderedAt" | "partsArrivedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["estimate"]>
 export type EstimateInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   items?: boolean | Prisma.Estimate$itemsArgs<ExtArgs>
   intervention?: boolean | Prisma.InterventionDefaultArgs<ExtArgs>
@@ -1244,6 +1291,7 @@ export type $EstimatePayload<ExtArgs extends runtime.Types.Extensions.InternalAr
     claimNumber: string | null
     deleted: boolean
     discount: number | null
+    paymentTerm: $Enums.PaymentTerm
     sentToGarageAt: Date | null
     acceptedAt: Date | null
     paidAt: Date | null
@@ -1631,6 +1679,7 @@ export interface EstimateFieldRefs {
   readonly claimNumber: Prisma.FieldRef<"Estimate", 'String'>
   readonly deleted: Prisma.FieldRef<"Estimate", 'Boolean'>
   readonly discount: Prisma.FieldRef<"Estimate", 'Float'>
+  readonly paymentTerm: Prisma.FieldRef<"Estimate", 'PaymentTerm'>
   readonly sentToGarageAt: Prisma.FieldRef<"Estimate", 'DateTime'>
   readonly acceptedAt: Prisma.FieldRef<"Estimate", 'DateTime'>
   readonly paidAt: Prisma.FieldRef<"Estimate", 'DateTime'>

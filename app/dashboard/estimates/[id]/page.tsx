@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/dialog";
 import {
   EstimateStatus,
+  PaymentTerm,
   TypeClient,
   TypeEstimate,
 } from "@/generated/prisma/enums";
@@ -74,6 +75,14 @@ import { GeistMono } from "geist/font/mono";
 import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 import { capitalizeFirstLetterInHtml, VAT_RATE } from "@/lib/utils";
+import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 type FetchEstimate = {
   id: string;
@@ -89,6 +98,7 @@ type FetchEstimate = {
     items?: any;
   }>;
   discount: number | null;
+  paymentTerm: PaymentTerm;
   intervention: {
     id: string;
     date: Date;
@@ -160,6 +170,8 @@ export default function QuoteGeneratorPage() {
 
   const [selectedItems, setSelectedItems] = useState<ItemEstimate>([]);
   const loadingItems = useRef(false);
+
+  const [paymentTerm, setPaymentTerm] = useState<PaymentTerm>("DAYS_15");
 
   const [dialogOpen, setDialogOpen] = useState(false);
   const [pdfPreviewUrl, setPdfPreviewUrl] = useState<string | null>(null);
@@ -295,6 +307,7 @@ export default function QuoteGeneratorPage() {
           status: "TOFINISH",
           claimNumber: itemsData.claimNumber,
           discount: itemsData.discount,
+          paymentTerm: itemsData.paymentTerm,
           // eslint-disable-next-line
           items: itemsData.items.map((item: any) => ({
             id: item.id,
@@ -377,6 +390,7 @@ export default function QuoteGeneratorPage() {
           status: estimate.status,
           claimNumber: estimate.claimNumber,
           discount: estimate.discount,
+          paymentTerm: estimate.paymentTerm,
           items: selectedItems.map((item) => ({
             id: item.id,
             type: item.type,
@@ -1294,6 +1308,27 @@ export default function QuoteGeneratorPage() {
                         qu&apos;il le valide à son tour !
                       </AlertDialogDescription>
                     </AlertDialogHeader>
+
+                    {/* NOUVEAU — le délai de paiement se choisit maintenant ici */}
+                    <div className="py-2">
+                      <Label htmlFor="paymentTerm">Délai de paiement</Label>
+                      <Select
+                        value={paymentTerm}
+                        onValueChange={(value) =>
+                          setPaymentTerm(value as "NOW" | "DAYS_15" | "DAYS_30")
+                        }
+                      >
+                        <SelectTrigger id="paymentTerm" className="mt-1 w-full">
+                          <SelectValue placeholder="Choisir un délai" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="NOW">Comptant</SelectItem>
+                          <SelectItem value="DAYS_15">Dans 15 jours</SelectItem>
+                          <SelectItem value="DAYS_30">Dans 30 jours</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+
                     <AlertDialogFooter>
                       <AlertDialogCancel>Annuler</AlertDialogCancel>
                       <AlertDialogAction
@@ -1301,13 +1336,12 @@ export default function QuoteGeneratorPage() {
                         onClick={async () => {
                           const response = await validateEstimate({
                             estimateId: estimate.id,
+                            paymentTerm, // NOUVEAU
                           });
-
                           if (response.success) {
                             const emailResponse = await sendEmailEstimate({
                               estimateId: estimate.id,
                             });
-
                             if (!emailResponse.success) {
                               toast.error(
                                 emailResponse.error ||
@@ -1315,12 +1349,12 @@ export default function QuoteGeneratorPage() {
                               );
                             } else {
                               toast.success(
-                                `${response.message} Le devis a aussi été envoyé par email avec le PDF en pièce jointe.`,
+                                response.message ||
+                                  "Le devis a aussi été envoyé par email avec le PDF en pièce jointe.",
                               );
                             }
-
                             router.push(
-                              `/dashboard/estimates/${estimate.type === "INDIVIDUAL" ? "individual/pending" : "insurance/pending"}`,
+                              `/dashboard/estimates/${estimate.type === "INDIVIDUAL" ? "individual" : "insurance"}/pending`,
                             );
                           } else {
                             toast.error(response.message);

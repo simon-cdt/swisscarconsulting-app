@@ -175,9 +175,11 @@ const styles = StyleSheet.create({
     borderTopColor: "#000000",
     flexDirection: "row",
     justifyContent: "space-between",
+    width: "100%",
   },
   paymentInfo: {
     fontSize: 9,
+    width: "70%",
   },
   totalInfo: {
     fontSize: 9,
@@ -399,13 +401,10 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
   );
 
   const getPaymentLabel = (term?: PaymentTerm) => {
-    if (term === "NOW") {
-      return "Paiement comptant à réception de la facture";
-    }
-    if (term === "DAYS_30") {
-      return "Paiement à effectuer dans un délai de 30 jours";
-    }
-    return "Paiement à effectuer dans un délai de 15 jours";
+    if (term === "NOW") return "Paiement comptant, à réception de la facture";
+    if (term === "DAYS_30")
+      return "Paiement à effectuer dans un délai de 30 jours à compter de la date d'émission de la facture";
+    return "Paiement à effectuer dans un délai de 15 jours à compter de la date d'émission de la facture";
   };
 
   const parts = data.items.filter((item) => item.type === "PART");
@@ -420,6 +419,7 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
 
   const isInvoice =
     data.status === "SENT_TO_GARAGE" || data.status === "FINISHED";
+  const isDraft = data.status === "TOFINISH";
 
   return (
     <Document>
@@ -486,8 +486,7 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
           <Text>
             <Text style={styles.bold}>Véhicule : </Text>
             {data.intervention.vehicule.brand}{" "}
-            {data.intervention.vehicule.model} (
-            {data.intervention.vehicule.year})
+            {data.intervention.vehicule.model}
           </Text>
           <Text>&nbsp;/&nbsp;</Text>
           <Text>
@@ -685,9 +684,9 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
         <View style={styles.footer}>
           <View style={styles.paymentInfo}>
             <Text style={styles.bold}>Conditions de paiement</Text>
-
             {isInvoice ? (
               <>
+                {/* Facture réelle : la date de départ est connue, on peut calculer une vraie échéance */}
                 <Text style={{ marginTop: 4 }}>
                   {getPaymentLabel(data.paymentTerm)}
                 </Text>
@@ -699,10 +698,17 @@ export const EstimatePDF = ({ data }: { data: EstimateData }) => {
                 )}
               </>
             ) : (
-              <Text style={{ marginTop: 4 }}>
-                Les conditions de paiement seront communiquées lors de
-                l&apos;envoi de la facture.
-              </Text>
+              <>
+                <Text style={{ marginTop: 4 }}>
+                  {getPaymentLabel(data.paymentTerm)}
+                </Text>
+                {data.paymentTerm !== "NOW" && (
+                  <Text style={{ marginTop: 2 }}>
+                    La date d&apos;échéance exacte sera communiquée lors de
+                    l&apos;envoi de la facture.
+                  </Text>
+                )}
+              </>
             )}
 
             <Text style={{ ...styles.bold, marginTop: 8 }}>IBAN</Text>

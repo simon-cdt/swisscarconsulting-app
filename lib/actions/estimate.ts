@@ -3,7 +3,11 @@
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth";
 import { db } from "../db";
-import { EstimateStatus, ItemType } from "@/generated/prisma/enums";
+import {
+  EstimateStatus,
+  ItemType,
+  PaymentTerm,
+} from "@/generated/prisma/enums";
 
 export const addEstimateIndividual = async ({
   data,
@@ -512,8 +516,10 @@ export const restoreEstimate = async ({
 
 export const validateEstimate = async ({
   estimateId,
+  paymentTerm,
 }: {
   estimateId: string;
+  paymentTerm: PaymentTerm;
 }): Promise<
   | { success: false; message: string }
   | { success: true; message: "Le devis a bien été validé." }
@@ -535,6 +541,7 @@ export const validateEstimate = async ({
       where: { id: estimateId },
       data: {
         status: "PENDING",
+        paymentTerm: paymentTerm,
       },
     });
 

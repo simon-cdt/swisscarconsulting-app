@@ -912,10 +912,6 @@ export type InvoiceSumOrderByAggregateInput = {
   postalCode?: Prisma.SortOrder
 }
 
-export type EnumPaymentTermFieldUpdateOperationsInput = {
-  set?: $Enums.PaymentTerm
-}
-
 export type EnumInvoiceStatusFieldUpdateOperationsInput = {
   set?: $Enums.InvoiceStatus
 }

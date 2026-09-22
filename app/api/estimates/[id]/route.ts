@@ -22,6 +22,7 @@ export async function GET(
       type: true,
       claimNumber: true,
       discount: true,
+      paymentTerm: true,
       acceptedAt: true,
       refusals: {
         select: {

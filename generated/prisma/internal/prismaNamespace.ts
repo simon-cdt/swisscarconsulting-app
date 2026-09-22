@@ -1192,6 +1192,7 @@ export const EstimateScalarFieldEnum = {
   claimNumber: 'claimNumber',
   deleted: 'deleted',
   discount: 'discount',
+  paymentTerm: 'paymentTerm',
   sentToGarageAt: 'sentToGarageAt',
   acceptedAt: 'acceptedAt',
   paidAt: 'paidAt',
@@ -1537,6 +1538,13 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
 
 
 /**
+ * Reference to a field of type 'PaymentTerm'
+ */
+export type EnumPaymentTermFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentTerm'>
+    
+
+
+/**
  * Reference to a field of type 'ItemType'
  */
 export type EnumItemTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ItemType'>
@@ -1554,13 +1562,6 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
-    
-
-
-/**
- * Reference to a field of type 'PaymentTerm'
- */
-export type EnumPaymentTermFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PaymentTerm'>
     
 
 

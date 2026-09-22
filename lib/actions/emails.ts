@@ -35,6 +35,7 @@ export async function sendEmailEstimate({
         status: true,
         claimNumber: true,
         discount: true,
+        paymentTerm: true,
         items: {
           select: {
             id: true,
@@ -106,6 +107,7 @@ export async function sendEmailEstimate({
       status: estimate.status,
       claimNumber: estimate.claimNumber,
       discount: estimate.discount,
+      paymentTerm: estimate.paymentTerm,
       logoBase64,
       items: estimate.items,
       intervention: estimate.intervention,
@@ -216,13 +218,7 @@ export async function sendEmailEstimate({
   }
 }
 
-export async function sendEmailInvoice({
-  estimateId,
-  paymentTerm,
-}: {
-  estimateId: string;
-  paymentTerm?: PaymentTerm;
-}) {
+export async function sendEmailInvoice({ estimateId }: { estimateId: string }) {
   try {
     const session = await getServerSession(authOptions);
     if (!session || !session.user) {
@@ -237,6 +233,7 @@ export async function sendEmailInvoice({
         claimNumber: true,
         status: true,
         discount: true,
+        paymentTerm: true,
         items: {
           select: {
             id: true,
@@ -316,7 +313,7 @@ export async function sendEmailInvoice({
       logoBase64,
       items: estimate.items,
       intervention: estimate.intervention,
-      paymentTerm: paymentTerm || "DAYS_15",
+      paymentTerm: estimate.paymentTerm,
     };
 
     const pdfBuffer = await renderToBuffer(
@@ -383,7 +380,7 @@ export async function sendEmailInvoice({
       subject: estimateId ? `Facture n°${estimateId}` : "Facture à régler",
       react:
         estimate.type === "INDIVIDUAL"
-          ? InvoiceIndividualEmail({ paymentTerm: paymentTerm || "DAYS_15" })
+          ? InvoiceIndividualEmail({ paymentTerm: estimate.paymentTerm })
           : InsuranceInvoiceEmail({
               customerFirstName:
                 estimate.intervention.vehicule.client.contactFirstName || "",
@@ -454,9 +451,8 @@ export async function sendEmailInvoice({
         address: estimate.intervention.vehicule.client.address,
         postalCode: estimate.intervention.vehicule.client.postalCode,
         city: estimate.intervention.vehicule.client.city,
-
+        paymentTerm: estimate.paymentTerm,
         pdfUrl: pdfFilename,
-        paymentTerm,
       },
     });
 

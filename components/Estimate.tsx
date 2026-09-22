@@ -580,7 +580,6 @@ export default function Estimate({
                           onClick={async () => {
                             const response = await sendEmailInvoice({
                               estimateId: estimate.id,
-                              paymentTerm: paymentTerm,
                             });
 
                             if (response.success) {

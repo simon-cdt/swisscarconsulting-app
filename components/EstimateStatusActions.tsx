@@ -353,7 +353,6 @@ export default function EstimateStatusActions({
                 onClick={async () => {
                   const response = await sendEmailInvoice({
                     estimateId: estimateId,
-                    paymentTerm: paymentTerm,
                   });
 
                   if (response.success) {
