@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
   },
   paymentInfo: {
     fontSize: 9,
-    width: "70%",
+    width: "60%",
   },
   totalInfo: {
     fontSize: 9,
