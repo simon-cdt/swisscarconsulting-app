@@ -15,14 +15,10 @@ import {
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { SharedFormData } from "./CustomTabs";
-import { useEffect, forwardRef, useImperativeHandle } from "react";
-import {
-  capitalizeName,
-  formatAddress,
-  normalizeCountryName,
-  toCamelCase,
-} from "@/lib/utils";
+import { useEffect, forwardRef, useImperativeHandle, useState } from "react";
+import { capitalizeName, normalizeCountryName, toCamelCase } from "@/lib/utils";
 import { AddressAutocomplete } from "../AddressAutocomplete";
+import DuplicateClientDialog from "./DuplicateClientDialog";
 
 type AddClientProps = {
   sharedData: SharedFormData;
@@ -34,6 +30,10 @@ export default forwardRef(function AddClient(
   ref,
 ) {
   const router = useRouter();
+  const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false);
+  const [duplicateConflicts, setDuplicateConflicts] = useState<string[]>([]);
+  const [pendingData, setPendingData] = useState<FormSchema | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
 
   const zodFormSchema = z.object({
     firstName: z.string().nonempty("Le prénom est requis."),
@@ -146,6 +146,19 @@ export default forwardRef(function AddClient(
     // Rien à faire ici maintenant, les données sont chargées au montage et on synchronise au changement de tab
   }, []);
 
+  const createClient = async (data: FormSchema, forceCreate = false) => {
+    setIsCreating(true);
+    const response = await addClientIndividual({ data, forceCreate });
+    setIsCreating(false);
+
+    if (response.success) {
+      toast.success(response.message);
+      router.push(`/client-handle/${response.clientId}`);
+    } else {
+      toast.error(response.message);
+    }
+  };
+
   const handleSubmitForm = async (data: FormSchema) => {
     // Vérifier si le client existe déjà
     const checkResult = await checkClientIndividualExists({
@@ -154,20 +167,17 @@ export default forwardRef(function AddClient(
       phonePrefix: data.phonePrefix,
       phoneNumber: data.phoneNumber,
       email: data.email,
+      address: data.address,
     });
 
     if (checkResult.exists) {
-      toast.error(checkResult.message);
+      setPendingData(data);
+      setDuplicateConflicts(checkResult.conflicts);
+      setDuplicateDialogOpen(true);
       return;
     }
 
-    const response = await addClientIndividual({ data });
-    if (response.success) {
-      toast.success(response.message);
-      router.push(`/client-handle/${response.clientId}`);
-    } else {
-      toast.error(response.message);
-    }
+    await createClient(data);
   };
 
   return (
@@ -274,10 +284,22 @@ export default forwardRef(function AddClient(
       <Button
         type="submit"
         className="w-full bg-sky-500 hover:bg-sky-600"
-        disabled={isSubmitting}
+        disabled={isSubmitting || isCreating}
       >
         {isSubmitting ? <Spinner /> : "Créer un client particulier"}
       </Button>
+      <DuplicateClientDialog
+        open={duplicateDialogOpen}
+        conflicts={duplicateConflicts}
+        onOpenChange={setDuplicateDialogOpen}
+        onConfirm={() => {
+          if (pendingData) {
+            setDuplicateDialogOpen(false);
+            void createClient(pendingData, true);
+          }
+        }}
+        isSubmitting={isCreating}
+      />
     </form>
   );
 });

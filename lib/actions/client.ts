@@ -6,6 +6,7 @@ import { normalizeCountryName } from "@/lib/utils";
 import { db } from "../db";
 
 const normalizePhoneNumber = (value: string) => value.replace(/\s/g, "");
+const normalizeAddress = (value?: string | null) => value?.trim().toLowerCase();
 
 // ============ FONCTIONS DE VÉRIFICATION (AVANT LES AUTRES) ============
 
@@ -15,12 +16,14 @@ export const checkClientIndividualExists = async ({
   phonePrefix,
   phoneNumber,
   email,
+  address,
 }: {
   firstName: string;
   name: string;
   phonePrefix: string;
   phoneNumber: string;
   email: string;
+  address?: string;
 }): Promise<
   | { exists: false }
   | {
@@ -32,7 +35,9 @@ export const checkClientIndividualExists = async ({
         name: string | null;
         email: string;
         phoneNumber: string;
+        address: string | null;
       };
+      conflicts: string[];
     }
 > => {
   try {
@@ -48,53 +53,45 @@ export const checkClientIndividualExists = async ({
         email: true,
         phoneNumber: true,
         phonePrefix: true,
+        address: true,
       },
     });
 
-    // Chercher par email (case insensitive)
-    let existingClient =
-      allClients.find(
-        (client) => client.email?.toLowerCase() === email.toLowerCase(),
-      ) || null;
-
-    if (existingClient) {
-      const message = `Un client avec l'email "${existingClient.email}" existe déjà.`;
-      return {
-        exists: true,
-        message,
-        existingClient,
-      };
-    }
-
-    existingClient =
-      allClients.find(
-        (client) =>
+    const existingClient =
+      allClients.find((client) => {
+        const sameEmail = client.email?.toLowerCase() === email.toLowerCase();
+        const samePhone =
           client.phonePrefix === phonePrefix &&
-          normalizePhoneNumber(client.phoneNumber) === normalizedPhoneNumber,
-      ) || null;
-
-    if (existingClient) {
-      const message = `Un client avec le numéro de téléphone "${phonePrefix}${existingClient.phoneNumber}" existe déjà.`;
-      return {
-        exists: true,
-        message,
-        existingClient,
-      };
-    }
-
-    // Chercher par nom + prénom (case insensitive)
-    existingClient =
-      allClients.find(
-        (client) =>
+          normalizePhoneNumber(client.phoneNumber) === normalizedPhoneNumber;
+        const sameAddress =
+          !!address &&
+          normalizeAddress(client.address) === normalizeAddress(address);
+        const sameName =
           client.firstName?.toLowerCase() === firstName.toLowerCase() &&
-          client.name?.toLowerCase() === name.toLowerCase(),
-      ) || null;
+          client.name?.toLowerCase() === name.toLowerCase();
+        return sameEmail || samePhone || sameAddress || sameName;
+      }) || null;
 
     if (existingClient) {
-      const message = `Un client avec le nom "${existingClient.firstName} ${existingClient.name}" existe déjà.`;
+      const conflicts = [
+        existingClient.email?.toLowerCase() === email.toLowerCase() &&
+          "l'adresse e-mail",
+        existingClient.phonePrefix === phonePrefix &&
+          normalizePhoneNumber(existingClient.phoneNumber) ===
+            normalizedPhoneNumber &&
+          "le numéro de téléphone",
+        !!address &&
+          normalizeAddress(existingClient.address) ===
+            normalizeAddress(address) &&
+          "l'adresse",
+        existingClient.firstName?.toLowerCase() === firstName.toLowerCase() &&
+          existingClient.name?.toLowerCase() === name.toLowerCase() &&
+          "le prénom et le nom",
+      ].filter((conflict): conflict is string => Boolean(conflict));
       return {
         exists: true,
-        message,
+        message: `Les informations suivantes existent déjà : ${conflicts.join(", ")}.`,
+        conflicts,
         existingClient,
       };
     }
@@ -111,11 +108,13 @@ export const checkCompanyExists = async ({
   phonePrefix,
   phoneNumber,
   email,
+  address,
 }: {
   companyName: string;
   phonePrefix: string;
   phoneNumber: string;
   email: string;
+  address?: string;
 }): Promise<
   | { exists: false }
   | {
@@ -126,7 +125,9 @@ export const checkCompanyExists = async ({
         companyName: string | null;
         email: string;
         phoneNumber: string;
+        address: string | null;
       };
+      conflicts: string[];
     }
 > => {
   try {
@@ -140,52 +141,43 @@ export const checkCompanyExists = async ({
         email: true,
         phoneNumber: true,
         phonePrefix: true,
+        address: true,
       },
     });
 
-    // Chercher par email (case insensitive)
-    let existingClient =
-      allClients.find(
-        (client) => client.email?.toLowerCase() === email.toLowerCase(),
-      ) || null;
-
-    if (existingClient) {
-      const message = `Une entreprise avec l'email "${existingClient.email}" existe déjà.`;
-      return {
-        exists: true,
-        message,
-        existingClient,
-      };
-    }
-
-    existingClient =
-      allClients.find(
-        (client) =>
+    const existingClient =
+      allClients.find((client) => {
+        const sameEmail = client.email?.toLowerCase() === email.toLowerCase();
+        const samePhone =
           client.phonePrefix === phonePrefix &&
-          normalizePhoneNumber(client.phoneNumber) === normalizedPhoneNumber,
-      ) || null;
+          normalizePhoneNumber(client.phoneNumber) === normalizedPhoneNumber;
+        const sameAddress =
+          !!address &&
+          normalizeAddress(client.address) === normalizeAddress(address);
+        const sameCompanyName =
+          client.companyName?.toLowerCase() === companyName.toLowerCase();
+        return sameEmail || samePhone || sameAddress || sameCompanyName;
+      }) || null;
 
     if (existingClient) {
-      const message = `Un client avec le numéro de téléphone "${phonePrefix}${existingClient.phoneNumber}" existe déjà.`;
+      const conflicts = [
+        existingClient.email?.toLowerCase() === email.toLowerCase() &&
+          "l'adresse e-mail",
+        existingClient.phonePrefix === phonePrefix &&
+          normalizePhoneNumber(existingClient.phoneNumber) ===
+            normalizedPhoneNumber &&
+          "le numéro de téléphone",
+        !!address &&
+          normalizeAddress(existingClient.address) ===
+            normalizeAddress(address) &&
+          "l'adresse",
+        existingClient.companyName?.toLowerCase() ===
+          companyName.toLowerCase() && "le nom de l'entreprise",
+      ].filter((conflict): conflict is string => Boolean(conflict));
       return {
         exists: true,
-        message,
-        existingClient,
-      };
-    }
-
-    // Chercher par nom d'entreprise (case insensitive)
-    existingClient =
-      allClients.find(
-        (client) =>
-          client.companyName?.toLowerCase() === companyName.toLowerCase(),
-      ) || null;
-
-    if (existingClient) {
-      const message = `Une entreprise avec le nom "${existingClient.companyName}" existe déjà.`;
-      return {
-        exists: true,
-        message,
+        message: `Les informations suivantes existent déjà : ${conflicts.join(", ")}.`,
+        conflicts,
         existingClient,
       };
     }
@@ -201,6 +193,7 @@ export const checkCompanyExists = async ({
 
 export const addClientIndividual = async ({
   data,
+  forceCreate = false,
 }: {
   data: {
     firstName: string;
@@ -215,6 +208,7 @@ export const addClientIndividual = async ({
     city?: string;
     country?: string;
   };
+  forceCreate?: boolean;
 }): Promise<
   | { success: false; message: string }
   | { success: true; message: "Le client a bien été ajouté"; clientId: number }
@@ -232,9 +226,10 @@ export const addClientIndividual = async ({
       phonePrefix: data.phonePrefix,
       phoneNumber: data.phoneNumber,
       email: data.email,
+      address: data.address,
     });
 
-    if (checkResult.exists) {
+    if (checkResult.exists && !forceCreate) {
       return { success: false, message: checkResult.message };
     }
 
@@ -279,6 +274,7 @@ export const addClientIndividual = async ({
 
 export const addClientCompany = async ({
   data,
+  forceCreate = false,
 }: {
   data: {
     companyName: string;
@@ -294,6 +290,7 @@ export const addClientCompany = async ({
     city?: string;
     country?: string;
   };
+  forceCreate?: boolean;
 }): Promise<
   | { success: false; message: string }
   | { success: true; message: "Le client a bien été ajouté"; clientId: number }
@@ -310,9 +307,10 @@ export const addClientCompany = async ({
       phonePrefix: data.phonePrefix,
       phoneNumber: data.phoneNumber,
       email: data.email,
+      address: data.address,
     });
 
-    if (checkResult.exists) {
+    if (checkResult.exists && !forceCreate) {
       return { success: false, message: checkResult.message };
     }
 

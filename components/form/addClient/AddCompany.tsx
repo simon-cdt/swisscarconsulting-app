@@ -12,15 +12,15 @@ import { addClientCompany, checkCompanyExists } from "@/lib/actions/client";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import { SharedFormData } from "./CustomTabs";
-import { useEffect, forwardRef, useImperativeHandle } from "react";
+import { useEffect, forwardRef, useImperativeHandle, useState } from "react";
 import {
-  formatAddress,
   toCamelCase,
   capitalize,
   capitalizeName,
   normalizeCountryName,
 } from "@/lib/utils";
 import { AddressAutocomplete } from "../AddressAutocomplete";
+import DuplicateClientDialog from "./DuplicateClientDialog";
 
 type AddCompanyProps = {
   sharedData: SharedFormData;
@@ -28,10 +28,14 @@ type AddCompanyProps = {
 };
 
 export default forwardRef(function AddCompany(
-  { sharedData, setSharedData }: AddCompanyProps,
+  { sharedData }: AddCompanyProps,
   ref,
 ) {
   const router = useRouter();
+  const [duplicateDialogOpen, setDuplicateDialogOpen] = useState(false);
+  const [duplicateConflicts, setDuplicateConflicts] = useState<string[]>([]);
+  const [pendingData, setPendingData] = useState<FormSchema | null>(null);
+  const [isCreating, setIsCreating] = useState(false);
 
   const zodFormSchema = z.object({
     companyName: z.string().nonempty("Le nom de l'entreprise est requis."),
@@ -146,6 +150,19 @@ export default forwardRef(function AddCompany(
     // Rien à faire ici maintenant, les données sont chargées au montage et on synchronise au changement de tab
   }, []);
 
+  const createCompany = async (data: FormSchema, forceCreate = false) => {
+    setIsCreating(true);
+    const response = await addClientCompany({ data, forceCreate });
+    setIsCreating(false);
+
+    if (response.success) {
+      toast.success(response.message);
+      router.push(`/client-handle/${response.clientId}`);
+    } else {
+      toast.error(response.message);
+    }
+  };
+
   const handleSubmitForm = async (data: FormSchema) => {
     // Vérifier si l'entreprise existe déjà
     const checkResult = await checkCompanyExists({
@@ -153,20 +170,17 @@ export default forwardRef(function AddCompany(
       phonePrefix: data.phonePrefix,
       phoneNumber: data.phoneNumber,
       email: data.email,
+      address: data.address,
     });
 
     if (checkResult.exists) {
-      toast.error(checkResult.message);
+      setPendingData(data);
+      setDuplicateConflicts(checkResult.conflicts);
+      setDuplicateDialogOpen(true);
       return;
     }
 
-    const response = await addClientCompany({ data });
-    if (response.success) {
-      toast.success(response.message);
-      router.push(`/client-handle/${response.clientId}`);
-    } else {
-      toast.error(response.message);
-    }
+    await createCompany(data);
   };
 
   return (
@@ -283,10 +297,22 @@ export default forwardRef(function AddCompany(
       <Button
         type="submit"
         className="w-full bg-amber-500 hover:bg-amber-600"
-        disabled={isSubmitting}
+        disabled={isSubmitting || isCreating}
       >
         {isSubmitting ? <Spinner /> : "Créer un client entreprise"}
       </Button>
+      <DuplicateClientDialog
+        open={duplicateDialogOpen}
+        conflicts={duplicateConflicts}
+        onOpenChange={setDuplicateDialogOpen}
+        onConfirm={() => {
+          if (pendingData) {
+            setDuplicateDialogOpen(false);
+            void createCompany(pendingData, true);
+          }
+        }}
+        isSubmitting={isCreating}
+      />
     </form>
   );
 });

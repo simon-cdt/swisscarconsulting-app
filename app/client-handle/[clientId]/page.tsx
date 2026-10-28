@@ -201,7 +201,7 @@ export default function ClientVehiculePage() {
                   className={`${data.client.typeClient === "individual" ? "individual-card" : "company-card"} w-full p-6`}
                 >
                   <div className="flex flex-col gap-3">
-                    <div className="flex w-full items-center justify-between">
+                    <div className="flex w-full items-center justify-between gap-5">
                       <div className="flex items-center gap-4">
                         <div
                           className={`${data.client.typeClient === "individual" ? "bg-sky-100" : "bg-amber-100"} flex h-10 w-10 items-center justify-center rounded-lg`}
@@ -216,9 +216,9 @@ export default function ClientVehiculePage() {
                           Informations client
                         </h2>
                       </div>
-                      <div>
+                      <div className="flex items-center gap-1">
                         <p className="text-muted-foreground text-sm">
-                          Numéro client
+                          N° Client
                         </p>
                         <p className="text-foreground text-sm font-medium">
                           {data.client.id}
